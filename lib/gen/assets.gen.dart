@@ -17,12 +17,26 @@ class $AssetsIconsGen {
   /// File path: assets/icons/appIcon.svg
   SvgGenImage get appIcon => const SvgGenImage('assets/icons/appIcon.svg');
 
+  /// File path: assets/icons/assigned_tasks.svg
+  SvgGenImage get assignedTasks =>
+      const SvgGenImage('assets/icons/assigned_tasks.svg');
+
   /// File path: assets/icons/bell.svg
   SvgGenImage get bell => const SvgGenImage('assets/icons/bell.svg');
 
   /// File path: assets/icons/bell_active.svg
   SvgGenImage get bellActive =>
       const SvgGenImage('assets/icons/bell_active.svg');
+
+  /// File path: assets/icons/emplyee_directory.svg
+  SvgGenImage get emplyeeDirectory =>
+      const SvgGenImage('assets/icons/emplyee_directory.svg');
+
+  /// File path: assets/icons/grid_icon.svg
+  SvgGenImage get gridIcon => const SvgGenImage('assets/icons/grid_icon.svg');
+
+  /// File path: assets/icons/list_icon.svg
+  SvgGenImage get listIcon => const SvgGenImage('assets/icons/list_icon.svg');
 
   /// File path: assets/icons/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/icons/lock.svg');
@@ -33,13 +47,29 @@ class $AssetsIconsGen {
   /// File path: assets/icons/person.svg
   SvgGenImage get person => const SvgGenImage('assets/icons/person.svg');
 
+  /// File path: assets/icons/room_map_view.svg
+  SvgGenImage get roomMapView =>
+      const SvgGenImage('assets/icons/room_map_view.svg');
+
   /// File path: assets/icons/splash_logo.svg
   SvgGenImage get splashLogo =>
       const SvgGenImage('assets/icons/splash_logo.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values =>
-      [appIcon, bell, bellActive, lock, mail, person, splashLogo];
+  List<SvgGenImage> get values => [
+        appIcon,
+        assignedTasks,
+        bell,
+        bellActive,
+        emplyeeDirectory,
+        gridIcon,
+        listIcon,
+        lock,
+        mail,
+        person,
+        roomMapView,
+        splashLogo
+      ];
 }
 
 class $AssetsImagesGen {

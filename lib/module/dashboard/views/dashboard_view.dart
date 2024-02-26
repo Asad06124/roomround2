@@ -11,16 +11,16 @@ class DashboardView extends StatelessWidget {
       init: DashBoardController(),
       builder: (controller) {
         return Container(
-          decoration: BoxDecoration(
-            gradient: controller.curruntIndex == 0 ? AppColors.gradient : null,
-            color: const Color.fromARGB(255, 239, 239, 239),
+          decoration: const BoxDecoration(
+            gradient: null,
+            color: AppColors.white,
           ),
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: controller.curruntScreen,
             bottomNavigationBar: CurvedNavigationBar(
               backgroundColor: Colors.transparent,
-              buttonBackgroundColor: AppColors.white,
+              buttonBackgroundColor: AppColors.lightWhite,
               color: AppColors.primary,
               items: <Widget>[
                 Icon(

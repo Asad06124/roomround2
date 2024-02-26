@@ -29,6 +29,18 @@ class AppPages {
       ),
     ),
     GetPage(
+      name: AppRoutes.HOME,
+      page: () => const HomeView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {
+          // Get.lazyPut<OnboardingController>(
+          //   () => OnboardingController(),
+          // );
+        },
+      ),
+    ),
+    GetPage(
       name: AppRoutes.DASHBOARD,
       page: () => const DashboardView(),
       transition: transitionType,

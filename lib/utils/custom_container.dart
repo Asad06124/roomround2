@@ -5,7 +5,13 @@ class CustomContainer extends StatelessWidget {
   Widget? child;
   PreferredSize? appBar;
   bool isGradient;
-  CustomContainer({Key? key, this.child, this.appBar, this.isGradient = true})
+  EdgeInsetsGeometry padding;
+  CustomContainer(
+      {Key? key,
+      this.child,
+      this.appBar,
+      this.padding = const EdgeInsets.symmetric(horizontal: 20),
+      this.isGradient = true})
       : super(key: key);
 
   @override
@@ -20,7 +26,7 @@ class CustomContainer extends StatelessWidget {
         backgroundColor: Colors.transparent,
         appBar: appBar,
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: padding,
           child: child,
         ),
       ),

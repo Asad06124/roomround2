@@ -9,7 +9,13 @@ class CustomAppbar {
       bool notificationActive = true,
       bool isHome = false,
       bool isBackButtun = false,
+      Color? backButtunColor,
+      Color? iconsClor,
+      TextStyle? titleStyle,
       String title = "Robert Brown"}) {
+    final txtStyle = titleStyle ?? context.titleLarge;
+    double iconHeight = isHome ? 25 : 20;
+    final iconWeight = iconHeight;
     return PreferredSize(
       preferredSize: Size.fromHeight(height),
       child: Padding(
@@ -29,9 +35,9 @@ class CustomAppbar {
                 if (isBackButtun) ...{
                   InkWell(
                     onTap: () => Get.back(),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_back,
-                      color: AppColors.white,
+                      color: backButtunColor ?? AppColors.white,
                     ),
                   ),
                   SB.w(20),
@@ -42,7 +48,7 @@ class CustomAppbar {
                       ? context.displaySmall!.copyWith(
                           color: AppColors.white,
                         )
-                      : context.titleSmall,
+                      : txtStyle,
                 ),
                 const Spacer(),
                 Row(
@@ -50,11 +56,23 @@ class CustomAppbar {
                   children: [
                     if (showNotificationIcon)
                       notificationActive
-                          ? Assets.icons.bellActive.svg()
-                          : Assets.icons.bell.svg(),
+                          ? Assets.icons.bellActive.svg(
+                              color: iconsClor,
+                              height: iconHeight + 8,
+                              width: iconWeight + 8,
+                            )
+                          : Assets.icons.bell.svg(
+                              color: iconsClor,
+                              height: iconHeight + 3,
+                              width: iconWeight + 3,
+                            ),
                     if (showMailIcon) ...{
                       SB.w(notificationActive ? 15 : 20),
-                      Assets.icons.mail.svg()
+                      Assets.icons.mail.svg(
+                        color: iconsClor,
+                        height: iconHeight,
+                        width: iconWeight,
+                      )
                     },
                   ],
                 )

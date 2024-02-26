@@ -4,6 +4,7 @@ class AppStrings {
   static const String appNameSpace = "Room Rounds";
   static const String keepUpDataWithSatausOf =
       "Keep up to date with the status of your RoomRounds";
+  static const String settings = "Settings";
 
   static const String account = "Account";
   static const String unableToLogin = "Unable to login? ";

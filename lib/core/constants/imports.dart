@@ -18,9 +18,11 @@ export 'package:roomrounds/utils/custom_loader.dart';
 export 'package:roomrounds/core/routes/app_routes.dart';
 export 'package:roomrounds/core/theme/theme_dark.dart';
 export 'package:roomrounds/utils/custom_container.dart';
-
+export 'package:roomrounds/utils/custom_appbar.dart';
 ///////////////   Pages     //////////////////////
 export 'package:roomrounds/module/splash/views/splash_view.dart';
 export 'package:roomrounds/module/authentications/views/login_view.dart';
 export 'package:roomrounds/module/dashboard/views/dashboard_view.dart';
 export 'package:roomrounds/module/home/views/home_view.dart';
+export 'package:roomrounds/module/main_features/views/main_features_view.dart';
+export 'package:roomrounds/module/settings/views/settings_view.dart';

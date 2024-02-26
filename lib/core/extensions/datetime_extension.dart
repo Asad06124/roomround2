@@ -40,8 +40,7 @@ extension GreetingExtension on DateTime {
 extension StringDateFormatExtension on String {
   String toDateAndMonth() {
     final DateTime? dateTime = DateTime.tryParse(this);
-    print(this);
-    print(dateTime);
+
     final months = [
       'Jan',
       'Feb',
