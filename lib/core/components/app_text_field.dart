@@ -20,14 +20,14 @@ class CustomTextField extends StatefulWidget {
     this.onChange,
     this.textCapitalization = TextCapitalization.words,
     this.fillColor,
-    this.showShadow = true,
     this.showBorder = false,
     this.maxLines = 1,
     this.prefixIcon,
     this.onTap,
+    this.isShadow = false,
     this.isRequiredField = true,
     this.hintText,
-    this.borderRadius = 9,
+    this.borderRadius = 9.0,
   }) : super(key: key);
 
   final String? title, hintText;
@@ -36,6 +36,7 @@ class CustomTextField extends StatefulWidget {
   final FormFieldValidator? validator;
   final bool readOnly;
   final bool enabled;
+  final bool isShadow;
   final TextInputType? keyboardType;
   final Color? textColor, fillColor;
   final Color? hintTextColor;
@@ -46,7 +47,7 @@ class CustomTextField extends StatefulWidget {
   final InputBorder? textFieldBorder;
   final Function(String value)? onChange;
   final TextCapitalization? textCapitalization;
-  final bool showShadow, showBorder;
+  final bool showBorder;
   final int maxLines;
   final bool isRequiredField;
   final double borderRadius;
@@ -82,71 +83,86 @@ class _CustomTextFieldState extends State<CustomTextField> {
               ],
             ),
           ),
-        TextFormField(
-          onTap: widget.onTap,
-          onTapOutside: (e) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          cursorColor: widget.textColor,
-          readOnly: widget.readOnly,
-          enabled: widget.enabled,
-          controller: widget.controller,
-          onChanged: widget.onChange,
-          textCapitalization:
-              widget.textCapitalization ?? TextCapitalization.none,
-          textAlign: widget.textAlign ?? TextAlign.start,
-          keyboardType: widget.keyboardType,
-          maxLines: widget.maxLines,
-          validator: widget.validator ??
-              (value) => value!.toString().trim().isEmpty
-                  ? "${widget.hintText ?? ''} ${AppStrings.cannotBeEmpty}"
+        Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              boxShadow: widget.isShadow
+                  ? [
+                      BoxShadow(
+                        color: AppColors.gry.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 9,
+                      )
+                    ]
+                  : []),
+          child: TextFormField(
+            onTap: widget.onTap,
+            onTapOutside: (e) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            cursorColor: widget.textColor,
+            readOnly: widget.readOnly,
+            enabled: widget.enabled,
+            controller: widget.controller,
+            onChanged: widget.onChange,
+            textCapitalization:
+                widget.textCapitalization ?? TextCapitalization.none,
+            textAlign: widget.textAlign ?? TextAlign.start,
+            keyboardType: widget.keyboardType,
+            maxLines: widget.maxLines,
+            validator: widget.validator ??
+                (value) => value!.toString().trim().isEmpty
+                    ? "${widget.hintText ?? ''} ${AppStrings.cannotBeEmpty}"
+                    : null,
+            obscureText:
+                widget.isPasswordField ? _hidePassword : widget.isPasswordField,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: InputDecoration(
+              prefixIcon: widget.prefixIcon != null
+                  ? Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SvgPicture.asset(
+                        widget.prefixIcon!,
+                        color: context.secondary,
+                      ),
+                    )
                   : null,
-          obscureText:
-              widget.isPasswordField ? _hidePassword : widget.isPasswordField,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(
-            prefixIcon: widget.prefixIcon != null
-                ? Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: SvgPicture.asset(
-                      widget.prefixIcon!,
-                      color: context.secondary,
-                    ),
-                  )
-                : null,
-            suffixIcon: widget.isPasswordField
-                ? _hidePasswordIcon()
-                : widget.suffixIcon != null
-                    ? Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: InkWell(
-                          onTap: widget.onSuffixTap,
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: context.primary,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: SvgPicture.asset(
-                              widget.suffixIcon!,
+              suffixIcon: widget.isPasswordField
+                  ? _hidePasswordIcon()
+                  : widget.suffixIcon != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: InkWell(
+                            onTap: widget.onSuffixTap,
+                            borderRadius: BorderRadius.circular(10),
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius:
+                                    BorderRadius.circular(widget.borderRadius),
+                              ),
+                              child: SvgPicture.asset(
+                                widget.suffixIcon!,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    : null,
-            hintText: widget.hintText,
-            hintStyle: context.bodyLarge!.copyWith(color: widget.hintTextColor),
-            fillColor: widget.fillColor,
-            filled: true,
-            contentPadding: //EdgeInsets.zero,
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            errorBorder: _inputBorder(),
-            focusedErrorBorder: _inputBorder(),
-            enabledBorder: _inputBorder(),
-            disabledBorder: _inputBorder(),
-            focusedBorder: _inputBorder(),
-            border: _inputBorder(),
+                        )
+                      : null,
+              hintText: widget.hintText,
+              hintStyle:
+                  context.bodyLarge!.copyWith(color: widget.hintTextColor),
+              fillColor: widget.fillColor,
+              filled: true,
+              contentPadding: //EdgeInsets.zero,
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              errorBorder: _inputBorder(),
+              focusedErrorBorder: _inputBorder(),
+              enabledBorder: _inputBorder(),
+              disabledBorder: _inputBorder(),
+              focusedBorder: _inputBorder(),
+              border: _inputBorder(),
+            ),
           ),
         ),
         SB.h(10),

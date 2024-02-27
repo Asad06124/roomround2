@@ -12,6 +12,7 @@ class CustomAppbar {
       Color? backButtunColor,
       Color? iconsClor,
       TextStyle? titleStyle,
+      Widget? decriptionWidget,
       String title = "Robert Brown"}) {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 25 : 20;
@@ -35,6 +36,7 @@ class CustomAppbar {
                 if (isBackButtun) ...{
                   InkWell(
                     onTap: () => Get.back(),
+                    borderRadius: BorderRadius.circular(35),
                     child: Icon(
                       Icons.arrow_back,
                       color: backButtunColor ?? AppColors.white,
@@ -55,29 +57,36 @@ class CustomAppbar {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (showNotificationIcon)
-                      notificationActive
-                          ? Assets.icons.bellActive.svg(
-                              color: iconsClor,
-                              height: iconHeight + 8,
-                              width: iconWeight + 8,
-                            )
-                          : Assets.icons.bell.svg(
-                              color: iconsClor,
-                              height: iconHeight + 3,
-                              width: iconWeight + 3,
-                            ),
+                      GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.NOTIFICATION),
+                        child: notificationActive
+                            ? Assets.icons.bellActive.svg(
+                                color: iconsClor,
+                                height: iconHeight + 8,
+                                width: iconWeight + 8,
+                              )
+                            : Assets.icons.bell.svg(
+                                color: iconsClor,
+                                height: iconHeight + 3,
+                                width: iconWeight + 3,
+                              ),
+                      ),
                     if (showMailIcon) ...{
                       SB.w(notificationActive ? 15 : 20),
-                      Assets.icons.mail.svg(
-                        color: iconsClor,
-                        height: iconHeight,
-                        width: iconWeight,
+                      GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.MESSAGE),
+                        child: Assets.icons.mail.svg(
+                          color: iconsClor,
+                          height: iconHeight,
+                          width: iconWeight,
+                        ),
                       )
                     },
                   ],
                 )
               ],
             ),
+            if (decriptionWidget != null) ...{SB.h(10), decriptionWidget},
             if (showWlcomeMessage) ...{
               SB.h(5),
               Text(

@@ -7,6 +7,11 @@ class AppStrings {
   static const String settings = "Settings";
 
   static const String account = "Account";
+  static const String assignedTasks = "Assigned Tasks";
+
+  static const String messageAndResponse = "Messages & Responses";
+  static const String employeeDirectory = "Employee Directory";
+  static const String roomStatusList = "Rooms Status List";
   static const String unableToLogin = "Unable to login? ";
   static const String clickHere = "Click here";
   static const String userName = "User Name";

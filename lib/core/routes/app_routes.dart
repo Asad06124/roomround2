@@ -5,4 +5,9 @@ abstract class AppRoutes {
   static const LOGIN = "/login";
   static const HOME = "/home";
   static const DASHBOARD = '/dashboard';
+  static const TEAMMEMBERS = '/team_members';
+  static const ASSIGNEDTASKS = '/assigned_tasks';
+  static const MESSAGE = '/message';
+  static const NOTIFICATION = "/notification";
+  static const EMPLOYEEDIRECTORy = '/employee_directory';
 }

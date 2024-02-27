@@ -1,4 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
+
 import 'package:roomrounds/module/main_features/components/main_features_components.dart';
 import 'package:roomrounds/module/main_features/controller/main_feature_controller.dart';
 
@@ -16,6 +17,12 @@ class MainFeaturesView extends StatelessWidget {
       Assets.icons.emplyeeDirectory,
       Assets.icons.assignedTasks,
       Assets.icons.roomMapView,
+    ];
+
+    List<String> pages = [
+      AppRoutes.EMPLOYEEDIRECTORy,
+      AppRoutes.ASSIGNEDTASKS,
+      AppRoutes.ASSIGNEDTASKS
     ];
     return CustomContainer(
       padding: const EdgeInsets.all(0),
@@ -78,10 +85,15 @@ class MainFeaturesView extends StatelessWidget {
                         ),
                         SB.h(50),
                         SizedBox(
-                            width: context.width,
-                            // height: context.height * 0.55,
-                            child: MainFeaturesCompinents.mainCards(
-                                context, titles, images)),
+                          width: context.width,
+                          // height: context.height * 0.55,
+                          child: MainFeaturesCompinents.mainCards(
+                            context,
+                            titles,
+                            images,
+                            onPressed: (index) => Get.toNamed(pages[index]),
+                          ),
+                        ),
                       ],
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/emloyee_directory/views/employee_directory_view.dart';
 
 class AppPages {
   static Transition transitionType = Transition.rightToLeft;
@@ -21,11 +22,7 @@ class AppPages {
       page: () => const LoginView(),
       transition: transitionType,
       binding: BindingsBuilder(
-        () {
-          // Get.lazyPut<OnboardingController>(
-          //   () => OnboardingController(),
-          // );
-        },
+        () {},
       ),
     ),
     GetPage(
@@ -33,11 +30,7 @@ class AppPages {
       page: () => const HomeView(),
       transition: transitionType,
       binding: BindingsBuilder(
-        () {
-          // Get.lazyPut<OnboardingController>(
-          //   () => OnboardingController(),
-          // );
-        },
+        () {},
       ),
     ),
     GetPage(
@@ -45,11 +38,47 @@ class AppPages {
       page: () => const DashboardView(),
       transition: transitionType,
       binding: BindingsBuilder(
-        () {
-          // Get.lazyPut<OnboardingController>(
-          //   () => OnboardingController(),
-          // );
-        },
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.TEAMMEMBERS,
+      page: () => const TeamMembersView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.ASSIGNEDTASKS,
+      page: () => const AssignedTasksView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.MESSAGE,
+      page: () => const MessageView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.NOTIFICATION,
+      page: () => const NotificationView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.EMPLOYEEDIRECTORy,
+      page: () => const EmployeeDirectoryView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
       ),
     ),
   ];
