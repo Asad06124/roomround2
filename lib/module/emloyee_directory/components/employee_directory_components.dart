@@ -29,7 +29,7 @@ class EmployeeDirectoryComponents {
               fontWeight: FontWeight.w500,
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Text(
             status,
             style: context.bodyLarge!.copyWith(

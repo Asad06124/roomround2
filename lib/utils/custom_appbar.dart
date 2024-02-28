@@ -21,27 +21,37 @@ class CustomAppbar {
       preferredSize: Size.fromHeight(height),
       child: Padding(
         padding: EdgeInsets.only(
-          top: context.paddingTop + 20,
+          top: context.paddingTop + (isBackButtun ? 10 : 20),
           left: 20,
           right: 20,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (isBackButtun) ...{
-                  InkWell(
-                    onTap: () => Get.back(),
-                    borderRadius: BorderRadius.circular(35),
-                    child: Icon(
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: Icon(
                       Icons.arrow_back,
                       color: backButtunColor ?? AppColors.white,
                     ),
                   ),
+                  // InkWell(
+                  //   onTap: () => Get.back(),
+                  //   borderRadius: BorderRadius.circular(35),
+                  //   child: Padding(
+                  //     padding: EdgeInsets.all(10),
+                  //     child: Icon(
+                  //       Icons.arrow_back,
+                  //       color: backButtunColor ?? AppColors.white,
+                  //     ),
+                  //   ),
+                  // ),
                   SB.w(20),
                 },
                 Text(

@@ -5,27 +5,30 @@ import 'package:roomrounds/core/theme/app_theme.dart';
 
 class ThemeDark extends AppTheme {
   ThemeData get theme => ThemeData(
-        // fontFamily: 'youtube_sans',
-        useMaterial3: true,
-        primarySwatch: primarySwatch,
-        extensions: [extension],
-        cardColor: cardColor,
-        scaffoldBackgroundColor: scaffoldBackgroundColor,
-        canvasColor: cardColor,
-        appBarTheme: const AppBarTheme(centerTitle: true),
-        // fontFamily: FontFamily.poppins,
-        colorScheme: ColorScheme.dark(
-          primary: primary,
-          onPrimary: onPrimary,
-          secondary: secondary,
-          onSecondary: onSecondary,
-          error: errorColor,
-          surface: cardColor,
-          onSurface: Colors.black,
-        ),
-        inputDecorationTheme: inputDecorationTheme,
-        progressIndicatorTheme: ProgressIndicatorThemeData(color: onPrimary),
-      );
+      // fontFamily: 'youtube_sans',
+      useMaterial3: true,
+      primarySwatch: primarySwatch,
+      extensions: [extension],
+      cardColor: cardColor,
+      scaffoldBackgroundColor: scaffoldBackgroundColor,
+      canvasColor: cardColor,
+      appBarTheme: const AppBarTheme(centerTitle: true),
+      // fontFamily: FontFamily.poppins,
+      colorScheme: ColorScheme.dark(
+        primary: primary,
+        onPrimary: onPrimary,
+        secondary: secondary,
+        onSecondary: onSecondary,
+        error: errorColor,
+        surface: cardColor,
+        onSurface: Colors.black,
+      ),
+      inputDecorationTheme: inputDecorationTheme,
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: onPrimary),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ));
 
   @override
   MaterialColor get primarySwatch => createMaterialColor(primary);

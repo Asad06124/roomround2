@@ -19,7 +19,8 @@ class CustomTextField extends StatefulWidget {
     this.textFieldBorder,
     this.onChange,
     this.textCapitalization = TextCapitalization.words,
-    this.fillColor,
+    this.fillColor = AppColors.white,
+    this.borderColor = AppColors.white,
     this.showBorder = false,
     this.maxLines = 1,
     this.prefixIcon,
@@ -27,6 +28,7 @@ class CustomTextField extends StatefulWidget {
     this.isShadow = false,
     this.isRequiredField = true,
     this.hintText,
+    this.sufficIconBackgroundColor = AppColors.primary,
     this.borderRadius = 9.0,
   }) : super(key: key);
 
@@ -38,8 +40,8 @@ class CustomTextField extends StatefulWidget {
   final bool enabled;
   final bool isShadow;
   final TextInputType? keyboardType;
-  final Color? textColor, fillColor;
-  final Color? hintTextColor;
+  final Color textColor, fillColor, borderColor;
+  final Color hintTextColor, sufficIconBackgroundColor;
   final String? prefixIcon;
   final String? suffixIcon;
   final VoidCallback? onSuffixTap, onTap;
@@ -63,6 +65,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.title != null)
           Padding(
@@ -85,16 +88,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ),
         Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-              boxShadow: widget.isShadow
-                  ? [
-                      BoxShadow(
-                        color: AppColors.gry.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 9,
-                      )
-                    ]
-                  : []),
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            boxShadow: widget.isShadow
+                ? [
+                    BoxShadow(
+                      color: AppColors.gry.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 9,
+                    )
+                  ]
+                : [],
+          ),
           child: TextFormField(
             onTap: widget.onTap,
             onTapOutside: (e) {
@@ -136,9 +140,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
                             onTap: widget.onSuffixTap,
                             borderRadius: BorderRadius.circular(10),
                             child: Container(
-                              padding: const EdgeInsets.all(10),
+                              padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: AppColors.primary,
+                                color: widget.sufficIconBackgroundColor,
                                 borderRadius:
                                     BorderRadius.circular(widget.borderRadius),
                               ),
@@ -165,14 +169,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ),
         ),
-        SB.h(10),
+        // SB.h(10),
       ],
     );
   }
 
-  InputBorder? _inputBorder() {
+  InputBorder _inputBorder() {
     return OutlineInputBorder(
-      borderSide: BorderSide.none,
+      borderSide: BorderSide(color: widget.borderColor),
       borderRadius: BorderRadius.all(
         Radius.circular(widget.borderRadius),
       ),

@@ -22,7 +22,7 @@ class MainFeaturesView extends StatelessWidget {
     List<String> pages = [
       AppRoutes.EMPLOYEEDIRECTORy,
       AppRoutes.ASSIGNEDTASKS,
-      AppRoutes.ASSIGNEDTASKS
+      AppRoutes.ROOMMAP
     ];
     return CustomContainer(
       padding: const EdgeInsets.all(0),

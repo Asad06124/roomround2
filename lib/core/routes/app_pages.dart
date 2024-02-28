@@ -1,5 +1,6 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/emloyee_directory/views/employee_directory_view.dart';
+import 'package:roomrounds/module/romm_map/views/room_map_details_view.dart';
+import 'package:roomrounds/module/romm_map/views/room_map_view.dart';
 
 class AppPages {
   static Transition transitionType = Transition.rightToLeft;
@@ -76,6 +77,22 @@ class AppPages {
     GetPage(
       name: AppRoutes.EMPLOYEEDIRECTORy,
       page: () => const EmployeeDirectoryView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.ROOMMAP,
+      page: () => const RoomMapView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.ROOMAMPDETAILS,
+      page: () => const RoomMapDetailsView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

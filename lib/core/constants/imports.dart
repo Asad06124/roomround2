@@ -36,3 +36,4 @@ export 'package:roomrounds/module/profile/views/team_members_view.dart';
 export 'package:roomrounds/module/assigned_task/views/assigned_task_view.dart';
 export 'package:roomrounds/module/message/views/message_view.dart';
 export 'package:roomrounds/module/notificatin/views/notification_view.dart';
+export 'package:roomrounds/module/emloyee_directory/views/employee_directory_view.dart';

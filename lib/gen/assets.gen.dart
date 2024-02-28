@@ -31,12 +31,19 @@ class $AssetsIconsGen {
   /// File path: assets/icons/camera.svg
   SvgGenImage get camera => const SvgGenImage('assets/icons/camera.svg');
 
+  /// File path: assets/icons/close.svg
+  SvgGenImage get close => const SvgGenImage('assets/icons/close.svg');
+
   /// File path: assets/icons/emplyee_directory.svg
   SvgGenImage get emplyeeDirectory =>
       const SvgGenImage('assets/icons/emplyee_directory.svg');
 
   /// File path: assets/icons/grid_icon.svg
   SvgGenImage get gridIcon => const SvgGenImage('assets/icons/grid_icon.svg');
+
+  /// File path: assets/icons/home_search.svg
+  SvgGenImage get homeSearch =>
+      const SvgGenImage('assets/icons/home_search.svg');
 
   /// File path: assets/icons/list_icon.svg
   SvgGenImage get listIcon => const SvgGenImage('assets/icons/list_icon.svg');
@@ -68,8 +75,10 @@ class $AssetsIconsGen {
         bell,
         bellActive,
         camera,
+        close,
         emplyeeDirectory,
         gridIcon,
+        homeSearch,
         listIcon,
         lock,
         mail,
@@ -91,6 +100,10 @@ class $AssetsImagesGen {
   SvgGenImage get loginImage =>
       const SvgGenImage('assets/images/login_image.svg');
 
+  /// File path: assets/images/mail_box_empty.svg
+  SvgGenImage get mailBoxEmpty =>
+      const SvgGenImage('assets/images/mail_box_empty.svg');
+
   /// File path: assets/images/person.png
   AssetGenImage get person => const AssetGenImage('assets/images/person.png');
 
@@ -99,7 +112,8 @@ class $AssetsImagesGen {
       const SvgGenImage('assets/images/splash_bottom.svg');
 
   /// List of all assets
-  List<dynamic> get values => [homeImage, loginImage, person, splashBottom];
+  List<dynamic> get values =>
+      [homeImage, loginImage, mailBoxEmpty, person, splashBottom];
 }
 
 class Assets {

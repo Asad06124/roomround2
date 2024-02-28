@@ -63,6 +63,7 @@ class AppStrings {
   static const String resetMyPassword = 'Reset my password';
   static const String resetYourPasswordHere = 'Reset your\npassword here';
   static const String sendEmail = "Send email";
+  static const String send = "Send";
   static const String sessions = "Sessions";
 
   static const String signIn = "Sign In";
@@ -83,6 +84,8 @@ class AppStrings {
   static const String welcomeUser = 'Welcome, John!';
   static const String welcomeBack = 'Welcome Back';
   static const String yourName = "Your name";
+  static const String roommapView = "Room/map view";
+  static const String ticketDetails = "Ticket Details";
   static const String youHaveSuccessfullyResetPassword =
       "You have successfully reset your password.\nPlease use your new password when you're logging in";
 }

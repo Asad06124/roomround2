@@ -10,4 +10,6 @@ abstract class AppRoutes {
   static const MESSAGE = '/message';
   static const NOTIFICATION = "/notification";
   static const EMPLOYEEDIRECTORy = '/employee_directory';
+  static const ROOMMAP = '/room_map';
+  static const ROOMAMPDETAILS = '/romm_map_details';
 }

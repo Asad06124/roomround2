@@ -27,22 +27,22 @@ class HomeView extends StatelessWidget {
           Positioned(
             top: context.height * 0.30,
             width: context.width,
-            child: InkWell(
-              onTap: () => Get.offAllNamed(AppRoutes.DASHBOARD),
-              child: Container(
-                width: context.width,
-                height: context.height * 0.30,
-                margin: const EdgeInsets.symmetric(horizontal: 30),
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(33),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: AppColors.primary,
-                          blurRadius: 10,
-                          spreadRadius: 2)
-                    ]),
+            child: Container(
+              width: context.width,
+              height: context.height * 0.30,
+              margin: const EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(33),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: AppColors.primary,
+                        blurRadius: 10,
+                        spreadRadius: 2)
+                  ]),
+              child: InkWell(
+                onTap: () => Get.offAllNamed(AppRoutes.DASHBOARD),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
