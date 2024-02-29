@@ -2,19 +2,20 @@ import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomeDropDown {
-  static Widget simple(
+  static Widget simple<T>(
     BuildContext context, {
-    required List<String> list,
-    required Function(String value) onSelect,
+    required List<T> list,
+    required Function(T value) onSelect,
     String hintText = "All Emplyees",
     double borderRadius = 5,
+    List<String>? labels,
     Color closedFillColor = AppColors.white,
     Color expandFillColor = AppColors.white,
     bool showShadow = true,
   }) {
     return SizedBox(
       width: context.width * 0.40,
-      child: CustomDropdown<String>(
+      child: CustomDropdown<T>(
         hintText: hintText,
         items: list,
         initialItem: list[0],

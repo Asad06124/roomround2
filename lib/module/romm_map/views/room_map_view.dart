@@ -9,7 +9,7 @@ class RoomMapView extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppbar.simpleAppBar(
         context,
-        height: 70,
+        height: 60,
         backButtunColor: AppColors.primary,
         title: AppStrings.roommapView,
         notificationActive: false,
@@ -28,7 +28,7 @@ class RoomMapView extends StatelessWidget {
       floatingActionButton: Container(
         margin: EdgeInsets.only(
             left: 20, right: 20, top: context.paddingTop + 65 + 10),
-        width: context.width * 0.75,
+        width: context.width - 40,
         height: 60,
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -39,14 +39,14 @@ class RoomMapView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: context.width * 0.15,
+              width: context.width * 0.20,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Assets.icons.homeSearch.svg(
-                    height: 25,
-                    width: 25,
-                  ),
+                      // height: 25,
+                      // width: 25,
+                      ),
                   SB.w(5),
                   const Icon(
                     Icons.arrow_drop_down_sharp,
@@ -62,8 +62,7 @@ class RoomMapView extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: context.width * 0.60,
-              // height: 60,
+              width: context.width * 0.80 - 40,
               child: CustomTextField(
                 hintText: "Search Room...",
                 suffixIcon: AppImages.close,

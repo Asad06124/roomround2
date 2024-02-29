@@ -1,4 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/romm_map/controller/room_map_controller.dart';
 
 class RoomMapComponents {
   static Widget bottomSheet(BuildContext context, {GestureTapCallback? onTab}) {
@@ -103,6 +104,31 @@ class RoomMapComponents {
           Divider(
             color: AppColors.gry.withOpacity(0.4),
           ),
+        ],
+      ),
+    );
+  }
+
+  static Widget radioButtton(BuildContext context, Urgent assignedVal,
+      dynamic controller, String title) {
+    return SizedBox(
+      width: context.width * 0.5 - 30,
+      child: Row(
+        children: [
+          Radio<Urgent>(
+            value: assignedVal,
+            groupValue: controller.isUrgent,
+            activeColor: AppColors.primary,
+            onChanged: (value) {
+              if (value != null) {
+                controller.onUrgentChange(value);
+              }
+            },
+          ),
+          Text(
+            title,
+            style: context.titleSmall!.copyWith(color: AppColors.black),
+          )
         ],
       ),
     );

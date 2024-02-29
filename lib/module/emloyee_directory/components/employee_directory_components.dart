@@ -1,51 +1,88 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class EmployeeDirectoryComponents {
-  static Widget tile(
-    BuildContext context, {
-    String title = "Room A1",
-    String status = "Close",
-    bool isAcvtive = false,
-    bool titleActive = true,
-    Color fillColor = AppColors.white,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: fillColor,
-        border: Border.all(
-          color: AppColors.gry.withOpacity(0.5),
+  static Widget tile(BuildContext context,
+      {String title = "Room A1",
+      String status = "Close",
+      bool isAcvtive = false,
+      bool titleActive = true,
+      bool isUnderline = true,
+      Color fillColor = AppColors.white,
+      GestureTapCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: fillColor,
+          border: Border.all(
+            color: AppColors.gry.withOpacity(0.5),
+          ),
+        ),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: context.bodyLarge!.copyWith(
+                color: titleActive ? AppColors.textPrimary : AppColors.gry,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              status,
+              style: context.bodyLarge!.copyWith(
+                color: AppColors.black,
+                decoration: isUnderline ? TextDecoration.underline : null,
+                decorationColor: isUnderline ? AppColors.black : null,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SB.w(5),
+            CircleAvatar(
+              radius: 4,
+              backgroundColor:
+                  isAcvtive ? AppColors.orange : Colors.transparent,
+            ),
+          ],
         ),
       ),
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: context.bodyLarge!.copyWith(
-              color: titleActive ? AppColors.textPrimary : AppColors.gry,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            status,
-            style: context.bodyLarge!.copyWith(
-              color: AppColors.black,
-              decoration: TextDecoration.underline,
-              decorationColor: AppColors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SB.w(5),
-          CircleAvatar(
-            radius: 4,
-            backgroundColor: isAcvtive ? AppColors.orange : Colors.transparent,
-          ),
-        ],
-      ),
     );
+  }
+
+  static void openDialog(int type) {
+    if (type == 0) {
+      Get.dialog(
+        Dialog(
+          child: CloseTicketDialouge(),
+        ),
+        barrierDismissible: false,
+      );
+    } else if (type == 1) {
+      Get.dialog(
+        Dialog(
+          child: ClosedTicketDialouge(),
+        ),
+        barrierDismissible: false,
+      );
+    } else if (type == 2) {
+      Get.dialog(
+        Dialog(
+          child: OpenThreadDialogue(),
+        ),
+        barrierDismissible: false,
+      );
+    } else if (type == 3) {
+      Get.dialog(
+        Dialog(
+          child: OpenThreadDialogueArgue(),
+        ),
+        barrierDismissible: false,
+      );
+    }
   }
 }

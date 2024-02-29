@@ -24,6 +24,7 @@ export 'package:roomrounds/core/constants/app_images.dart';
 export 'package:roomrounds/utils/custome_tiles.dart';
 export 'package:roomrounds/module/assigned_task/components/assigned_tasks_components.dart';
 export 'package:roomrounds/utils/custome_drop_down.dart';
+export 'package:roomrounds/core/components/app_button.dart';
 
 ///////////////   Pages     //////////////////////
 export 'package:roomrounds/module/splash/views/splash_view.dart';

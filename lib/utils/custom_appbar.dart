@@ -22,7 +22,7 @@ class CustomAppbar {
       child: Padding(
         padding: EdgeInsets.only(
           top: context.paddingTop + (isBackButtun ? 10 : 20),
-          left: 20,
+          left: isBackButtun ? 10 : 20,
           right: 20,
         ),
         child: Column(
@@ -31,7 +31,7 @@ class CustomAppbar {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 if (isBackButtun) ...{
                   IconButton(
@@ -52,7 +52,7 @@ class CustomAppbar {
                   //     ),
                   //   ),
                   // ),
-                  SB.w(20),
+                  SB.w(0),
                 },
                 Text(
                   title,
