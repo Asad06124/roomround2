@@ -64,7 +64,7 @@ class RoomMapView extends StatelessWidget {
             SizedBox(
               width: context.width * 0.80 - 40,
               child: CustomTextField(
-                hintText: "Search Room...",
+                hintText: AppStrings.searchRoom,
                 suffixIcon: AppImages.close,
                 sufficIconBackgroundColor: AppColors.white,
                 borderRadius: 35,

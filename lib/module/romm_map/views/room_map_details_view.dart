@@ -43,7 +43,7 @@ class RoomMapDetailsView extends StatelessWidget {
                         suffixDesc: "Department of Nursing, DON"),
                     SB.h(10),
                     Text(
-                      "Create Ticket",
+                      AppStrings.createTicket,
                       style:
                           context.titleSmall!.copyWith(color: AppColors.black),
                     ),
@@ -60,7 +60,7 @@ class RoomMapDetailsView extends StatelessWidget {
                         children: [
                           SB.w(context.width),
                           Text(
-                            "Reply",
+                            AppStrings.reply,
                             style: context.titleSmall!
                                 .copyWith(color: AppColors.textGrey),
                           ),
@@ -70,11 +70,11 @@ class RoomMapDetailsView extends StatelessWidget {
                             borderRadius: 8,
                             validator: (value) => null,
                             borderColor: AppColors.gry,
-                            hintText: "Write message...",
+                            hintText: AppStrings.writeMessage,
                           ),
                           SB.h(20),
                           Text(
-                            "Urgent",
+                            AppStrings.urgent,
                             style: context.titleSmall!
                                 .copyWith(color: AppColors.textGrey),
                           ),
@@ -82,10 +82,10 @@ class RoomMapDetailsView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              RoomMapComponents.radioButtton(
-                                  context, Urgent.yes, controller, "Yes"),
-                              RoomMapComponents.radioButtton(
-                                  context, Urgent.no, controller, "No"),
+                              RoomMapComponents.radioButtton(context,
+                                  Urgent.yes, controller, AppStrings.yes),
+                              RoomMapComponents.radioButtton(context, Urgent.no,
+                                  controller, AppStrings.no),
                             ],
                           ),
                           SB.h(20),

@@ -42,7 +42,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final Color textColor, fillColor, borderColor;
   final Color hintTextColor, sufficIconBackgroundColor;
-  final String? prefixIcon;
+  final Widget? prefixIcon;
   final String? suffixIcon;
   final VoidCallback? onSuffixTap, onTap;
   final TextAlign? textAlign;
@@ -125,10 +125,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               prefixIcon: widget.prefixIcon != null
                   ? Padding(
                       padding: const EdgeInsets.all(12),
-                      child: SvgPicture.asset(
-                        widget.prefixIcon!,
-                        color: context.secondary,
-                      ),
+                      child: widget.prefixIcon,
                     )
                   : null,
               suffixIcon: widget.isPasswordField
@@ -140,6 +137,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                             onTap: widget.onSuffixTap,
                             borderRadius: BorderRadius.circular(10),
                             child: Container(
+                              height: 40,
+                              width: 40,
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: widget.sufficIconBackgroundColor,
@@ -148,6 +147,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                               ),
                               child: SvgPicture.asset(
                                 widget.suffixIcon!,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),

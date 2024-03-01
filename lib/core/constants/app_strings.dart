@@ -5,6 +5,7 @@ class AppStrings {
   static const String keepUpDataWithSatausOf =
       "Keep up to date with the status of your RoomRounds";
   static const String settings = "Settings";
+  static const String inbox = "Inbox";
 
   static const String account = "Account";
   static const String assignedTasks = "Assigned Tasks";
@@ -74,6 +75,8 @@ class AppStrings {
   static const String skipForNow = 'Skip for now';
   static const String step = 'step';
   static const String search = 'Search';
+  static const String searchEmployee = "Search employee...";
+  static const String searchRoom = "Search Room...";
   static const String seeAll = 'See all';
   static const String save = 'Save';
   static const String success = 'Success!';
@@ -86,6 +89,27 @@ class AppStrings {
   static const String yourName = "Your name";
   static const String roommapView = "Room/map view";
   static const String ticketDetails = "Ticket Details";
+  static const String ticket = "Ticket";
+  static const String closeTicket = "Closed Tickets";
+  static const String uploadfromDevice = "Upload from device";
+  static const String takePhoto = "Take Photo";
+  static const String clearAll = "Clear All";
+  static const String edit = "Edit";
+  static const String logout = "Logout";
+  static const String mainFeature = "Main Features";
+  static const String teamMember = "Team Members";
+  static const String createTicket = "Create Ticket";
+  static const String personalInformation = "Personal Information";
+  static const String typeeMessageHere = "Type message here...";
+  static const String writeMessage = "Write message...";
+  static const String reply = "Reply";
+  static const String urgent = "Urgent";
+  static const String yes = "Yes";
+  static const String no = "No";
+  static const String rateUs = "Rate Us";
+  static const String notificationSettings = "Notification Settings";
+  static const String help = "Help";
+  static const String contactUs = "Contact Us";
   static const String youHaveSuccessfullyResetPassword =
       "You have successfully reset your password.\nPlease use your new password when you're logging in";
 }

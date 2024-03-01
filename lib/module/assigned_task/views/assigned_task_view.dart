@@ -14,6 +14,8 @@ class AssignedTasksView extends StatelessWidget {
         titleStyle: context.titleLarge,
         title: AppStrings.roomStatusList,
         isHome: false,
+        showMailIcon: false,
+        showNotificationIcon: false,
         decriptionWidget: AssignedTaskComponents.appBatTile(context),
       ),
       child: Column(
@@ -57,7 +59,7 @@ class AssignedTasksView extends StatelessWidget {
                   CustomTextField(
                     borderRadius: 35,
                     fillColor: AppColors.white,
-                    hintText: "Search employee",
+                    hintText: AppStrings.searchEmployee,
                     isShadow: true,
                     validator: (value) {
                       return null;
@@ -65,9 +67,15 @@ class AssignedTasksView extends StatelessWidget {
                     suffixIcon: AppImages.search,
                   ),
                   SB.h(10),
-                  CustomeTiles.employeeTile(context),
-                  CustomeTiles.employeeTile(context),
-                  CustomeTiles.employeeTile(context),
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 10,
+                      itemBuilder: (context, index) {
+                        return CustomeTiles.employeeTile(context);
+                      },
+                    ),
+                  )
                 ],
               ),
             ),

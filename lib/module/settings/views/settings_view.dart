@@ -1,5 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/settings/components/settings_components.dart';
 import 'package:roomrounds/module/settings/controller/settings_controller.dart';
 
 class SettingsView extends StatelessWidget {
@@ -29,10 +28,10 @@ class SettingsView extends StatelessWidget {
             child: Column(
               children: [
                 SettingsComponents.tile(context,
-                    title: "Notification Settings"),
-                SettingsComponents.tile(context, title: "Help"),
-                SettingsComponents.tile(context, title: "Contact Us"),
-                SettingsComponents.tile(context, title: "Rate Us"),
+                    title: AppStrings.notificationSettings),
+                SettingsComponents.tile(context, title: AppStrings.help),
+                SettingsComponents.tile(context, title: AppStrings.contactUs),
+                SettingsComponents.tile(context, title: AppStrings.rateUs),
               ],
             ),
           );

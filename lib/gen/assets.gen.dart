@@ -14,6 +14,9 @@ import 'package:flutter/services.dart';
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/add.svg
+  SvgGenImage get add => const SvgGenImage('assets/icons/add.svg');
+
   /// File path: assets/icons/appIcon.svg
   SvgGenImage get appIcon => const SvgGenImage('assets/icons/appIcon.svg');
 
@@ -30,6 +33,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/camera.svg
   SvgGenImage get camera => const SvgGenImage('assets/icons/camera.svg');
+
+  /// File path: assets/icons/camera_alt.svg
+  SvgGenImage get cameraAlt => const SvgGenImage('assets/icons/camera_alt.svg');
 
   /// File path: assets/icons/close.svg
   SvgGenImage get close => const SvgGenImage('assets/icons/close.svg');
@@ -54,6 +60,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/mail.svg
   SvgGenImage get mail => const SvgGenImage('assets/icons/mail.svg');
 
+  /// File path: assets/icons/mic.svg
+  SvgGenImage get mic => const SvgGenImage('assets/icons/mic.svg');
+
   /// File path: assets/icons/person.svg
   SvgGenImage get person => const SvgGenImage('assets/icons/person.svg');
 
@@ -64,17 +73,25 @@ class $AssetsIconsGen {
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
 
+  /// File path: assets/icons/send.svg
+  SvgGenImage get send => const SvgGenImage('assets/icons/send.svg');
+
   /// File path: assets/icons/splash_logo.svg
   SvgGenImage get splashLogo =>
       const SvgGenImage('assets/icons/splash_logo.svg');
 
+  /// File path: assets/icons/upload.svg
+  SvgGenImage get upload => const SvgGenImage('assets/icons/upload.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
+        add,
         appIcon,
         assignedTasks,
         bell,
         bellActive,
         camera,
+        cameraAlt,
         close,
         emplyeeDirectory,
         gridIcon,
@@ -82,15 +99,22 @@ class $AssetsIconsGen {
         listIcon,
         lock,
         mail,
+        mic,
         person,
         roomMapView,
         search,
-        splashLogo
+        send,
+        splashLogo,
+        upload
       ];
 }
 
 class $AssetsImagesGen {
   const $AssetsImagesGen();
+
+  /// File path: assets/images/app_logo.png
+  AssetGenImage get appLogo =>
+      const AssetGenImage('assets/images/app_logo.png');
 
   /// File path: assets/images/home_image.svg
   SvgGenImage get homeImage =>
@@ -113,7 +137,7 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<dynamic> get values =>
-      [homeImage, loginImage, mailBoxEmpty, person, splashBottom];
+      [appLogo, homeImage, loginImage, mailBoxEmpty, person, splashBottom];
 }
 
 class Assets {

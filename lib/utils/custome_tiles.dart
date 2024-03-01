@@ -7,12 +7,13 @@ class CustomeTiles {
       String desc = "4:30 PM",
       GestureTapCallback? onPressed,
       int? notificationCount}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: onPressed,
+    return Column(
+      children: [
+        InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -66,15 +67,14 @@ class CustomeTiles {
               ],
             ),
           ),
-          SB.h(3),
-          Divider(
-            indent: 0,
-            endIndent: 0,
-            color: AppColors.gry.withOpacity(0.3),
-            thickness: 0.8,
-          ),
-        ],
-      ),
+        ),
+        Divider(
+          indent: 0,
+          endIndent: 0,
+          color: AppColors.gry.withOpacity(0.3),
+          thickness: 0.8,
+        ),
+      ],
     );
   }
 

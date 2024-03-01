@@ -1,4 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/message/views/chat_view.dart';
 import 'package:roomrounds/module/romm_map/views/room_map_details_view.dart';
 import 'package:roomrounds/module/romm_map/views/room_map_view.dart';
 
@@ -93,6 +94,14 @@ class AppPages {
     GetPage(
       name: AppRoutes.ROOMAMPDETAILS,
       page: () => const RoomMapDetailsView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.CHAT,
+      page: () => const ChatView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

@@ -42,7 +42,7 @@ class EmployeeDirectoryView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Tickets",
+                        AppStrings.ticket,
                         style: context.titleSmall!.copyWith(
                           color: AppColors.black,
                         ),
@@ -92,7 +92,7 @@ class EmployeeDirectoryView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Closed Tickets",
+                            AppStrings.closeTicket,
                             style: context.titleSmall!.copyWith(
                               color: AppColors.black,
                             ),

@@ -4,4 +4,5 @@ class AppImages {
   static const String lock = "assets/icons/lock.svg";
   static const String search = "assets/icons/search.svg";
   static const String close = "assets/icons/close.svg";
+  static const String send = "assets/icons/send.svg";
 }

@@ -1,5 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/profile/components/profile_components.dart';
 
 class TeamMembersView extends StatelessWidget {
   const TeamMembersView({Key? key}) : super(key: key);
@@ -7,7 +6,8 @@ class TeamMembersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: SizedBox(
+        height: context.height,
         child: Column(
           children: [
             ProfileComponents.mainCard(context, isBackButtun: true),
@@ -18,18 +18,27 @@ class TeamMembersView extends StatelessWidget {
                 children: [
                   SB.h(25),
                   Text(
-                    "Team Members",
+                    AppStrings.teamMember,
                     style: context.titleSmall!.copyWith(
                       color: AppColors.black,
                     ),
                   ),
-                  SB.h(20),
-                  ProfileComponents.teamTile(context, name: "Anthony Roye"),
-                  ProfileComponents.teamTile(context, name: "Anthony Roye"),
-                  ProfileComponents.teamTile(context, name: "Anthony Roye"),
-                  ProfileComponents.teamTile(context, name: "Anthony Roye"),
-                  ProfileComponents.teamTile(context, name: "Anthony Roye"),
-                  ProfileComponents.teamTile(context, name: "Anthony Roye"),
+                  SB.h(0),
+                  SizedBox(
+                    height: context.height -
+                        context.height * 0.30 -
+                        25 -
+                        context.paddingTop,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      // physics: NeverScrollableScrollPhysics(),
+                      itemCount: 20,
+                      itemBuilder: (context, index) {
+                        return ProfileComponents.teamTile(context,
+                            name: "Anthony Roye");
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

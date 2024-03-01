@@ -9,11 +9,12 @@ class MessageView extends StatelessWidget {
       appBar: CustomAppbar.simpleAppBar(
         context,
         height: 75,
-        backButtunColor: AppColors.primary,
+        backButtunColor: AppColors.textPrimary,
         title: AppStrings.messageAndResponse,
+        showNotificationIcon: false,
         notificationActive: true,
-        titleStyle: context.titleLarge!.copyWith(color: AppColors.primary),
-        iconsClor: AppColors.primary,
+        titleStyle: context.titleLarge!.copyWith(color: AppColors.textPrimary),
+        iconsClor: AppColors.textPrimary,
         isHome: false,
         showMailIcon: false,
         isBackButtun: true,
@@ -26,7 +27,7 @@ class MessageView extends StatelessWidget {
             CustomTextField(
               borderRadius: 35,
               fillColor: AppColors.white,
-              hintText: "Search employee",
+              hintText: AppStrings.searchEmployee,
               isShadow: true,
               validator: (value) {
                 return null;
@@ -34,10 +35,21 @@ class MessageView extends StatelessWidget {
               suffixIcon: AppImages.search,
             ),
             SB.h(10),
-            CustomeTiles.employeeTile(context, notificationCount: 5),
-            CustomeTiles.employeeTile(context, notificationCount: 10),
-            CustomeTiles.employeeTile(context, notificationCount: 6),
-            CustomeTiles.employeeTile(context, notificationCount: 0),
+            Expanded(
+              child: SizedBox(
+                child: ListView.builder(
+                  itemCount: 12,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return CustomeTiles.employeeTile(
+                      context,
+                      notificationCount: index,
+                      onPressed: () => Get.toNamed(AppRoutes.CHAT),
+                    );
+                  },
+                ),
+              ),
+            )
           ],
         ),
       ),

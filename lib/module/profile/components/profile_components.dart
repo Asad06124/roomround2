@@ -117,6 +117,7 @@ class ProfileComponents {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisSize: MainAxisSize.max,
@@ -140,7 +141,7 @@ class ProfileComponents {
               ),
             ],
           ),
-          SB.h(3),
+          SB.h(5),
           Divider(
             indent: 0,
             endIndent: 0,

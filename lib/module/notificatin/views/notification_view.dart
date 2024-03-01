@@ -39,7 +39,7 @@ class NotificationView extends StatelessWidget {
                     children: [
                       const SizedBox(),
                       Text(
-                        "Clear All",
+                        AppStrings.clearAll,
                         style: context.titleSmall!.copyWith(
                           color: AppColors.gry,
                           decoration: TextDecoration.underline,
@@ -49,9 +49,15 @@ class NotificationView extends StatelessWidget {
                     ],
                   ),
                   SB.h(15),
-                  CustomeTiles.notificationTile(context),
-                  CustomeTiles.notificationTile(context),
-                  CustomeTiles.notificationTile(context),
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 20,
+                      itemBuilder: (context, index) {
+                        return CustomeTiles.notificationTile(context);
+                      },
+                    ),
+                  )
                 ],
               ),
             ),

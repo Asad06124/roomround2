@@ -9,9 +9,9 @@ class MainFeaturesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> titles = [
-      "Employee directory",
-      "Assigned tasks",
-      "Room/map view",
+      AppStrings.employeeDirectory,
+      AppStrings.assignedTasks,
+      AppStrings.roommapView
     ];
     List<SvgGenImage> images = [
       Assets.icons.emplyeeDirectory,
@@ -57,7 +57,7 @@ class MainFeaturesView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Main Features",
+                              AppStrings.mainFeature,
                               style: context.titleLarge!.copyWith(
                                 color: AppColors.black,
                               ),
@@ -83,15 +83,20 @@ class MainFeaturesView extends StatelessWidget {
                             )
                           ],
                         ),
-                        SB.h(50),
-                        SizedBox(
-                          width: context.width,
-                          // height: context.height * 0.55,
-                          child: MainFeaturesCompinents.mainCards(
-                            context,
-                            titles,
-                            images,
-                            onPressed: (index) => Get.toNamed(pages[index]),
+                        SB.h(30),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.only(bottom: 10),
+
+                            width: context.width,
+                            // height: context.height * 0.55,
+                            child: MainFeaturesCompinents.mainCards(
+                              context,
+                              titles,
+                              controller.isGridView,
+                              images,
+                              onPressed: (index) => Get.toNamed(pages[index]),
+                            ),
                           ),
                         ),
                       ],

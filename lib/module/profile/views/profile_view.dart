@@ -1,6 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/profile/components/profile_components.dart';
-import 'package:roomrounds/module/settings/components/settings_components.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({Key? key}) : super(key: key);
@@ -24,13 +22,13 @@ class ProfileView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Personal Information",
+                        AppStrings.personalInformation,
                         style: context.titleSmall!.copyWith(
                           color: AppColors.black,
                         ),
                       ),
                       Text(
-                        "Edit",
+                        AppStrings.edit,
                         style: context.titleSmall!.copyWith(
                           color: AppColors.deepSkyBlue,
                         ),
@@ -46,7 +44,7 @@ class ProfileView extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.TEAMMEMBERS),
                     child: Text(
-                      "Team Members",
+                      AppStrings.teamMember,
                       style: context.titleSmall!.copyWith(
                         color: AppColors.black,
                       ),
@@ -54,7 +52,7 @@ class ProfileView extends StatelessWidget {
                   ),
                   SB.h(10),
                   Text(
-                    "Logout",
+                    AppStrings.logout,
                     style: context.titleSmall!.copyWith(
                       color: AppColors.black,
                     ),

@@ -1,49 +1,98 @@
 import 'package:roomrounds/core/constants/imports.dart';
 
 class MainFeaturesCompinents {
-  static Widget mainCards(
-      BuildContext context, List<String> titles, List<SvgGenImage> images,
+  static Widget mainCards(BuildContext context, List<String> titles,
+      bool isGridView, List<SvgGenImage> images,
       {required Function(int index) onPressed}) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // number of items in each row
-        mainAxisSpacing: 50, // spacing between rows
-        crossAxisSpacing: 20, // spacing between columns
-      ),
-      // padding around the grid
-      shrinkWrap: true,
-      itemCount: 3, // total number of items
-      itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () => onPressed(index),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 150,
-                height: 130,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.white,
-                    boxShadow: const [
-                      BoxShadow(
-                        blurRadius: 5,
-                        spreadRadius: 1,
-                        color: AppColors.gry,
-                      ),
-                    ]),
-                child: images[index].svg(
-                  fit: BoxFit.contain,
-                ),
-              ),
-              Text(
-                titles[index],
-                style: context.titleSmall!.copyWith(color: AppColors.black),
-              )
-            ],
+    return isGridView
+        ? GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 30,
+              crossAxisSpacing: 15,
+            ),
+            shrinkWrap: true,
+            itemCount: titles.length,
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () => onPressed(index),
+                child: _boxTile(context, titles, images, index),
+              );
+            },
+          )
+        : ListView.builder(
+            itemCount: titles.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return _rowTile(context, titles, images, index);
+            },
+          );
+  }
+
+  static Widget _rowTile(BuildContext context, List<String> titles,
+      List<SvgGenImage> images, int index) {
+    return Container(
+      // width: 150,
+      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5, top: 10),
+      height: 130,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 5,
+              spreadRadius: 1,
+              color: AppColors.gry.withOpacity(0.4),
+            ),
+          ]),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          images[index].svg(
+            fit: BoxFit.cover,
           ),
-        );
-      },
+          SB.w(5),
+          Text(
+            titles[index],
+            style: context.titleSmall!.copyWith(color: AppColors.black),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _boxTile(BuildContext context, List<String> titles,
+      List<SvgGenImage> images, int index) {
+    return Container(
+      padding: const EdgeInsets.only(top: 5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: 150,
+            height: 130,
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 5,
+                    spreadRadius: 1,
+                    color: AppColors.gry.withOpacity(0.4),
+                  ),
+                ]),
+            child: images[index].svg(
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+            titles[index],
+            style: context.titleSmall!.copyWith(color: AppColors.black),
+          )
+        ],
+      ),
     );
   }
 }

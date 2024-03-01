@@ -9,6 +9,7 @@ class CustomeDropDown {
     String hintText = "All Emplyees",
     double borderRadius = 5,
     List<String>? labels,
+    bool borderRadiusBoth = true,
     Color closedFillColor = AppColors.white,
     Color expandFillColor = AppColors.white,
     bool showShadow = true,
@@ -32,7 +33,8 @@ class CustomeDropDown {
             closedFillColor: closedFillColor,
             expandedFillColor: expandFillColor,
             closedBorderRadius: BorderRadius.circular(borderRadius),
-            expandedBorderRadius: BorderRadius.circular(borderRadius),
+            expandedBorderRadius:
+                BorderRadius.circular(borderRadiusBoth ? borderRadius : 5),
             expandedSuffixIcon: const Icon(
               Icons.arrow_drop_up_outlined,
               color: AppColors.black,

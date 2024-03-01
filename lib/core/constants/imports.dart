@@ -26,6 +26,8 @@ export 'package:roomrounds/module/assigned_task/components/assigned_tasks_compon
 export 'package:roomrounds/utils/custome_drop_down.dart';
 export 'package:roomrounds/core/components/app_button.dart';
 
+export 'package:roomrounds/module/profile/components/profile_components.dart';
+export 'package:roomrounds/module/settings/components/settings_components.dart';
 ///////////////   Pages     //////////////////////
 export 'package:roomrounds/module/splash/views/splash_view.dart';
 export 'package:roomrounds/module/authentications/views/login_view.dart';
