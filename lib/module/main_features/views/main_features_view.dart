@@ -3,27 +3,13 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/main_features/components/main_features_components.dart';
 import 'package:roomrounds/module/main_features/controller/main_feature_controller.dart';
 
+// ignore: must_be_immutable
 class MainFeaturesView extends StatelessWidget {
-  const MainFeaturesView({Key? key}) : super(key: key);
+  MainFeaturesView({Key? key}) : super(key: key);
+  int userType = 1;
 
   @override
   Widget build(BuildContext context) {
-    List<String> titles = [
-      AppStrings.employeeDirectory,
-      AppStrings.assignedTasks,
-      AppStrings.roommapView
-    ];
-    List<SvgGenImage> images = [
-      Assets.icons.emplyeeDirectory,
-      Assets.icons.assignedTasks,
-      Assets.icons.roomMapView,
-    ];
-
-    List<String> pages = [
-      AppRoutes.EMPLOYEEDIRECTORy,
-      AppRoutes.ASSIGNEDTASKS,
-      AppRoutes.ROOMMAP
-    ];
     return CustomContainer(
       padding: const EdgeInsets.all(0),
       appBar: CustomAppbar.simpleAppBar(
@@ -31,10 +17,10 @@ class MainFeaturesView extends StatelessWidget {
         height: 100,
         // showWlcomeMessage: false,
         title: AppStrings.appNameSpace,
-        isHome: true,
+        isHome: false,
       ),
       child: GetBuilder<MainFeatureController>(
-          init: MainFeatureController(),
+          init: MainFeatureController(userType),
           builder: (controller) {
             return Column(
               children: [
@@ -42,7 +28,7 @@ class MainFeaturesView extends StatelessWidget {
                   child: Container(
                     // width: context.width,
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, top: 50),
+                        const EdgeInsets.only(left: 20, right: 20, top: 70),
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(55),
@@ -67,17 +53,21 @@ class MainFeaturesView extends StatelessWidget {
                                 InkWell(
                                   onTap: () => controller.chnageLayout(true),
                                   child: Assets.icons.gridIcon.svg(
-                                      color: controller.isGridView
-                                          ? AppColors.primary
-                                          : AppColors.gry),
+                                      colorFilter: ColorFilter.mode(
+                                          controller.isGridView
+                                              ? AppColors.primary
+                                              : AppColors.gry,
+                                          BlendMode.srcIn)),
                                 ),
                                 SB.w(10),
                                 InkWell(
                                   onTap: () => controller.chnageLayout(false),
                                   child: Assets.icons.listIcon.svg(
-                                      color: !controller.isGridView
-                                          ? AppColors.primary
-                                          : AppColors.gry),
+                                      colorFilter: ColorFilter.mode(
+                                          controller.isGridView
+                                              ? AppColors.gry
+                                              : AppColors.primary,
+                                          BlendMode.srcIn)),
                                 ),
                               ],
                             )
@@ -86,16 +76,17 @@ class MainFeaturesView extends StatelessWidget {
                         SB.h(30),
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.only(bottom: 10),
-
+                            padding: const EdgeInsets.only(bottom: 20),
+                            color: Colors.transparent,
                             width: context.width,
                             // height: context.height * 0.55,
                             child: MainFeaturesCompinents.mainCards(
                               context,
-                              titles,
+                              controller.titles,
                               controller.isGridView,
-                              images,
-                              onPressed: (index) => Get.toNamed(pages[index]),
+                              controller.images,
+                              onPressed: (index) =>
+                                  Get.toNamed(controller.pages[index]),
                             ),
                           ),
                         ),

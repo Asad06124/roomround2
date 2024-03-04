@@ -1,5 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/romm_map/components/room_map_components.dart';
 import 'package:roomrounds/module/romm_map/controller/room_map_controller.dart';
 
 class RoomMapDetailsView extends StatelessWidget {
@@ -82,10 +81,20 @@ class RoomMapDetailsView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              RoomMapComponents.radioButtton(context,
-                                  Urgent.yes, controller, AppStrings.yes),
-                              RoomMapComponents.radioButtton(context, Urgent.no,
-                                  controller, AppStrings.no),
+                              RoomMapComponents.radioButtton<YesNo>(
+                                  context,
+                                  YesNo.yes,
+                                  controller.isUrgent,
+                                  AppStrings.yes, (value) {
+                                controller.onUrgentChange(value);
+                              }),
+                              RoomMapComponents.radioButtton<YesNo>(
+                                  context,
+                                  YesNo.no,
+                                  controller.isUrgent,
+                                  AppStrings.no, (value) {
+                                controller.onUrgentChange(value);
+                              }),
                             ],
                           ),
                           SB.h(20),

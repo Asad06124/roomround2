@@ -21,8 +21,8 @@ class LoginView extends StatelessWidget {
                   SB.h(40),
                   Text(
                     AppStrings.login,
-                    style:
-                        context.displaySmall!.copyWith(color: AppColors.white),
+                    style: context.displaySmall!.copyWith(
+                        color: AppColors.white, fontWeight: FontWeight.w600),
                   ),
                   SB.h(10),
                   Text(

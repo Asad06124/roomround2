@@ -1,7 +1,8 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/room_list/components/room_list_components.dart';
 
-class NotificationView extends StatelessWidget {
-  const NotificationView({Key? key}) : super(key: key);
+class RoomListView extends StatelessWidget {
+  const RoomListView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +13,10 @@ class NotificationView extends StatelessWidget {
         height: 140,
         isBackButtun: true,
         titleStyle: context.titleLarge,
-        title: AppStrings.notification,
-        showNotificationIcon: false,
+        title: AppStrings.roomStatusList,
         isHome: false,
-        decriptionWidget: AssignedTaskComponents.appBatTile(context),
+        decriptionWidget: AssignedTaskComponents.appBatTile(context,
+            name: AppStrings.managinfStaff, desc: 'Philo Dairin '),
       ),
       child: Column(
         children: [
@@ -35,26 +36,31 @@ class NotificationView extends StatelessWidget {
                   SB.w(context.width),
                   SB.h(10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(),
                       Text(
-                        AppStrings.clearAll,
-                        style: context.titleSmall!.copyWith(
-                          color: AppColors.gry,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.gry,
+                        AppStrings.auditTemplete,
+                        style: context.titleMedium!.copyWith(
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],
                   ),
-                  SB.h(15),
+                  SB.h(10),
+                  RoomListComponents.filter(context),
+                  SB.h(10),
                   Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: 20,
                       itemBuilder: (context, index) {
-                        return CustomeTiles.notificationTileSimple(context);
+                        return EmployeeDirectoryComponents.tile(
+                          context,
+                          onTap: () => Get.toNamed(AppRoutes.TASKSLISTS),
+                          statusWidget: RoomListComponents.statusWidget(context,
+                              isComplete: index % 2 == 0),
+                        );
                       },
                     ),
                   )

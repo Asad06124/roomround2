@@ -1,5 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/romm_map/controller/room_map_controller.dart';
 
 class RoomMapComponents {
   static Widget bottomSheet(BuildContext context, {GestureTapCallback? onTab}) {
@@ -109,27 +108,32 @@ class RoomMapComponents {
     );
   }
 
-  static Widget radioButtton(BuildContext context, Urgent assignedVal,
-      dynamic controller, String title) {
-    return SizedBox(
-      width: context.width * 0.5 - 30,
-      child: Row(
-        children: [
-          Radio<Urgent>(
-            value: assignedVal,
-            groupValue: controller.isUrgent,
-            activeColor: AppColors.primary,
-            onChanged: (value) {
-              if (value != null) {
-                controller.onUrgentChange(value);
-              }
-            },
-          ),
-          Text(
-            title,
-            style: context.titleSmall!.copyWith(color: AppColors.black),
-          )
-        ],
+  static Widget radioButtton<T>(BuildContext context, T assignedVal,
+      T selectedVal, String title, Function(T value) onSelect,
+      {double? width}) {
+    width ?? context.width * 0.5 - 30;
+    return InkWell(
+      onTap: () => onSelect(assignedVal),
+      child: SizedBox(
+        width: width == 0 ? null : width,
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 8,
+              backgroundColor: assignedVal == selectedVal
+                  ? AppColors.primary
+                  : AppColors.gry,
+            ),
+            SB.w(10),
+            Text(
+              title,
+              style: context.titleSmall!.copyWith(
+                color: AppColors.black,
+                fontSize: 18,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

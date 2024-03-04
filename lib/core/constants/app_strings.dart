@@ -6,13 +6,18 @@ class AppStrings {
       "Keep up to date with the status of your RoomRounds";
   static const String settings = "Settings";
   static const String inbox = "Inbox";
+  static const String facilitiesView = "Facilities View";
+  static const String myTicket = "My Tickets";
+  static const String trackingQueesry = "Tracking Query";
 
   static const String account = "Account";
+  static const String home = "Home";
   static const String assignedTasks = "Assigned Tasks";
 
   static const String messageAndResponse = "Messages & Responses";
   static const String employeeDirectory = "Employee Directory";
   static const String roomStatusList = "Rooms Status List";
+  static const String managinfStaff = "Managing Staff";
   static const String unableToLogin = "Unable to login? ";
   static const String clickHere = "Click here";
   static const String userName = "User Name";
@@ -95,6 +100,8 @@ class AppStrings {
   static const String takePhoto = "Take Photo";
   static const String clearAll = "Clear All";
   static const String edit = "Edit";
+  static const String auditTemplete = "Audit Template";
+  static const String auditTempleteTasks = "Audit Template Tasks";
   static const String logout = "Logout";
   static const String mainFeature = "Main Features";
   static const String teamMember = "Team Members";
@@ -110,6 +117,8 @@ class AppStrings {
   static const String notificationSettings = "Notification Settings";
   static const String help = "Help";
   static const String contactUs = "Contact Us";
+  static const String directory = "Directory";
+  static const String comment = 'Comment';
   static const String youHaveSuccessfullyResetPassword =
       "You have successfully reset your password.\nPlease use your new password when you're logging in";
 }

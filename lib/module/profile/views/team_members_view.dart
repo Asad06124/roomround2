@@ -34,8 +34,11 @@ class TeamMembersView extends StatelessWidget {
                       // physics: NeverScrollableScrollPhysics(),
                       itemCount: 20,
                       itemBuilder: (context, index) {
-                        return ProfileComponents.teamTile(context,
-                            name: "Anthony Roye");
+                        return ProfileComponents.teamTile(
+                          context,
+                          name: "Anthony Roye",
+                          isAdmin: true,
+                        );
                       },
                     ),
                   ),

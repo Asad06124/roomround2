@@ -5,7 +5,7 @@ import 'package:roomrounds/core/theme/app_theme.dart';
 
 class ThemeDark extends AppTheme {
   ThemeData get theme => ThemeData(
-      // fontFamily: 'youtube_sans',
+      fontFamily: 'OpenSans',
       useMaterial3: true,
       primarySwatch: primarySwatch,
       extensions: [extension],
@@ -13,7 +13,6 @@ class ThemeDark extends AppTheme {
       scaffoldBackgroundColor: scaffoldBackgroundColor,
       canvasColor: cardColor,
       appBarTheme: const AppBarTheme(centerTitle: true),
-      // fontFamily: FontFamily.poppins,
       colorScheme: ColorScheme.dark(
         primary: primary,
         onPrimary: onPrimary,

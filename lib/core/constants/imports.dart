@@ -25,9 +25,14 @@ export 'package:roomrounds/utils/custome_tiles.dart';
 export 'package:roomrounds/module/assigned_task/components/assigned_tasks_components.dart';
 export 'package:roomrounds/utils/custome_drop_down.dart';
 export 'package:roomrounds/core/components/app_button.dart';
+export 'package:roomrounds/core/constants/app_enum.dart';
+export 'package:roomrounds/utils/app_bottom_bar.dart';
 
 export 'package:roomrounds/module/profile/components/profile_components.dart';
 export 'package:roomrounds/module/settings/components/settings_components.dart';
+export 'package:roomrounds/module/emloyee_directory/components/employee_directory_components.dart';
+export 'package:roomrounds/module/romm_map/components/room_map_components.dart';
+
 ///////////////   Pages     //////////////////////
 export 'package:roomrounds/module/splash/views/splash_view.dart';
 export 'package:roomrounds/module/authentications/views/login_view.dart';
@@ -40,3 +45,8 @@ export 'package:roomrounds/module/assigned_task/views/assigned_task_view.dart';
 export 'package:roomrounds/module/message/views/message_view.dart';
 export 'package:roomrounds/module/notificatin/views/notification_view.dart';
 export 'package:roomrounds/module/emloyee_directory/views/employee_directory_view.dart';
+export 'package:roomrounds/module/message/views/chat_view.dart';
+export 'package:roomrounds/module/romm_map/views/room_map_details_view.dart';
+export 'package:roomrounds/module/romm_map/views/room_map_view.dart';
+export 'package:roomrounds/module/room_list/views/room_list_view.dart';
+export 'package:roomrounds/module/room_list/views/tasks_list.dart';

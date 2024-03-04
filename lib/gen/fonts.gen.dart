@@ -10,6 +10,6 @@
 class FontFamily {
   FontFamily._();
 
-  /// Font family: youtube_sans
-  static const String youtubeSans = 'youtube_sans';
+  /// Font family: OpenSans
+  static const String openSans = 'OpenSans';
 }

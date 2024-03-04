@@ -12,6 +12,7 @@ class CustomeDropDown {
     bool borderRadiusBoth = true,
     Color closedFillColor = AppColors.white,
     Color expandFillColor = AppColors.white,
+    Color textColor = AppColors.black,
     bool showShadow = true,
   }) {
     return SizedBox(
@@ -26,27 +27,31 @@ class CustomeDropDown {
         closedHeaderPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: CustomDropdownDecoration(
-            closedSuffixIcon: const Icon(
+            listItemStyle: context.bodyLarge!.copyWith(color: textColor),
+            headerStyle: context.titleSmall!.copyWith(color: textColor),
+            closedSuffixIcon: Icon(
               Icons.arrow_drop_down,
-              color: AppColors.black,
+              color: textColor,
             ),
             closedFillColor: closedFillColor,
             expandedFillColor: expandFillColor,
             closedBorderRadius: BorderRadius.circular(borderRadius),
             expandedBorderRadius:
                 BorderRadius.circular(borderRadiusBoth ? borderRadius : 5),
-            expandedSuffixIcon: const Icon(
+            expandedSuffixIcon: Icon(
               Icons.arrow_drop_up_outlined,
-              color: AppColors.black,
+              color: textColor,
             ),
-            expandedShadow: [
-              BoxShadow(
-                color: AppColors.gry.withOpacity(0.5),
-                spreadRadius: 3,
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              )
-            ],
+            expandedShadow: showShadow
+                ? [
+                    BoxShadow(
+                      color: AppColors.gry.withOpacity(0.5),
+                      spreadRadius: 3,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    )
+                  ]
+                : [],
             closedShadow: showShadow
                 ? [
                     BoxShadow(

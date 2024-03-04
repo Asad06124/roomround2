@@ -6,9 +6,11 @@ class EmployeeDirectoryComponents {
       {String title = "Room A1",
       String status = "Close",
       bool isAcvtive = false,
+      Widget? prefixWidget,
       bool titleActive = true,
       bool isUnderline = true,
       Color fillColor = AppColors.white,
+      Widget? statusWidget,
       GestureTapCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -25,6 +27,10 @@ class EmployeeDirectoryComponents {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if (prefixWidget != null) ...{
+              prefixWidget,
+              SB.w(5),
+            },
             Text(
               title,
               style: context.bodyLarge!.copyWith(
@@ -33,16 +39,17 @@ class EmployeeDirectoryComponents {
               ),
             ),
             const Spacer(),
-            Text(
-              status,
-              style: context.bodyLarge!.copyWith(
-                color: AppColors.black,
-                decoration: isUnderline ? TextDecoration.underline : null,
-                decorationColor: isUnderline ? AppColors.black : null,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SB.w(5),
+            statusWidget ??
+                Text(
+                  status,
+                  style: context.bodyLarge!.copyWith(
+                    color: AppColors.black,
+                    decoration: isUnderline ? TextDecoration.underline : null,
+                    decorationColor: isUnderline ? AppColors.black : null,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+            SB.w(statusWidget == null ? 5 : 0),
             CircleAvatar(
               radius: 4,
               backgroundColor:

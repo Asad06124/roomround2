@@ -99,22 +99,22 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: youtube_sans
+    - family: OpenSans
       fonts:
-        - asset: assets/fonts/YouTubeSansBlack.ttf
-        - asset: assets/fonts/YouTubeSansBold.ttf
-        - asset: assets/fonts/YouTubeSansDarkBlack.ttf
-        - asset: assets/fonts/YouTubeSansDarkBold.ttf
-        - asset: assets/fonts/YouTubeSansDarkExtrabold.ttf
-        - asset: assets/fonts/YouTubeSansDarkLight.ttf
-        - asset: assets/fonts/YouTubeSansDarkMedium.ttf
-        - asset: assets/fonts/YouTubeSansDarkRegular.ttf
-        - asset: assets/fonts/YouTubeSansDarkSemibold.ttf
-        - asset: assets/fonts/YouTubeSansExtrabold.ttf
-        - asset: assets/fonts/YouTubeSansLight.ttf
-        - asset: assets/fonts/YouTubeSansMedium.ttf
-        - asset: assets/fonts/YouTubeSansRegular.ttf
-        - asset: assets/fonts/YouTubeSansSemibold.ttf
+        - asset: assets/fonts/OpenSans-Light.ttf
+        - asset: assets/fonts/OpenSans-Regular.ttf
+        - asset: assets/fonts/OpenSans-Medium.ttf
+        - asset: assets/fonts/OpenSans-SemiBold.ttf
+        - asset: assets/fonts/OpenSans-Bold.ttf
+        - asset: assets/fonts/OpenSans-ExtraBold.ttf
+        - asset: assets/fonts/OpenSans-LightItalic.ttf
+        - asset: assets/fonts/OpenSans-Italic.ttf
+        - asset: assets/fonts/OpenSans-MediumItalic.ttf
+        - asset: assets/fonts/OpenSans-SemiBoldItalic.ttf
+        - asset: assets/fonts/OpenSans-BoldItalic.ttf
+        - asset: assets/fonts/OpenSans-ExtraBoldItalic.ttf
+ 
+        
         
   #   - family: Trajan Pro
   #     fonts:

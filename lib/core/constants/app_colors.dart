@@ -19,6 +19,8 @@ class AppColors {
   static const Color darkGrey = Color(0xFF605E5E);
   static const Color lightBlack = Color(0xff161616);
   static const Color aqua = Color(0xff26DBDC);
+  static const Color green = Color(0xffB9FFAD);
+  static const Color greenDark = Color(0xff3E8633);
   static const Color deepSkyBlue = Color(0xff326FEA);
 
   static const Gradient profileGradient = LinearGradient(

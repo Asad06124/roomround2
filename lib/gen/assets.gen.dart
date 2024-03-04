@@ -37,6 +37,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/camera_alt.svg
   SvgGenImage get cameraAlt => const SvgGenImage('assets/icons/camera_alt.svg');
 
+  /// File path: assets/icons/camera_circle.svg
+  SvgGenImage get cameraCircle =>
+      const SvgGenImage('assets/icons/camera_circle.svg');
+
   /// File path: assets/icons/close.svg
   SvgGenImage get close => const SvgGenImage('assets/icons/close.svg');
 
@@ -44,8 +48,14 @@ class $AssetsIconsGen {
   SvgGenImage get emplyeeDirectory =>
       const SvgGenImage('assets/icons/emplyee_directory.svg');
 
+  /// File path: assets/icons/filter.svg
+  SvgGenImage get filter => const SvgGenImage('assets/icons/filter.svg');
+
   /// File path: assets/icons/grid_icon.svg
   SvgGenImage get gridIcon => const SvgGenImage('assets/icons/grid_icon.svg');
+
+  /// File path: assets/icons/home.svg
+  SvgGenImage get home => const SvgGenImage('assets/icons/home.svg');
 
   /// File path: assets/icons/home_search.svg
   SvgGenImage get homeSearch =>
@@ -66,6 +76,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/person.svg
   SvgGenImage get person => const SvgGenImage('assets/icons/person.svg');
 
+  /// File path: assets/icons/person_fill.svg
+  SvgGenImage get personFill =>
+      const SvgGenImage('assets/icons/person_fill.svg');
+
   /// File path: assets/icons/room_map_view.svg
   SvgGenImage get roomMapView =>
       const SvgGenImage('assets/icons/room_map_view.svg');
@@ -76,9 +90,15 @@ class $AssetsIconsGen {
   /// File path: assets/icons/send.svg
   SvgGenImage get send => const SvgGenImage('assets/icons/send.svg');
 
+  /// File path: assets/icons/settings.svg
+  SvgGenImage get settings => const SvgGenImage('assets/icons/settings.svg');
+
   /// File path: assets/icons/splash_logo.svg
   SvgGenImage get splashLogo =>
       const SvgGenImage('assets/icons/splash_logo.svg');
+
+  /// File path: assets/icons/tickets.svg
+  SvgGenImage get tickets => const SvgGenImage('assets/icons/tickets.svg');
 
   /// File path: assets/icons/upload.svg
   SvgGenImage get upload => const SvgGenImage('assets/icons/upload.svg');
@@ -92,19 +112,25 @@ class $AssetsIconsGen {
         bellActive,
         camera,
         cameraAlt,
+        cameraCircle,
         close,
         emplyeeDirectory,
+        filter,
         gridIcon,
+        home,
         homeSearch,
         listIcon,
         lock,
         mail,
         mic,
         person,
+        personFill,
         roomMapView,
         search,
         send,
+        settings,
         splashLogo,
+        tickets,
         upload
       ];
 }

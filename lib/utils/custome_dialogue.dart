@@ -59,7 +59,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                   DialougeComponents.tile(context),
                   SB.h(20),
                   DialougeComponents.nameTile(context,
-                      name: widget.name, title: widget.title),
+                      name: widget.name, desc: widget.title),
                   SB.h(20),
                   DialougeComponents.detailWithBorder(context, widget.review),
                   SB.h(20),
@@ -129,8 +129,7 @@ class ClosedTicketDialouge extends StatelessWidget {
                   DialougeComponents.tile(context,
                       value: '', isDecoration: false, title: 'Assigned by:'),
                   SB.h(20),
-                  DialougeComponents.nameTile(context,
-                      name: name, title: title),
+                  DialougeComponents.nameTile(context, name: name, desc: title),
                   SB.h(20),
                   DialougeComponents.detailWithBorder(context, review),
                   SB.h(20),
@@ -193,8 +192,7 @@ class OpenThreadDialogue extends StatelessWidget {
                   DialougeComponents.tile(context,
                       title: "Send to:", value: '', isDecoration: false),
                   SB.h(20),
-                  DialougeComponents.nameTile(context,
-                      name: name, title: title),
+                  DialougeComponents.nameTile(context, name: name, desc: title),
                   SB.h(20),
                   DialougeComponents.detailWithBorder(context, review),
                   SB.h(20),
@@ -325,22 +323,223 @@ class _OpenThreadDialogueArgueState extends State<OpenThreadDialogueArgue> {
   }
 }
 
+// ignore: must_be_immutable
+class YesNoDialouge extends StatelessWidget {
+  YesNoDialouge(
+      {Key? key, this.title = "title", this.onNoPressed, this.onYesPressed})
+      : super(key: key);
+  String title;
+  GestureTapCallback? onYesPressed;
+  GestureTapCallback? onNoPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      // height: context.height * 0.75,
+      width: context.width,
+      padding: const EdgeInsets.all(10),
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DialougeComponents.closeBtn(),
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: context.titleLarge!.copyWith(
+                    color: AppColors.black,
+                  ),
+                ),
+                SB.h(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppButton.primary(
+                      background: AppColors.primary,
+                      title: 'Yes',
+                      onPressed: onYesPressed,
+                      height: 50,
+                      width: context.width * 0.25,
+                    ),
+                    SB.w(10),
+                    AppButton.primary(
+                      background: AppColors.primary,
+                      title: 'No',
+                      onPressed: onNoPressed ?? () => Get.back(),
+                      height: 50,
+                      width: context.width * 0.25,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ArrangeAuditFunding extends StatelessWidget {
+  const ArrangeAuditFunding({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      // height: context.height * 0.75,
+      width: context.width,
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DialougeComponents.closeBtn(),
+          SB.h(10),
+          DialougeComponents.labelTile(
+            context,
+            isBorder: true,
+            status: '',
+            title: 'Arrange audit findings?',
+          ),
+          SB.h(10),
+          DialougeComponents.labelTile(
+            context,
+            isBorder: true,
+            status: '',
+            title: AppStrings.comment,
+            titleStyle: context.titleSmall!.copyWith(
+              color: AppColors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SB.h(10),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.lightWhite,
+            ),
+            padding: const EdgeInsets.all(3),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextField(
+                  maxLines: 4,
+                  borderRadius: 0,
+                  borderColor: AppColors.lightWhite,
+                  hintText: AppStrings.writeMessage,
+                  isRequiredField: false,
+                  validator: (value) => null,
+                  fillColor: AppColors.lightWhite,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Assets.icons.cameraCircle.svg(),
+                    SB.w(10),
+                    Assets.icons.mic.svg(),
+                    SB.w(10)
+                  ],
+                ),
+                SB.h(5),
+              ],
+            ),
+          ),
+          DialougeComponents.labelTile(
+            context,
+            isBorder: true,
+            status: '',
+            title: AppStrings.directory,
+            titleStyle: context.titleSmall!.copyWith(
+              color: AppColors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SB.h(10),
+          DialougeComponents.labelTile(
+            context,
+            isBorder: true,
+            status: '',
+            title: 'Change Member:',
+          ),
+          SB.h(10),
+          DialougeComponents.nameTile(context, name: "Anthony Roy"),
+          SB.h(10),
+          DialougeComponents.dateTile(context,
+              time: '1:03 PM', date: '11/23/2023'),
+          SB.h(5),
+          DialougeComponents.dateTile(context,
+              label: 'Completion Date:', time: '1:03 PM', date: '11/23/2023'),
+          SB.h(10),
+          DialougeComponents.labelTile(
+            context,
+            isBorder: true,
+            status: '',
+            title: AppStrings.urgent,
+            titleStyle: context.titleSmall!.copyWith(
+              color: AppColors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SB.h(10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              RoomMapComponents.radioButtton<YesNo>(
+                context,
+                YesNo.yes,
+                YesNo.yes,
+                AppStrings.yes,
+                (value) {},
+                width: context.width * 0.35,
+              ),
+              RoomMapComponents.radioButtton<YesNo>(
+                  context, YesNo.no, YesNo.yes, AppStrings.no, (value) {}),
+            ],
+          ),
+          SB.h(10),
+          AppButton.primary(
+            background: AppColors.primary,
+            title: AppStrings.done,
+            // onPressed: onYesPressed,
+            height: 50,
+            width: context.width,
+          ),
+          SB.h(10),
+        ],
+      ),
+    );
+  }
+}
+
 class DialougeComponents {
   static Widget labelTile(
     BuildContext context, {
     String title = '',
     String status = '',
     bool isBorder = false,
+    TextStyle? titleStyle,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: context.bodyLarge!.copyWith(
-            color: !isBorder ? AppColors.gry : AppColors.textGrey,
-            fontWeight: FontWeight.w500,
-          ),
+          style: titleStyle ??
+              context.bodyLarge!.copyWith(
+                color: !isBorder ? AppColors.gry : AppColors.textGrey,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const Spacer(),
         Text(
@@ -459,7 +658,7 @@ class DialougeComponents {
   }
 
   static Widget nameTile(BuildContext context,
-      {String name = '', String title = ''}) {
+      {String name = '', String desc = ''}) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.gry.withOpacity(0.24),
@@ -483,7 +682,7 @@ class DialougeComponents {
           ),
           const Spacer(),
           Text(
-            title,
+            desc,
             style: context.bodyLarge!.copyWith(
               color: AppColors.textGrey,
               fontWeight: FontWeight.w500,

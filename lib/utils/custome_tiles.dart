@@ -78,7 +78,7 @@ class CustomeTiles {
     );
   }
 
-  static Widget notificationTile(BuildContext context,
+  static Widget notificationTileSimple(BuildContext context,
       {String name = "New task added in template",
       GestureTapCallback? onCloseTap,
       GestureTapCallback? onPressed,

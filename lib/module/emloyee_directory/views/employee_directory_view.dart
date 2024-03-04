@@ -1,5 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/emloyee_directory/components/employee_directory_components.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
 class EmployeeDirectoryView extends StatelessWidget {

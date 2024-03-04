@@ -22,7 +22,7 @@ class CustomAppbar {
       child: Padding(
         padding: EdgeInsets.only(
           top: context.paddingTop + (isBackButtun ? 10 : 20),
-          left: isBackButtun ? 10 : 20,
+          left: isBackButtun ? 5 : 20,
           right: 20,
         ),
         child: Column(
@@ -71,12 +71,18 @@ class CustomAppbar {
                         onTap: () => Get.toNamed(AppRoutes.NOTIFICATION),
                         child: notificationActive
                             ? Assets.icons.bellActive.svg(
-                                color: iconsClor,
+                                colorFilter: iconsClor != null
+                                    ? ColorFilter.mode(
+                                        iconsClor, BlendMode.srcIn)
+                                    : null,
                                 height: iconHeight + 8,
                                 width: iconWeight + 8,
                               )
                             : Assets.icons.bell.svg(
-                                color: iconsClor,
+                                colorFilter: iconsClor != null
+                                    ? ColorFilter.mode(
+                                        iconsClor, BlendMode.srcIn)
+                                    : null,
                                 height: iconHeight + 3,
                                 width: iconWeight + 3,
                               ),
@@ -86,7 +92,9 @@ class CustomAppbar {
                       GestureDetector(
                         onTap: () => Get.toNamed(AppRoutes.MESSAGE),
                         child: Assets.icons.mail.svg(
-                          color: iconsClor,
+                          colorFilter: iconsClor != null
+                              ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
+                              : null,
                           height: iconHeight,
                           width: iconWeight,
                         ),

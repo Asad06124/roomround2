@@ -1,5 +1,4 @@
-import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/romm_map/components/room_map_components.dart';
+import 'package:roomrounds/core/constants/imports.dart'; 
 
 class RoomMapView extends StatelessWidget {
   const RoomMapView({Key? key}) : super(key: key);

@@ -55,7 +55,8 @@ class MainFeaturesCompinents {
           SB.w(5),
           Text(
             titles[index],
-            style: context.titleSmall!.copyWith(color: AppColors.black),
+            style: context.titleSmall!
+                .copyWith(color: AppColors.black, fontSize: 18),
           ),
         ],
       ),
@@ -89,7 +90,8 @@ class MainFeaturesCompinents {
           ),
           Text(
             titles[index],
-            style: context.titleSmall!.copyWith(color: AppColors.black),
+            style: context.titleSmall!
+                .copyWith(color: AppColors.black, fontSize: 18),
           )
         ],
       ),

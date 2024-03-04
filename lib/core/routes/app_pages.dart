@@ -1,7 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/message/views/chat_view.dart';
-import 'package:roomrounds/module/romm_map/views/room_map_details_view.dart';
-import 'package:roomrounds/module/romm_map/views/room_map_view.dart';
 
 class AppPages {
   static Transition transitionType = Transition.rightToLeft;
@@ -102,6 +99,22 @@ class AppPages {
     GetPage(
       name: AppRoutes.CHAT,
       page: () => const ChatView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.ROOMLIST,
+      page: () => const RoomListView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.TASKSLISTS,
+      page: () => const TasksList(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

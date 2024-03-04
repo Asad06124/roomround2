@@ -112,6 +112,7 @@ class ProfileComponents {
   static Widget teamTile(
     BuildContext context, {
     String name = "Anthony Roy",
+    bool isAdmin = false,
     GestureDetector? onPressed,
   }) {
     return Padding(
@@ -139,6 +140,22 @@ class ProfileComponents {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+              if (isAdmin) ...{
+                const Spacer(),
+                InkWell(
+                  onTap: () {},
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(35),
+                        border: Border.all(color: AppColors.gry)),
+                    child: const Icon(
+                      Icons.remove,
+                      color: AppColors.gry,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              },
             ],
           ),
           SB.h(5),
