@@ -11,38 +11,42 @@ class TeamMembersView extends StatelessWidget {
         child: Column(
           children: [
             ProfileComponents.mainCard(context, isBackButtun: true),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SB.h(25),
-                  Text(
-                    AppStrings.teamMember,
-                    style: context.titleSmall!.copyWith(
-                      color: AppColors.black,
+            SizedBox(
+              height: context.height * 0.70,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SB.h(25),
+                    Text(
+                      AppStrings.teamMember,
+                      style: context.titleSmall!.copyWith(
+                        color: AppColors.black,
+                      ),
                     ),
-                  ),
-                  SB.h(0),
-                  SizedBox(
-                    height: context.height -
-                        context.height * 0.30 -
-                        25 -
-                        context.paddingTop,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      // physics: NeverScrollableScrollPhysics(),
-                      itemCount: 20,
-                      itemBuilder: (context, index) {
-                        return ProfileComponents.teamTile(
-                          context,
-                          name: "Anthony Roye",
-                          isAdmin: true,
-                        );
-                      },
+                    Expanded(
+                      child: SizedBox(
+                        // height: context.height -
+                        //     context.height * 0.30 -
+                        //     30 -
+                        //     context.paddingTop,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          // physics: NeverScrollableScrollPhysics(),
+                          itemCount: 20,
+                          itemBuilder: (context, index) {
+                            return ProfileComponents.teamTile(
+                              context,
+                              name: "Anthony Roye",
+                              isAdmin: true,
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

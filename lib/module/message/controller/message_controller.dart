@@ -3,6 +3,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 class MessageController extends GetxController with WidgetsBindingObserver {
   bool _isKeyBoardOpen = false;
   bool get isKeyBoardOpen => _isKeyBoardOpen;
+  OverlayPortalController overlayController = OverlayPortalController();
 
   @override
   void onReady() {

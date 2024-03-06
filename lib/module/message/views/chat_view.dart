@@ -2,29 +2,31 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/message/components/message_components.dart';
 import 'package:roomrounds/module/message/controller/message_controller.dart';
 
+// ignore: must_be_immutable
 class ChatView extends StatelessWidget {
-  const ChatView({Key? key}) : super(key: key);
-
+  ChatView({Key? key}) : super(key: key);
+  LayerLink link = LayerLink();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppbar.simpleAppBar(
-        context,
-        height: 75,
-        backButtunColor: AppColors.textPrimary,
-        title: AppStrings.inbox,
-        showNotificationIcon: false,
-        notificationActive: true,
-        titleStyle: context.titleLarge!.copyWith(color: AppColors.textPrimary),
-        iconsClor: AppColors.textPrimary,
-        isHome: false,
-        showMailIcon: false,
-        isBackButtun: true,
-      ),
-      body: GetBuilder<MessageController>(
-          init: MessageController(),
-          builder: (controller) {
-            return Column(
+    return GetBuilder<MessageController>(
+        init: MessageController(),
+        builder: (controller) {
+          return Scaffold(
+            appBar: CustomAppbar.simpleAppBar(
+              context,
+              height: 75,
+              backButtunColor: AppColors.textPrimary,
+              title: AppStrings.inbox,
+              showNotificationIcon: false,
+              notificationActive: true,
+              titleStyle:
+                  context.titleLarge!.copyWith(color: AppColors.textPrimary),
+              iconsClor: AppColors.textPrimary,
+              isHome: false,
+              showMailIcon: false,
+              isBackButtun: true,
+            ),
+            body: Column(
               children: [
                 AnimatedContainer(
                   height: controller.isKeyBoardOpen ? 0 : null,
@@ -107,51 +109,73 @@ class ChatView extends StatelessWidget {
                   ),
                 ),
               ],
-            );
-          }),
-      bottomSheet: Container(
-        // height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        width: context.width,
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                    color: AppColors.gry.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 9,
-                    offset: const Offset(2, 0))
-              ]),
-          child: Row(
-            children: [
-              _chatPrefeixIcons(context),
-              SizedBox(
-                width: context.width - context.width * 0.22 - 30,
-                child: CustomTextField(
-                  validator: (value) => null,
-                  borderRadius: 30,
-                  hintText: AppStrings.typeeMessageHere,
-                  suffixIcon: AppImages.send,
-                  onSuffixTap: () {},
+            ),
+            bottomSheet: Container(
+              // height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              width: context.width,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: AppColors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppColors.gry.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 9,
+                          offset: const Offset(2, 0))
+                    ]),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _chatPrefeixIcons(context, controller),
+                    SizedBox(
+                      width: context.width -
+                          (context.width * 0.22 > 90
+                              ? 90
+                              : context.width * 0.22) -
+                          30,
+                      child: CustomTextField(
+                        validator: (value) => null,
+                        borderRadius: 30,
+                        hintText: AppStrings.typeeMessageHere,
+                        suffixIcon: AppImages.send,
+                        onSuffixTap: () {},
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        });
   }
 
-  Widget _chatPrefeixIcons(BuildContext context) {
-    return SizedBox(
+  Widget _chatPrefeixIcons(
+      BuildContext context, MessageController mController) {
+    return Container(
+        // color: Colors.red,
         width: context.width * 0.22,
+        constraints: const BoxConstraints(
+          maxWidth: 90,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
           children: [
-            MessageComponents.popMenue(context, (type) {}),
+            // MessageComponents.popMenue(context, (type) {}),
+
+            // overlayController.toggle();
+            CustomePainterDialouge(
+              controller: mController.overlayController,
+              link: link,
+              onTap: () {
+                mController.overlayController.toggle();
+                mController.update();
+              },
+              child: Assets.icons.add.svg(),
+            ),
             InkWell(
               onTap: () {},
               child: Assets.icons.mic.svg(),

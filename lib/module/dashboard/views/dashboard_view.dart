@@ -32,8 +32,8 @@ class DashboardView extends StatelessWidget {
               },
               padding: const EdgeInsets.only(left: 0, right: 0, bottom: 0),
               cornerRadius: const BorderRadius.only(
-                topLeft: Radius.circular(25),
-                topRight: Radius.circular(25),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
                 bottomRight: Radius.circular(0),
                 bottomLeft: Radius.circular(0),
               ),

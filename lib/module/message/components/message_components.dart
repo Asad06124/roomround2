@@ -112,74 +112,139 @@ class MessageComponents {
       ),
     );
   }
-
-  static Widget popMenue(BuildContext context, Function(int type) onTap) {
-    return PopupMenuButton(
-        icon: Assets.icons.add.svg(),
-        onSelected: (value) {
-          onTap(value);
-        },
-        offset: const Offset(10, -120),
-        shadowColor: AppColors.gry,
-        surfaceTintColor: Colors.white,
-        color: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(15.0),
-          ),
-        ),
-        itemBuilder: (_) {
-          return [
-            PopupMenuItem(
-              onTap: () => onTap(0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(children: [
-                    Assets.icons.upload
-                        .svg(height: 25, width: 25, fit: BoxFit.cover),
-                    SB.w(8),
-                    Text(
-                      AppStrings.uploadfromDevice,
-                      style: context.bodyLarge!.copyWith(color: AppColors.gry),
-                    ),
-                  ]),
-                  Divider(
-                    color: AppColors.gry.withOpacity(0.24),
-                  ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              onTap: () => onTap(1),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Assets.icons.cameraAlt
-                          .svg(height: 20, width: 25, fit: BoxFit.cover),
-                      SB.w(8),
-                      Text(
-                        AppStrings.takePhoto,
-                        style:
-                            context.bodyLarge!.copyWith(color: AppColors.gry),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    color: AppColors.gry.withOpacity(0.24),
-                  )
-                ],
-              ),
-            ),
-          ];
-        });
-  }
 }
 
 class DropDownItems {
   String label;
   Widget icon;
   DropDownItems(this.label, this.icon);
+}
+
+// ignore: must_be_immutable
+class CustomePainterDialouge extends StatelessWidget {
+  LayerLink link;
+  OverlayPortalController controller;
+  GestureTapCallback? onTap;
+  Widget child;
+  CustomePainterDialouge(
+      {Key? key,
+      required this.link,
+      required this.controller,
+      this.onTap,
+      required this.child})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: CompositedTransformTarget(
+        link: link,
+        child: OverlayPortal(
+          controller: controller,
+          overlayChildBuilder: (BuildContext context) {
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: InkWell(
+                    onTap: onTap,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                  ),
+                ),
+                CompositedTransformFollower(
+                  link: link,
+                  offset: const Offset(-7, -20),
+                  targetAnchor: Alignment.topLeft,
+                  followerAnchor: Alignment.bottomLeft,
+                  child: SizedBox(
+                    height: 125,
+                    width: 250,
+                    child: CustomPaint(
+                      size: const Size(250, 125),
+                      painter: MessageIconPainter(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 10),
+                        child: Column(
+                          children: [
+                            Row(children: [
+                              Assets.icons.upload.svg(
+                                  height: 25, width: 25, fit: BoxFit.cover),
+                              SB.w(8),
+                              Text(
+                                AppStrings.uploadfromDevice,
+                                style: context.bodyLarge!.copyWith(
+                                  color: AppColors.gry,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ]),
+                            Divider(
+                              color: AppColors.gry.withOpacity(0.24),
+                            ),
+                            Row(children: [
+                              Assets.icons.cameraAlt.svg(
+                                  height: 20, width: 25, fit: BoxFit.cover),
+                              SB.w(8),
+                              Text(
+                                AppStrings.takePhoto,
+                                style: context.bodyLarge!.copyWith(
+                                  color: AppColors.gry,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ]),
+                            Divider(
+                              color: AppColors.gry.withOpacity(0.24),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class MessageIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    Path path = Path()
+      ..moveTo(8, 8)
+      ..lineTo(size.width - 8, 8)
+      ..quadraticBezierTo(size.width, 8, size.width, 16)
+      ..lineTo(size.width, size.height - 16)
+      ..quadraticBezierTo(
+          size.width, size.height - 8, size.width - 8, size.height - 8)
+      ..lineTo(8, size.height - 8)
+      ..lineTo(28, size.height - 8)
+      ..lineTo(20, size.height - 0)
+      ..lineTo(12, size.height - 8)
+      ..lineTo(8, size.height - 8)
+      ..quadraticBezierTo(0, size.height - 8, 0, size.height - 16)
+      ..lineTo(0, 16)
+      ..quadraticBezierTo(0, 8, 8, 8)
+      ..close();
+    canvas.drawShadow(path, Colors.black, 10.0, true);
+    canvas.translate(2, 2);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
 }

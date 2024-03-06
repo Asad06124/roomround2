@@ -98,7 +98,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.CHAT,
-      page: () => const ChatView(),
+      page: () => ChatView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

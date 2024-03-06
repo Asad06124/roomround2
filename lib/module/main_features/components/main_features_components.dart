@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class MainFeaturesCompinents {
@@ -6,8 +7,8 @@ class MainFeaturesCompinents {
       {required Function(int index) onPressed}) {
     return isGridView
         ? GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: context.isPhone ? 2 : 3,
               mainAxisSpacing: 30,
               crossAxisSpacing: 15,
             ),
@@ -68,7 +69,8 @@ class MainFeaturesCompinents {
     return Container(
       padding: const EdgeInsets.only(top: 5),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 150,
