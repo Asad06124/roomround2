@@ -6,7 +6,7 @@ class AssignedTaskComponents {
       String desc = "Staff / Employee",
       String date = "11/23/2023"}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.only(left: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,

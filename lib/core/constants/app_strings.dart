@@ -80,8 +80,8 @@ class AppStrings {
   static const String skipForNow = 'Skip for now';
   static const String step = 'step';
   static const String search = 'Search';
-  static const String searchEmployee = "Search employee...";
-  static const String searchRoom = "Search Room...";
+  static const String searchEmployee = "Search employee";
+  static const String searchRoom = "Search Room";
   static const String seeAll = 'See all';
   static const String save = 'Save';
   static const String success = 'Success!';

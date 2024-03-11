@@ -31,6 +31,8 @@ class SettingsView extends StatelessWidget {
                 SettingsComponents.tile(context,
                     title: AppStrings.notificationSettings),
                 SettingsComponents.tile(context, title: AppStrings.help),
+                SettingsComponents.tile(context,
+                    title: AppStrings.privacyPolicy),
                 SettingsComponents.tile(context, title: AppStrings.contactUs),
                 SettingsComponents.tile(context, title: AppStrings.rateUs),
               ],

@@ -159,7 +159,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               fillColor: widget.fillColor,
               filled: true,
               contentPadding: //EdgeInsets.zero,
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               errorBorder: _inputBorder(),
               focusedErrorBorder: _inputBorder(),
               enabledBorder: _inputBorder(),

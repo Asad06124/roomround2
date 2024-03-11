@@ -13,7 +13,8 @@ class SettingsComponents {
             Text(
               title,
               style: context.bodyLarge!.copyWith(
-                color: AppColors.darkGrey,
+                color: AppColors.textGrey,
+                fontWeight: FontWeight.w600,
               ),
             ),
             SB.h(2),

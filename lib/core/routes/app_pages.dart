@@ -1,7 +1,7 @@
 import 'package:roomrounds/core/constants/imports.dart';
 
 class AppPages {
-  static Transition transitionType = Transition.rightToLeft;
+  static Transition? transitionType;
 
   static final routes = [
     GetPage(
