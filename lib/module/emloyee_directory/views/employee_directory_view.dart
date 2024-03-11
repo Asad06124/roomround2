@@ -55,8 +55,9 @@ class EmployeeDirectoryView extends StatelessWidget {
                         onSelect: (value) =>
                             controller.changeTicketsType(value),
                         borderRadius: 20,
-                        closedFillColor: AppColors.textGrey.withOpacity(0.1),
-                        showShadow: false,
+                        closedFillColor: AppColors.gry.withOpacity(0.24),
+                        showShadow: true,
+                        closedShaddow: false,
                       ),
                     ],
                   ),

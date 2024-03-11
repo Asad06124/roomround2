@@ -23,6 +23,22 @@ class RoomMapView extends StatelessWidget {
         height: context.height - 75,
         width: context.width,
         color: AppColors.primary.withOpacity(0.1),
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Positioned(
+              width: context.width,
+              height: context.height - context.height * 0.15,
+              child: Assets.images.mapImage.svg(
+                fit: BoxFit.fill,
+              ),
+            ),
+            Positioned(
+              top: (context.height - context.height * 0.15 - 100) / 2,
+              child: Assets.icons.locationPinDrop.svg(),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: Container(
         margin: EdgeInsets.only(
@@ -30,9 +46,16 @@ class RoomMapView extends StatelessWidget {
         width: context.width - 40,
         height: 60,
         decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(35),
-        ),
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(35),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.gry,
+                offset: Offset(0, 0),
+                spreadRadius: 0.5,
+                blurRadius: 10,
+              )
+            ]),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -40,18 +63,18 @@ class RoomMapView extends StatelessWidget {
             SizedBox(
               width: context.width * 0.20,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  SB.w(0),
+                  SB.w(0),
                   Assets.icons.homeSearch.svg(
                       // height: 25,
                       // width: 25,
                       ),
-                  SB.w(5),
                   const Icon(
                     Icons.arrow_drop_down_sharp,
                     color: AppColors.gry,
                   ),
-                  SB.w(5),
                   Container(
                     width: 0.5,
                     height: 50,

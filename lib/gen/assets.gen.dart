@@ -64,6 +64,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/list_icon.svg
   SvgGenImage get listIcon => const SvgGenImage('assets/icons/list_icon.svg');
 
+  /// File path: assets/icons/location_pin_drop.svg
+  SvgGenImage get locationPinDrop =>
+      const SvgGenImage('assets/icons/location_pin_drop.svg');
+
   /// File path: assets/icons/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/icons/lock.svg');
 
@@ -120,6 +124,7 @@ class $AssetsIconsGen {
         home,
         homeSearch,
         listIcon,
+        locationPinDrop,
         lock,
         mail,
         mic,
@@ -154,6 +159,9 @@ class $AssetsImagesGen {
   SvgGenImage get mailBoxEmpty =>
       const SvgGenImage('assets/images/mail_box_empty.svg');
 
+  /// File path: assets/images/map_image.svg
+  SvgGenImage get mapImage => const SvgGenImage('assets/images/map_image.svg');
+
   /// File path: assets/images/person.png
   AssetGenImage get person => const AssetGenImage('assets/images/person.png');
 
@@ -162,8 +170,15 @@ class $AssetsImagesGen {
       const SvgGenImage('assets/images/splash_bottom.svg');
 
   /// List of all assets
-  List<dynamic> get values =>
-      [appLogo, homeImage, loginImage, mailBoxEmpty, person, splashBottom];
+  List<dynamic> get values => [
+        appLogo,
+        homeImage,
+        loginImage,
+        mailBoxEmpty,
+        mapImage,
+        person,
+        splashBottom
+      ];
 }
 
 class Assets {

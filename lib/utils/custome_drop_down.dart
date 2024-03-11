@@ -14,6 +14,7 @@ class CustomeDropDown {
     Color expandFillColor = AppColors.white,
     Color textColor = AppColors.black,
     bool showShadow = true,
+    bool closedShaddow = true,
   }) {
     return SizedBox(
       width: context.width * 0.40,
@@ -58,7 +59,7 @@ class CustomeDropDown {
                     )
                   ]
                 : [],
-            closedShadow: showShadow
+            closedShadow: closedShaddow
                 ? [
                     BoxShadow(
                       color: AppColors.gry.withOpacity(0.5),

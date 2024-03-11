@@ -53,7 +53,7 @@ class RoomListComponents {
         borderRadius: BorderRadius.circular(10),
         color: AppColors.textPrimary,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.only(left: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -63,9 +63,10 @@ class RoomListComponents {
           Expanded(
             child: CustomeDropDown.simple(
               context,
-              closedFillColor: AppColors.textPrimary.withOpacity(0.8),
-              expandFillColor: AppColors.textPrimary.withOpacity(0.95),
+              closedFillColor: AppColors.textPrimary,
+              expandFillColor: AppColors.textPrimary,
               showShadow: false,
+              closedShaddow: false,
               textColor: AppColors.white,
               list: [
                 "All Rooms",

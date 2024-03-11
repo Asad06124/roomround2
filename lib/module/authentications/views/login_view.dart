@@ -34,13 +34,13 @@ class LoginView extends StatelessWidget {
                     hintText: AppStrings.userName,
                     prefixIcon: Assets.icons.person.svg(),
                   ),
-                  SB.h(10),
+                  SB.h(15),
                   CustomTextField(
                     hintText: AppStrings.password,
                     prefixIcon: Assets.icons.lock.svg(),
                     isPasswordField: true,
                   ),
-                  SB.h(25),
+                  SB.h(30),
                   AppButton.primary(
                     title: AppStrings.login,
                     onPressed: controller.login,
@@ -58,9 +58,16 @@ class LoginView extends StatelessWidget {
                       Text(
                         AppStrings.clickHere,
                         style: context.bodyLarge!.copyWith(
-                          color: AppColors.white,
+                          color: Colors.transparent,
                           decoration: TextDecoration.underline,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          decorationThickness: 2,
                           decorationColor: AppColors.white,
+                          shadows: [
+                            const Shadow(
+                                color: Colors.white, offset: Offset(0, -2))
+                          ],
                         ),
                       ),
                     ],

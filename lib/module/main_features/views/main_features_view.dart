@@ -6,7 +6,7 @@ import 'package:roomrounds/module/main_features/controller/main_feature_controll
 // ignore: must_be_immutable
 class MainFeaturesView extends StatelessWidget {
   MainFeaturesView({Key? key}) : super(key: key);
-  int userType = 0;
+  int userType = 1;
 
   @override
   Widget build(BuildContext context) {
