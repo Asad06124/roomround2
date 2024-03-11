@@ -16,8 +16,9 @@ class EmployeeDirectoryView extends StatelessWidget {
               height: 70,
               backButtunColor: AppColors.primary,
               title: AppStrings.assignedTasks,
-              showMailIcon: false,
-              showNotificationIcon: false,
+              showMailIcon: true,
+              showNotificationIcon: true,
+              notificationActive: true,
               titleStyle:
                   context.titleLarge!.copyWith(color: AppColors.primary),
               iconsClor: AppColors.primary,
@@ -34,6 +35,7 @@ class EmployeeDirectoryView extends StatelessWidget {
                     "30 Tickets / 20 Closed / 5 Urgent",
                     style: context.bodyLarge!.copyWith(
                       color: AppColors.gry,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   SB.h(10),
@@ -41,9 +43,10 @@ class EmployeeDirectoryView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        AppStrings.ticket,
+                        AppStrings.tickets,
                         style: context.titleSmall!.copyWith(
-                          color: AppColors.black,
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       CustomeDropDown.simple<String>(
@@ -91,9 +94,10 @@ class EmployeeDirectoryView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            AppStrings.closeTicket,
+                            AppStrings.closed,
                             style: context.titleSmall!.copyWith(
-                              color: AppColors.black,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           SB.h(10),

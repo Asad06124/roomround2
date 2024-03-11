@@ -35,7 +35,7 @@ class EmployeeDirectoryComponents {
               title,
               style: context.bodyLarge!.copyWith(
                 color: titleActive ? AppColors.textPrimary : AppColors.gry,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const Spacer(),
@@ -43,10 +43,15 @@ class EmployeeDirectoryComponents {
                 Text(
                   status,
                   style: context.bodyLarge!.copyWith(
-                    color: AppColors.black,
+                    color: Colors.transparent,
                     decoration: isUnderline ? TextDecoration.underline : null,
                     decorationColor: isUnderline ? AppColors.black : null,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                          color: Colors.black,
+                          offset: Offset(0, isUnderline ? -2 : 0.01))
+                    ],
                   ),
                 ),
             SB.w(statusWidget == null ? 5 : 0),

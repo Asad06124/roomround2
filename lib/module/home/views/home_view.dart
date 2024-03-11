@@ -29,7 +29,7 @@ class HomeView extends StatelessWidget {
             width: context.width,
             child: Container(
               width: context.width,
-              height: context.height * 0.30,
+              height: context.height * 0.23,
               margin: const EdgeInsets.symmetric(horizontal: 30),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
@@ -59,6 +59,7 @@ class HomeView extends StatelessWidget {
                         style: context.titleSmall!.copyWith(
                           color: AppColors.primary,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),

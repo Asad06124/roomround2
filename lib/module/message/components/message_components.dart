@@ -6,10 +6,6 @@ class MessageComponents {
     String title = "Room No 1A",
     String subTitle = "Cleaning Department",
   }) {
-    List<DropDownItems> dropdownList = [
-      DropDownItems("Floor", Assets.icons.homeSearch.svg()),
-      DropDownItems("Roof", Assets.icons.homeSearch.svg())
-    ];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -19,7 +15,6 @@ class MessageComponents {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SB.h(10),
             Text(
               title,
               style:
@@ -27,20 +22,39 @@ class MessageComponents {
             ),
             Text(
               subTitle,
-              style: context.bodyLarge!
-                  .copyWith(color: AppColors.gry.withOpacity(0.7)),
+              style: context.bodyLarge!.copyWith(
+                color: AppColors.gry.withOpacity(0.8),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
-        CustomeDropDown.simple(
-          context,
-          list: dropdownList.map((e) => e.label).toList(),
-          onSelect: (value) {},
-          showShadow: false,
-          borderRadius: 35,
-          borderRadiusBoth: false,
-          closedFillColor: AppColors.gry.withOpacity(0.24),
-        ),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(35),
+            color: AppColors.gry.withOpacity(0.24),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 7),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Assets.icons.homeSearch.svg(
+                colorFilter:
+                    const ColorFilter.mode(AppColors.black, BlendMode.srcIn),
+                height: 15,
+                width: 15,
+              ),
+              SB.w(10),
+              Text(
+                'Floor',
+                style: context.bodyLarge!.copyWith(
+                  color: AppColors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
@@ -79,7 +93,7 @@ class MessageComponents {
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(15),
                     topRight: const Radius.circular(15),
-                    bottomLeft: Radius.circular(sender ? 0 : 10),
+                    bottomLeft: Radius.circular(sender ? 0 : 15),
                     bottomRight: Radius.circular(!sender ? 0 : 15),
                   ),
                 ),
@@ -97,7 +111,7 @@ class MessageComponents {
                 time,
                 style: context.bodySmall!.copyWith(
                   color: AppColors.textGrey,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               )
             ],
@@ -112,12 +126,6 @@ class MessageComponents {
       ),
     );
   }
-}
-
-class DropDownItems {
-  String label;
-  Widget icon;
-  DropDownItems(this.label, this.icon);
 }
 
 // ignore: must_be_immutable

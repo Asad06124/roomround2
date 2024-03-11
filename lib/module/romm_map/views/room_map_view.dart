@@ -1,4 +1,4 @@
-import 'package:roomrounds/core/constants/imports.dart'; 
+import 'package:roomrounds/core/constants/imports.dart';
 
 class RoomMapView extends StatelessWidget {
   const RoomMapView({Key? key}) : super(key: key);
@@ -11,12 +11,12 @@ class RoomMapView extends StatelessWidget {
         height: 60,
         backButtunColor: AppColors.primary,
         title: AppStrings.roommapView,
-        notificationActive: false,
+        notificationActive: true,
         titleStyle: context.titleLarge!.copyWith(color: AppColors.primary),
         iconsClor: AppColors.primary,
         isHome: false,
-        showMailIcon: false,
-        showNotificationIcon: false,
+        showMailIcon: true,
+        showNotificationIcon: true,
         isBackButtun: true,
       ),
       body: Container(

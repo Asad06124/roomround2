@@ -10,7 +10,7 @@ class MainFeaturesCompinents {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: context.isPhone ? 2 : 3,
               mainAxisSpacing: 30,
-              crossAxisSpacing: 15,
+              crossAxisSpacing: 20,
             ),
             shrinkWrap: true,
             itemCount: titles.length,
@@ -34,7 +34,7 @@ class MainFeaturesCompinents {
       List<SvgGenImage> images, int index) {
     return Container(
       // width: 150,
-      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5, top: 10),
+      margin: const EdgeInsets.only(bottom: 10, left: 0, right: 0, top: 10),
       height: 130,
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(

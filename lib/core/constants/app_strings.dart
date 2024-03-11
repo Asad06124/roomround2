@@ -94,8 +94,9 @@ class AppStrings {
   static const String yourName = "Your name";
   static const String roommapView = "Room/map view";
   static const String ticketDetails = "Ticket Details";
-  static const String ticket = "Ticket";
+  static const String tickets = "Tickets";
   static const String closeTicket = "Closed Tickets";
+  static const String closed = "Closed";
   static const String uploadfromDevice = "Upload from device";
   static const String takePhoto = "Take Photo";
   static const String clearAll = "Clear All";

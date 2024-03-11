@@ -23,17 +23,20 @@ class ProfileView extends StatelessWidget {
                     children: [
                       Text(
                         AppStrings.personalInformation,
-                        style: context.titleSmall!.copyWith(
+                        style: context.titleMedium!.copyWith(
                           color: AppColors.black,
-                        ),
-                      ),
-                      Text(
-                        AppStrings.edit,
-                        style: context.titleSmall!.copyWith(
-                          color: AppColors.deepSkyBlue,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
+                  ),
+                  SB.h(10),
+                  Text(
+                    AppStrings.edit,
+                    style: context.titleMedium!.copyWith(
+                      color: AppColors.deepSkyBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   SB.h(20),
                   SettingsComponents.tile(context, title: "Anthony"),

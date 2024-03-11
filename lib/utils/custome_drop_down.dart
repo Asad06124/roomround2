@@ -27,8 +27,14 @@ class CustomeDropDown {
         closedHeaderPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: CustomDropdownDecoration(
-            listItemStyle: context.bodyLarge!.copyWith(color: textColor),
-            headerStyle: context.titleSmall!.copyWith(color: textColor),
+            listItemStyle: context.bodyLarge!.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w500,
+            ),
+            headerStyle: context.bodyLarge!.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
             closedSuffixIcon: Icon(
               Icons.arrow_drop_down,
               color: textColor,

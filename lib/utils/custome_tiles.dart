@@ -36,9 +36,9 @@ class CustomeTiles {
                       child: Text(
                         name,
                         maxLines: 1,
-                        style: context.bodyLarge!.copyWith(
+                        style: context.titleSmall!.copyWith(
                           color: AppColors.darkGrey,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),

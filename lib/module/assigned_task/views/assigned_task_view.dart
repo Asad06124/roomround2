@@ -14,8 +14,8 @@ class AssignedTasksView extends StatelessWidget {
         titleStyle: context.titleLarge,
         title: AppStrings.roomStatusList,
         isHome: false,
-        showMailIcon: false,
-        showNotificationIcon: false,
+        showMailIcon: true,
+        showNotificationIcon: true,
         decriptionWidget: AssignedTaskComponents.appBatTile(context),
       ),
       child: Column(
@@ -43,7 +43,7 @@ class AssignedTasksView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CustomeDropDown.simple(context,
-                          list: ['Jalwa', 'Ho ga'],
+                          list: ['All Employees', 'Assigned Me'],
                           onSelect: (String value) {}),
                       CustomeDropDown.simple(context,
                           list: [
@@ -51,7 +51,6 @@ class AssignedTasksView extends StatelessWidget {
                             'Department 2',
                             'Department 3'
                           ],
-                          hintText: "Department",
                           onSelect: (String value) {}),
                     ],
                   ),

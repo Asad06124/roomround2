@@ -15,13 +15,13 @@ class RoomMapDetailsView extends StatelessWidget {
               height: 70,
               backButtunColor: AppColors.primary,
               title: AppStrings.ticketDetails,
-              notificationActive: false,
+              notificationActive: true,
               titleStyle:
                   context.titleLarge!.copyWith(color: AppColors.primary),
               iconsClor: AppColors.primary,
               isHome: false,
-              showMailIcon: false,
-              showNotificationIcon: false,
+              showMailIcon: true,
+              showNotificationIcon: true,
               isBackButtun: true,
             ),
             body: Container(
@@ -95,6 +95,7 @@ class RoomMapDetailsView extends StatelessWidget {
                                   AppStrings.no, (value) {
                                 controller.onUrgentChange(value);
                               }),
+                              const SizedBox.shrink()
                             ],
                           ),
                           SB.h(20),

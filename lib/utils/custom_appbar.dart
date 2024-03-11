@@ -15,7 +15,7 @@ class CustomAppbar {
       Widget? decriptionWidget,
       String title = "Robert Brown"}) {
     final txtStyle = titleStyle ?? context.titleLarge;
-    double iconHeight = isHome ? 25 : 20;
+    double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
     return PreferredSize(
       preferredSize: Size.fromHeight(height),
@@ -28,7 +28,7 @@ class CustomAppbar {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -67,28 +67,31 @@ class CustomAppbar {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (showNotificationIcon)
-                      GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.NOTIFICATION),
-                        child: notificationActive
-                            ? Assets.icons.bellActive.svg(
+                      Stack(
+                        children: [
+                          GestureDetector(
+                              onTap: () => Get.toNamed(AppRoutes.NOTIFICATION),
+                              child: Assets.icons.bellActive.svg(
                                 colorFilter: iconsClor != null
                                     ? ColorFilter.mode(
                                         iconsClor, BlendMode.srcIn)
                                     : null,
                                 height: iconHeight + 8,
                                 width: iconWeight + 8,
-                              )
-                            : Assets.icons.bell.svg(
-                                colorFilter: iconsClor != null
-                                    ? ColorFilter.mode(
-                                        iconsClor, BlendMode.srcIn)
-                                    : null,
-                                height: iconHeight + 3,
-                                width: iconWeight + 3,
+                              )),
+                          if (notificationActive)
+                            Positioned(
+                              right: 3,
+                              top: 2,
+                              child: CircleAvatar(
+                                radius: iconWeight * 0.24,
+                                backgroundColor: AppColors.orange,
                               ),
+                            ),
+                        ],
                       ),
                     if (showMailIcon) ...{
-                      SB.w(notificationActive ? 15 : 20),
+                      SB.w(15),
                       GestureDetector(
                         onTap: () => Get.toNamed(AppRoutes.MESSAGE),
                         child: Assets.icons.mail.svg(
@@ -109,6 +112,7 @@ class CustomAppbar {
               SB.h(5),
               Text(
                 AppStrings.welcomeBack,
+                textAlign: TextAlign.left,
                 style: context.titleSmall!.copyWith(
                   fontWeight: FontWeight.w400,
                 ),

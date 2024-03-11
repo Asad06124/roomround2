@@ -91,7 +91,7 @@ class RoomMapComponents {
             children: [
               Text(
                 title,
-                style: context.bodyLarge!.copyWith(color: AppColors.black),
+                style: context.titleSmall!.copyWith(color: AppColors.black),
               ),
               Text(
                 suffixDesc,

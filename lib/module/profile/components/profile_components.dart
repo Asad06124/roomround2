@@ -79,7 +79,7 @@ class ProfileComponents {
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: Assets.icons.camera.svg(
+                    child: Assets.icons.cameraAlt.svg(
                       height: 15,
                       width: 15,
                     ),
