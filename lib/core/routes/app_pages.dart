@@ -120,5 +120,13 @@ class AppPages {
         () {},
       ),
     ),
+    GetPage(
+      name: AppRoutes.ROOMMAPMANAGER,
+      page: () => const RoomMapManagerView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
   ];
 }

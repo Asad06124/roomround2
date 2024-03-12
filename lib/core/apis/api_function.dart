@@ -124,17 +124,22 @@
 //       "Content-Type": "application/json"
 //     };
 
-// void showSnackBar(String? message,
-//     {Color backgroundColor = AppColors.primary}) {
-//   ScaffoldMessenger.of(Get.context!).removeCurrentSnackBar();
-//   final snackBar = SnackBar(
-//     content: Text(message ?? ""),
-//     backgroundColor: backgroundColor,
-//     // showCloseIcon: true,
-//     // closeIconColor: AppColors.white,
-//   );
-//   ScaffoldMessenger.of(Get.context!).showSnackBar(snackBar);
-// }
+import 'package:roomrounds/core/constants/imports.dart';
+
+void showSnackBar(String? message,
+    {Color backgroundColor = AppColors.primary}) {
+  ScaffoldMessenger.of(Get.context!).removeCurrentSnackBar();
+  final snackBar = SnackBar(
+    content: Text(
+      message ?? "",
+      style: const TextStyle(color: AppColors.white),
+    ),
+    backgroundColor: backgroundColor,
+    // showCloseIcon: true,
+    // closeIconColor: AppColors.white,
+  );
+  ScaffoldMessenger.of(Get.context!).showSnackBar(snackBar);
+}
 
 // Future<bool> _checkInternetConnectivity() async {
 //   bool hasInternet = false;

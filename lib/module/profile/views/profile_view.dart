@@ -9,9 +9,11 @@ class ProfileView extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ProfileComponents.mainCard(
-              context,
-            ),
+            ProfileComponents.mainCard(context,
+                name: userData.name,
+                decs: userData.type == UserType.employee
+                    ? "Employee"
+                    : "Department Manager"),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -39,10 +41,10 @@ class ProfileView extends StatelessWidget {
                     ),
                   ),
                   SB.h(20),
-                  SettingsComponents.tile(context, title: "Anthony"),
+                  SettingsComponents.tile(context, title: userData.name),
                   SettingsComponents.tile(context, title: "Roye"),
                   SettingsComponents.tile(context, title: "Male"),
-                  SettingsComponents.tile(context, title: "jgkwru@gmail.com"),
+                  SettingsComponents.tile(context, title: userData.username),
                   SettingsComponents.tile(context, title: "**********"),
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.TEAMMEMBERS),

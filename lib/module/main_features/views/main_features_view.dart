@@ -5,8 +5,7 @@ import 'package:roomrounds/module/main_features/controller/main_feature_controll
 
 // ignore: must_be_immutable
 class MainFeaturesView extends StatelessWidget {
-  MainFeaturesView({Key? key}) : super(key: key);
-  int userType = 1;
+  const MainFeaturesView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,13 +13,19 @@ class MainFeaturesView extends StatelessWidget {
       padding: const EdgeInsets.all(0),
       appBar: CustomAppbar.simpleAppBar(
         context,
-        height: 110,
-        // showWlcomeMessage: false,
+        height: userData.type == UserType.manager ? 140 : 110,
         title: AppStrings.appNameSpace,
+        isBackButtun: false,
         isHome: true,
+        decriptionWidget: userData.type == UserType.manager
+            ? AssignedTaskComponents.appBatTile(context,
+                name: "Managing Staff",
+                desc: userData.name,
+                pading: const EdgeInsets.all(0))
+            : null,
       ),
       child: GetBuilder<MainFeatureController>(
-          init: MainFeatureController(userType),
+          init: MainFeatureController(userData.type),
           builder: (controller) {
             return Column(
               children: [

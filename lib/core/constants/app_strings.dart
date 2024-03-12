@@ -12,7 +12,11 @@ class AppStrings {
 
   static const String account = "Account";
   static const String home = "Home";
+  static const String mapView = "Map View";
   static const String assignedTasks = "Assigned Tasks";
+  static const String assignRoom = "Assign Room";
+  static const String member = "Member";
+  static const String assign = "Assign";
 
   static const String messageAndResponse = "Messages & Responses";
   static const String employeeDirectory = "Employee Directory";
@@ -57,7 +61,7 @@ class AppStrings {
   static const String next = 'Next';
   static const String newPassword = 'New password';
   static const String notification = 'Notifications';
-  static const String noNotificationYet = 'No Notifications Yet';
+  static const String noNotificationFound = 'No Notifications found';
   static const String noNotificationDescription =
       'You have no notifications right now.\ncome back later';
   static const String oldPassword = "Old password";
@@ -110,6 +114,7 @@ class AppStrings {
   static const String personalInformation = "Personal Information";
   static const String typeeMessageHere = "Type message here...";
   static const String writeMessage = "Write message...";
+  static const String writeComment = "Write Comment ";
   static const String reply = "Reply";
   static const String urgent = "Urgent";
   static const String yes = "Yes";

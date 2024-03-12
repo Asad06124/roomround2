@@ -4,9 +4,10 @@ class AssignedTaskComponents {
   static Widget appBatTile(BuildContext context,
       {String name = "Robert Brown",
       String desc = "Staff / Employee",
-      String date = "11/23/2023"}) {
+      String date = "11/23/2023",
+      EdgeInsets? pading}) {
     return Padding(
-      padding: const EdgeInsets.only(left: 15),
+      padding: pading ?? const EdgeInsets.only(left: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,

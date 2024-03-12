@@ -32,7 +32,9 @@ class EmployeeDirectoryView extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   Text(
-                    "30 Tickets / 20 Closed / 5 Urgent",
+                    controller.ticketsType == TicketsType.assignedMe
+                        ? "30 Tickets / 20 Closed / 5 Urgent"
+                        : "30 Tickets / 20 Replied",
                     style: context.bodyLarge!.copyWith(
                       color: AppColors.gry,
                       fontWeight: FontWeight.w500,
@@ -75,9 +77,30 @@ class EmployeeDirectoryView extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return EmployeeDirectoryComponents.tile(
                           context,
-                          isAcvtive: index % 2 == 0,
+                          isAcvtive:
+                              controller.ticketsType == TicketsType.assignedMe
+                                  ? index % 2 == 0
+                                  : false,
+                          status:
+                              controller.ticketsType == TicketsType.assignedMe
+                                  ? "Close"
+                                  : "Open Thread",
+                          onStatusPressed: () {
+                            if (controller.ticketsType == TicketsType.sendTo) {
+                              EmployeeDirectoryComponents.openDialog(3, index);
+                              return;
+                            }
+                          },
                           onTap: () {
-                            EmployeeDirectoryComponents.openDialog(index);
+                            // close ticket dialoue = 0 //
+                            // closed ticket dialoue = 1
+                            // Open thread dialoue = 2 // send to
+                            // Open thread Send to dialoue = 3
+                            if (controller.ticketsType == TicketsType.sendTo) {
+                              EmployeeDirectoryComponents.openDialog(2, index);
+                              return;
+                            }
+                            EmployeeDirectoryComponents.openDialog(0, index);
                           },
                         );
                       },
@@ -114,7 +137,8 @@ class EmployeeDirectoryView extends StatelessWidget {
                                   status: 'Closed',
                                   isUnderline: false,
                                   onTap: () {
-                                    EmployeeDirectoryComponents.openDialog(1);
+                                    EmployeeDirectoryComponents.openDialog(
+                                        1, index);
                                   },
                                 );
                               },

@@ -3,8 +3,8 @@ import 'package:roomrounds/core/constants/imports.dart';
 class MainFeatureController extends GetxController {
   bool _isGridView = true;
   bool get isGridView => _isGridView;
-  int _userType = 0;
-  MainFeatureController(int userType) {
+  UserType _userType = UserType.employee;
+  MainFeatureController(UserType userType) {
     _userType = userType;
     _creatingMainFeature();
   }
@@ -24,7 +24,7 @@ class MainFeatureController extends GetxController {
   }
 
   _creatingMainFeature() {
-    if (_userType == 0) {
+    if (_userType == UserType.employee) {
       _titles = [
         AppStrings.employeeDirectory,
         AppStrings.assignedTasks,
@@ -40,7 +40,7 @@ class MainFeatureController extends GetxController {
         AppRoutes.ASSIGNEDTASKS,
         AppRoutes.ROOMMAP
       ];
-    } else if (_userType == 1) {
+    } else if (_userType == UserType.manager) {
       _titles = [
         AppStrings.appName,
         AppStrings.facilitiesView,

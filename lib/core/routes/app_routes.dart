@@ -15,4 +15,5 @@ abstract class AppRoutes {
   static const CHAT = '/chat';
   static const ROOMLIST = '/room_list';
   static const TASKSLISTS = '/tasks_list';
+  static const ROOMMAPMANAGER = '/room_map_manager';
 }

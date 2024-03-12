@@ -11,6 +11,7 @@ class HomeView extends StatelessWidget {
         height: 120,
         showWlcomeMessage: true,
         isHome: true,
+        title: userData.name,
       ),
       child: Stack(
         alignment: Alignment.center,

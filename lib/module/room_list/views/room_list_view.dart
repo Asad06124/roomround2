@@ -16,7 +16,7 @@ class RoomListView extends StatelessWidget {
         title: AppStrings.roomStatusList,
         isHome: false,
         decriptionWidget: AssignedTaskComponents.appBatTile(context,
-            name: AppStrings.managinfStaff, desc: 'Philo Dairin '),
+            name: AppStrings.managinfStaff, desc: userData.name),
       ),
       child: Column(
         children: [
@@ -48,7 +48,7 @@ class RoomListView extends StatelessWidget {
                     ],
                   ),
                   SB.h(10),
-                  RoomListComponents.filter(context),
+                  RoomListComponents.filter(context, (value) {}),
                   SB.h(10),
                   Expanded(
                     child: ListView.builder(
@@ -57,7 +57,9 @@ class RoomListView extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return EmployeeDirectoryComponents.tile(
                           context,
-                          onTap: () => Get.toNamed(AppRoutes.TASKSLISTS),
+                          onTap: index % 2 != 0
+                              ? () => Get.toNamed(AppRoutes.TASKSLISTS)
+                              : null,
                           statusWidget: RoomListComponents.statusWidget(context,
                               isComplete: index % 2 == 0),
                         );

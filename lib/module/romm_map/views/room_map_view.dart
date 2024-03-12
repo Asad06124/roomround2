@@ -10,7 +10,9 @@ class RoomMapView extends StatelessWidget {
         context,
         height: 60,
         backButtunColor: AppColors.primary,
-        title: AppStrings.roommapView,
+        title: userData.type == UserType.manager
+            ? AppStrings.mapView
+            : AppStrings.roommapView,
         notificationActive: true,
         titleStyle: context.titleLarge!.copyWith(color: AppColors.primary),
         iconsClor: AppColors.primary,
@@ -99,7 +101,9 @@ class RoomMapView extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       bottomSheet: RoomMapComponents.bottomSheet(
         context,
-        onTab: () => Get.toNamed(AppRoutes.ROOMAMPDETAILS),
+        onTab: () => Get.toNamed(userData.type == UserType.manager
+            ? AppRoutes.ROOMMAPMANAGER
+            : AppRoutes.ROOMAMPDETAILS),
       ),
     );
   }

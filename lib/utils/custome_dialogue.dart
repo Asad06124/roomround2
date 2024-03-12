@@ -56,7 +56,8 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                       status: widget.status,
                       title: widget.title),
                   SB.h(20),
-                  DialougeComponents.tile(context),
+                  DialougeComponents.tile(context,
+                      isDecoration: widget.isUrgent),
                   SB.h(20),
                   DialougeComponents.nameTile(context,
                       name: widget.name, desc: widget.title),
@@ -159,8 +160,21 @@ class OpenThreadDialogue extends StatelessWidget {
     this.cTime = '1:03 PM',
     this.cDate = '11/23/2013',
     this.argue = 'Arrange audit findings?',
+    this.isUrgent = false,
+    this.urgentText = '',
   }) : super(key: key);
-  String title, status, name, review, aTime, aDate, cTime, cDate, argue;
+  String title,
+      status,
+      name,
+      review,
+      aTime,
+      aDate,
+      cTime,
+      cDate,
+      argue,
+      urgentText;
+  bool isUrgent;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -190,7 +204,9 @@ class OpenThreadDialogue extends StatelessWidget {
                   ),
                   SB.h(20),
                   DialougeComponents.tile(context,
-                      title: "Send to:", value: '', isDecoration: false),
+                      title: "Send to:",
+                      value: urgentText,
+                      isDecoration: isUrgent),
                   SB.h(20),
                   DialougeComponents.nameTile(context, name: name, desc: title),
                   SB.h(20),
@@ -664,13 +680,13 @@ class DialougeComponents {
         color: AppColors.gry.withOpacity(0.24),
         borderRadius: BorderRadius.circular(35),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           CircleAvatar(
-            child: Assets.images.person.image(height: 40, width: 40),
+            child: Assets.images.person.image(height: 35, width: 35),
           ),
           SB.w(6),
           Text(

@@ -1,5 +1,7 @@
 import 'package:roomrounds/core/constants/imports.dart';
 
+enum RoomType { allRooms, complete, incomplete }
+
 class RoomListController extends GetxController {
   final List<YesNo> _tasks = [];
 

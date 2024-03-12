@@ -11,7 +11,8 @@ class EmployeeDirectoryComponents {
       bool isUnderline = true,
       Color fillColor = AppColors.white,
       Widget? statusWidget,
-      GestureTapCallback? onTap}) {
+      GestureTapCallback? onTap,
+      GestureTapCallback? onStatusPressed}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -39,21 +40,24 @@ class EmployeeDirectoryComponents {
               ),
             ),
             const Spacer(),
-            statusWidget ??
-                Text(
-                  status,
-                  style: context.bodyLarge!.copyWith(
-                    color: Colors.transparent,
-                    decoration: isUnderline ? TextDecoration.underline : null,
-                    decorationColor: isUnderline ? AppColors.black : null,
-                    fontWeight: FontWeight.w600,
-                    shadows: [
-                      Shadow(
-                          color: Colors.black,
-                          offset: Offset(0, isUnderline ? -2 : 0.01))
-                    ],
+            InkWell(
+              onTap: onStatusPressed,
+              child: statusWidget ??
+                  Text(
+                    status,
+                    style: context.bodyLarge!.copyWith(
+                      color: Colors.transparent,
+                      decoration: isUnderline ? TextDecoration.underline : null,
+                      decorationColor: isUnderline ? AppColors.black : null,
+                      fontWeight: FontWeight.w600,
+                      shadows: [
+                        Shadow(
+                            color: Colors.black,
+                            offset: Offset(0, isUnderline ? -2 : 0.01))
+                      ],
+                    ),
                   ),
-                ),
+            ),
             SB.w(statusWidget == null ? 5 : 0),
             CircleAvatar(
               radius: 4,
@@ -66,11 +70,13 @@ class EmployeeDirectoryComponents {
     );
   }
 
-  static void openDialog(int type) {
+  static void openDialog(int type, int index) {
     if (type == 0) {
       Get.dialog(
         Dialog(
-          child: CloseTicketDialouge(),
+          child: CloseTicketDialouge(
+            isUrgent: index % 2 == 0,
+          ),
         ),
         barrierDismissible: false,
       );
@@ -84,7 +90,10 @@ class EmployeeDirectoryComponents {
     } else if (type == 2) {
       Get.dialog(
         Dialog(
-          child: OpenThreadDialogue(),
+          child: OpenThreadDialogue(
+            isUrgent: true,
+            urgentText: 'Urgent',
+          ),
         ),
         barrierDismissible: false,
       );

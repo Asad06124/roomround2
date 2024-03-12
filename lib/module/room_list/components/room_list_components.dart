@@ -47,7 +47,7 @@ class RoomListComponents {
     );
   }
 
-  static Widget filter(BuildContext context) {
+  static Widget filter(BuildContext context, Function(String value) onSelect) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -61,7 +61,7 @@ class RoomListComponents {
           Assets.icons.filter.svg(),
           SB.w(15),
           Expanded(
-            child: CustomeDropDown.simple(
+            child: CustomeDropDown.simple<String>(
               context,
               closedFillColor: AppColors.textPrimary,
               expandFillColor: AppColors.textPrimary,
@@ -73,7 +73,7 @@ class RoomListComponents {
                 "Completed",
                 "Incomplete",
               ],
-              onSelect: (value) {},
+              onSelect: onSelect,
             ),
           )
         ],
