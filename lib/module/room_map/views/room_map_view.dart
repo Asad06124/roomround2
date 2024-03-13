@@ -64,29 +64,16 @@ class RoomMapView extends StatelessWidget {
           children: [
             SizedBox(
               width: context.width * 0.20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SB.w(0),
-                  SB.w(0),
-                  Assets.icons.homeSearch.svg(
-                      // height: 25,
-                      // width: 25,
-                      ),
-                  const Icon(
-                    Icons.arrow_drop_down_sharp,
-                    color: AppColors.gry,
-                  ),
-                  Container(
-                    width: 0.5,
-                    height: 50,
-                    color: AppColors.gry.withOpacity(0.5),
-                  ),
-                ],
-              ),
+              child: CustomeDropDown.custome(context,
+                  dropDownItems: getListOfIcons(5)),
+            ),
+            Container(
+              width: 1,
+              height: 45,
+              color: AppColors.gry.withOpacity(0.24),
             ),
             SizedBox(
-              width: context.width * 0.80 - 40,
+              width: context.width * 0.80 - 41,
               child: CustomTextField(
                 hintText: AppStrings.searchRoom,
                 suffixIcon: AppImages.close,
@@ -106,5 +93,35 @@ class RoomMapView extends StatelessWidget {
             : AppRoutes.ROOMAMPDETAILS),
       ),
     );
+  }
+
+  List<Widget> getListOfIcons(int length) {
+    List<Widget> w = <Widget>[];
+    for (var i = 0; i < length; i++) {
+      w.add(SizedBox(
+        width: 20,
+        height: 20,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Assets.icons.homeRound.svg(
+              width: 20,
+              height: 20,
+            ),
+            Align(
+                alignment: Alignment.center,
+                child: Text(
+                  '${i + 1}',
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )),
+          ],
+        ),
+      ));
+    }
+    return w;
   }
 }

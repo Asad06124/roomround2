@@ -15,7 +15,9 @@ class EmployeeDirectoryView extends StatelessWidget {
               context,
               height: 70,
               backButtunColor: AppColors.primary,
-              title: AppStrings.assignedTasks,
+              title: userData.type == UserType.manager
+                  ? AppStrings.queries
+                  : AppStrings.assignedTasks,
               showMailIcon: true,
               showNotificationIcon: true,
               notificationActive: true,
@@ -32,9 +34,13 @@ class EmployeeDirectoryView extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   Text(
-                    controller.ticketsType == TicketsType.assignedMe
-                        ? "30 Tickets / 20 Closed / 5 Urgent"
-                        : "30 Tickets / 20 Replied",
+                    userData.type == UserType.employee
+                        ? controller.ticketsType == TicketsType.assignedMe
+                            ? "30 Tickets / 20 Urgent / 5 Urgent"
+                            : "30 Tickets / 20 Replied"
+                        : controller.ticketsType == TicketsType.assignedMe
+                            ? "30 Tickets / 20 Urgent"
+                            : "30 Tickets",
                     style: context.bodyLarge!.copyWith(
                       color: AppColors.gry,
                       fontWeight: FontWeight.w500,
@@ -53,11 +59,12 @@ class EmployeeDirectoryView extends StatelessWidget {
                       ),
                       CustomeDropDown.simple<String>(
                         context,
-                        list: ["Assigned Me", 'Send To'],
-                        onSelect: (value) =>
-                            controller.changeTicketsType(value),
+                        list: userData.type == UserType.manager
+                            ? ["Assigned Me", "Assigned To"]
+                            : ["Assigned Me", 'Send To'],
+                        onSelect: controller.changeTicketsType,
                         borderRadius: 20,
-                        closedFillColor: AppColors.gry.withOpacity(0.24),
+                        closedFillColor: AppColors.lightWhite,
                         showShadow: true,
                         closedShaddow: false,
                       ),
@@ -65,8 +72,12 @@ class EmployeeDirectoryView extends StatelessWidget {
                   ),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 500),
-                    height: controller.ticketsType == TicketsType.assignedMe
-                        ? context.height * 0.3800
+                    height: userData.type == UserType.employee
+                        ? controller.ticketsType == TicketsType.assignedMe
+                            ? context.height * 0.3800
+                            : context.height * 0.80 -
+                                context.paddingTop -
+                                context.paddingBottom
                         : context.height * 0.80 -
                             context.paddingTop -
                             context.paddingBottom,
@@ -75,38 +86,77 @@ class EmployeeDirectoryView extends StatelessWidget {
                       physics: const AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return EmployeeDirectoryComponents.tile(
-                          context,
-                          isAcvtive:
-                              controller.ticketsType == TicketsType.assignedMe
-                                  ? index % 2 == 0
-                                  : false,
-                          status:
-                              controller.ticketsType == TicketsType.assignedMe
-                                  ? "Close"
-                                  : "Open Thread",
-                          onStatusPressed: () {
-                            if (controller.ticketsType == TicketsType.sendTo) {
-                              EmployeeDirectoryComponents.openDialog(3, index);
-                              return;
-                            }
-                          },
-                          onTap: () {
-                            // close ticket dialoue = 0 //
-                            // closed ticket dialoue = 1
-                            // Open thread dialoue = 2 // send to
-                            // Open thread Send to dialoue = 3
-                            if (controller.ticketsType == TicketsType.sendTo) {
-                              EmployeeDirectoryComponents.openDialog(2, index);
-                              return;
-                            }
-                            EmployeeDirectoryComponents.openDialog(0, index);
-                          },
-                        );
+                        return userData.type == UserType.employee
+                            ? EmployeeDirectoryComponents.tile(
+                                context,
+                                isAcvtive: controller.ticketsType ==
+                                        TicketsType.assignedMe
+                                    ? index % 2 == 0
+                                    : false,
+                                status: controller.ticketsType ==
+                                        TicketsType.assignedMe
+                                    ? "Close"
+                                    : "Open Thread",
+                                onStatusPressed: () {
+                                  if (controller.ticketsType ==
+                                      TicketsType.sendTo) {
+                                    EmployeeDirectoryComponents
+                                        .openDialogEmployee(3, index);
+                                    return;
+                                  }
+                                },
+                                onTap: () {
+                                  // close ticket dialoue = 0 //
+                                  // closed ticket dialoue = 1
+                                  // Open thread dialoue = 2 // send to
+                                  // Open thread Send to dialoue = 3
+                                  if (controller.ticketsType ==
+                                      TicketsType.sendTo) {
+                                    EmployeeDirectoryComponents
+                                        .openDialogEmployee(2, index);
+                                    return;
+                                  }
+                                  EmployeeDirectoryComponents
+                                      .openDialogEmployee(0, index);
+                                },
+                              )
+                            : EmployeeDirectoryComponents.tile(
+                                context,
+                                isAcvtive: controller.ticketsType ==
+                                    TicketsType.assignedMe,
+                                status: controller.ticketsType ==
+                                        TicketsType.assignedMe
+                                    ? "See Thread"
+                                    : 'Assigned',
+                                statusTextColor: controller.ticketsType ==
+                                        TicketsType.assignedMe
+                                    ? AppColors.black
+                                    : AppColors.gry,
+                                isUnderline: controller.ticketsType ==
+                                    TicketsType.assignedMe,
+                                onStatusPressed: () {
+                                  if (controller.ticketsType ==
+                                      TicketsType.assignedMe) {
+                                    EmployeeDirectoryComponents
+                                        .openDialogManager(1, index);
+                                  }
+                                },
+                                onTap: () {
+                                  if (controller.ticketsType ==
+                                      TicketsType.assignedMe) {
+                                    EmployeeDirectoryComponents
+                                        .openDialogManager(0, index);
+                                  } else {
+                                    EmployeeDirectoryComponents
+                                        .openDialogManager(2, index);
+                                  }
+                                },
+                              );
                       },
                     ),
                   ),
-                  if (controller.ticketsType == TicketsType.assignedMe) ...{
+                  if (controller.ticketsType == TicketsType.assignedMe &&
+                      userData.type == UserType.employee) ...{
                     SB.h(10),
                     Container(
                       decoration: BoxDecoration(
@@ -137,8 +187,8 @@ class EmployeeDirectoryView extends StatelessWidget {
                                   status: 'Closed',
                                   isUnderline: false,
                                   onTap: () {
-                                    EmployeeDirectoryComponents.openDialog(
-                                        1, index);
+                                    EmployeeDirectoryComponents
+                                        .openDialogEmployee(1, index);
                                   },
                                 );
                               },

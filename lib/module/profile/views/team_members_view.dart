@@ -12,7 +12,7 @@ class TeamMembersView extends StatelessWidget {
           children: [
             ProfileComponents.mainCard(context, isBackButtun: true),
             SizedBox(
-              height: context.height * 0.70,
+              height: context.height * 0.68,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(

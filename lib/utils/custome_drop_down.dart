@@ -1,4 +1,3 @@
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomeDropDown {
@@ -15,9 +14,11 @@ class CustomeDropDown {
     Color textColor = AppColors.black,
     bool showShadow = true,
     bool closedShaddow = true,
+    double? width,
   }) {
+    width = width ?? context.width * 0.40;
     return SizedBox(
-      width: context.width * 0.40,
+      width: width,
       child: CustomDropdown<T>(
         hintText: hintText,
         items: list,
@@ -69,6 +70,59 @@ class CustomeDropDown {
                     )
                   ]
                 : []),
+      ),
+    );
+  }
+
+  static Widget custome(
+    BuildContext context, {
+    double? width,
+    required List<Widget> dropDownItems,
+    int? selectedIndex,
+  }) {
+    width = width ?? MediaQuery.of(context).size.width * 0.20;
+    return SizedBox(
+      width: width,
+      child: CoolDropdown(
+        controller: DropdownController(),
+        dropdownList: dropDownItems
+            .map((e) => CoolDropdownItem(
+                  label: '',
+                  value: '',
+                  icon: e,
+                ))
+            .toList(),
+        defaultItem: CoolDropdownItem(
+          label: '',
+          value: '',
+          icon: dropDownItems[0],
+        ),
+        onChange: (dropdownItem) {},
+        resultOptions: const ResultOptions(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          boxDecoration: BoxDecoration(),
+          openBoxDecoration: BoxDecoration(),
+          render: ResultRender.icon,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppColors.black,
+            size: 20,
+          ),
+        ),
+        dropdownItemOptions: DropdownItemOptions(
+          render: DropdownItemRender.icon,
+          selectedPadding: EdgeInsets.zero,
+          padding: EdgeInsets.zero,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          selectedBoxDecoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(
+                color: Colors.black.withOpacity(0.7),
+                width: 3,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -20,8 +20,8 @@ class TasksList extends StatelessWidget {
         decriptionWidget: AssignedTaskComponents.appBatTile(context,
             name: AppStrings.managinfStaff, desc: 'Philo Dairin '),
       ),
-      child: GetBuilder<RoomListController>(
-          init: RoomListController(),
+      child: GetBuilder<TaskListController>(
+          init: TaskListController(),
           builder: (controller) {
             return Column(
               children: [

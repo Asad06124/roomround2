@@ -108,6 +108,30 @@ class RoomMapComponents {
     );
   }
 
+  static Widget boxTile(
+    BuildContext context, {
+    String title = "Room No",
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: AppColors.gry,
+          )),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: context.titleSmall!.copyWith(color: AppColors.gry),
+          ),
+        ],
+      ),
+    );
+  }
+
   static Widget radioButtton<T>(BuildContext context, T assignedVal,
       T selectedVal, String title, Function(T value) onSelect,
       {double? width}) {

@@ -13,7 +13,7 @@ class MainFeaturesView extends StatelessWidget {
       padding: const EdgeInsets.all(0),
       appBar: CustomAppbar.simpleAppBar(
         context,
-        height: userData.type == UserType.manager ? 140 : 110,
+        height: userData.type == UserType.manager ? context.height * 0.18 : 110,
         title: AppStrings.appNameSpace,
         isBackButtun: false,
         isHome: true,

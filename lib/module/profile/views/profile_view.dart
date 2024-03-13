@@ -46,15 +46,16 @@ class ProfileView extends StatelessWidget {
                   SettingsComponents.tile(context, title: "Male"),
                   SettingsComponents.tile(context, title: userData.username),
                   SettingsComponents.tile(context, title: "**********"),
-                  GestureDetector(
-                    onTap: () => Get.toNamed(AppRoutes.TEAMMEMBERS),
-                    child: Text(
-                      AppStrings.teamMember,
-                      style: context.titleSmall!.copyWith(
-                        color: AppColors.black,
+                  if (userData.type == UserType.manager)
+                    GestureDetector(
+                      onTap: () => Get.toNamed(AppRoutes.TEAMMEMBERS),
+                      child: Text(
+                        AppStrings.teamMember,
+                        style: context.titleSmall!.copyWith(
+                          color: AppColors.black,
+                        ),
                       ),
                     ),
-                  ),
                   SB.h(10),
                   Text(
                     AppStrings.logout,

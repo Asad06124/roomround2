@@ -40,7 +40,7 @@ class LoginView extends StatelessWidget with Validators {
                       keyboardType: TextInputType.emailAddress,
                       validator: validateEmail,
                     ),
-                    SB.h(15),
+                    SB.h(5),
                     CustomTextField(
                       hintText: AppStrings.password,
                       prefixIcon: Assets.icons.lock.svg(),

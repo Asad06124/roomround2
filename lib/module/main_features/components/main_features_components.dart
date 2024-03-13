@@ -9,7 +9,8 @@ class MainFeaturesCompinents {
         ? GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: context.isPhone ? 2 : 3,
-              mainAxisSpacing: 30,
+              mainAxisSpacing: 0,
+              childAspectRatio: 0.75,
               crossAxisSpacing: 20,
             ),
             shrinkWrap: true,
@@ -43,7 +44,7 @@ class MainFeaturesCompinents {
           boxShadow: [
             BoxShadow(
               blurRadius: 5,
-              spreadRadius: 1,
+              spreadRadius: 0.5,
               color: AppColors.gry.withOpacity(0.4),
             ),
           ]),
@@ -52,6 +53,8 @@ class MainFeaturesCompinents {
         children: [
           images[index].svg(
             fit: BoxFit.cover,
+            height: 90,
+            width: 90,
           ),
           SB.w(5),
           Text(
@@ -69,12 +72,13 @@ class MainFeaturesCompinents {
     return Container(
       padding: const EdgeInsets.only(top: 5),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 150,
-            height: 130,
+            // height: 130,
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -87,11 +91,14 @@ class MainFeaturesCompinents {
                   ),
                 ]),
             child: images[index].svg(
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
+              height: 90,
+              width: 90,
             ),
           ),
           Text(
             titles[index],
+            maxLines: 2,
             style: context.titleSmall!
                 .copyWith(color: AppColors.black, fontSize: 18),
           )

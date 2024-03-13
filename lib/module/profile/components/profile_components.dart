@@ -9,7 +9,7 @@ class ProfileComponents {
     String decs = "Staff / Employee",
   }) {
     return Container(
-      height: context.height * 0.30,
+      height: context.height * 0.32,
       width: context.width,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(

@@ -3,7 +3,7 @@ import 'package:roomrounds/module/room_list/controller/room_list_controller.dart
 
 class RoomListComponents {
   static Widget yesNoWidget(
-      BuildContext context, RoomListController controller, int index) {
+      BuildContext context, TaskListController controller, int index) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

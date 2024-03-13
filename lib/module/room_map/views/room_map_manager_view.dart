@@ -1,5 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/romm_map/controller/room_map_controller.dart';
+import 'package:roomrounds/module/room_map/controller/room_map_controller.dart';
 
 class RoomMapManagerView extends StatelessWidget {
   const RoomMapManagerView({Key? key}) : super(key: key);
@@ -49,7 +49,7 @@ class RoomMapManagerView extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           CustomTextField(
-                            maxLines: 4,
+                            maxLines: 5,
                             borderRadius: 0,
                             borderColor: AppColors.lightWhite,
                             hintText: AppStrings.writeComment,
@@ -77,10 +77,20 @@ class RoomMapManagerView extends StatelessWidget {
                           .copyWith(color: AppColors.textGrey),
                     ),
                     SB.h(20),
+                    RoomMapComponents.boxTile(
+                      context,
+                      title: 'Room 6H',
+                    ),
+                    SB.h(20),
                     Text(
                       AppStrings.member,
                       style: context.titleSmall!
                           .copyWith(color: AppColors.textGrey),
+                    ),
+                    SB.h(20),
+                    RoomMapComponents.boxTile(
+                      context,
+                      title: 'Anthony Roye',
                     ),
                     SB.h(20),
                     Text(
@@ -106,9 +116,10 @@ class RoomMapManagerView extends StatelessWidget {
                         const SizedBox.shrink()
                       ],
                     ),
-                    SB.h(20),
+                    SB.h(25),
                     AppButton.primary(
                       title: AppStrings.assign,
+                      background: AppColors.primary,
                       onPressed: () {},
                     ),
                   ],

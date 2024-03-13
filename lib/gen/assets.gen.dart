@@ -24,6 +24,9 @@ class $AssetsIconsGen {
   SvgGenImage get assignedTasks =>
       const SvgGenImage('assets/icons/assigned_tasks.svg');
 
+  /// File path: assets/icons/bascket.svg
+  SvgGenImage get bascket => const SvgGenImage('assets/icons/bascket.svg');
+
   /// File path: assets/icons/bell.svg
   SvgGenImage get bell => const SvgGenImage('assets/icons/bell.svg');
 
@@ -56,6 +59,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/home.svg
   SvgGenImage get home => const SvgGenImage('assets/icons/home.svg');
+
+  /// File path: assets/icons/home_round.svg
+  SvgGenImage get homeRound => const SvgGenImage('assets/icons/home_round.svg');
 
   /// File path: assets/icons/home_search.svg
   SvgGenImage get homeSearch =>
@@ -112,6 +118,7 @@ class $AssetsIconsGen {
         add,
         appIcon,
         assignedTasks,
+        bascket,
         bell,
         bellActive,
         camera,
@@ -122,6 +129,7 @@ class $AssetsIconsGen {
         filter,
         gridIcon,
         home,
+        homeRound,
         homeSearch,
         listIcon,
         locationPinDrop,

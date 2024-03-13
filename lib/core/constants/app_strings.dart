@@ -8,7 +8,8 @@ class AppStrings {
   static const String inbox = "Inbox";
   static const String facilitiesView = "Facilities View";
   static const String myTicket = "My Tickets";
-  static const String trackingQueesry = "Tracking Query";
+  static const String trackingQuery = "Tracking Query";
+  static const String queries = "Queries";
 
   static const String account = "Account";
   static const String home = "Home";
@@ -17,8 +18,11 @@ class AppStrings {
   static const String assignRoom = "Assign Room";
   static const String member = "Member";
   static const String assign = "Assign";
+  static const String assignedTo = "Assigned to";
+  static const String assignment = "Assignment";
 
   static const String messageAndResponse = "Messages & Responses";
+  static const String messages = "Messages";
   static const String employeeDirectory = "Employee Directory";
   static const String roomStatusList = "Rooms Status List";
   static const String managinfStaff = "Managing Staff";
@@ -31,6 +35,7 @@ class AppStrings {
   static const String confirmPassword = "Confirm password";
   static const String cannotBeEmpty = "cannot be empty";
   static const String changePassword = "Change Password";
+  static const String changeMember = "Change Member:";
   static const String continueWithEmail = "Continue with email";
   static const String continueWithApple = "Continue with Apple";
   static const String continueWithGoogle = "Continue with Google";
@@ -99,6 +104,7 @@ class AppStrings {
   static const String roommapView = "Room/map view";
   static const String ticketDetails = "Ticket Details";
   static const String tickets = "Tickets";
+  static const String ticket = "Ticket";
   static const String closeTicket = "Closed Tickets";
   static const String closed = "Closed";
   static const String uploadfromDevice = "Upload from device";
@@ -125,6 +131,8 @@ class AppStrings {
   static const String contactUs = "Contact Us";
   static const String directory = "Directory";
   static const String comment = 'Comment';
+  static const String comments = 'Comments';
+  static const String completeTask = 'Complete Task';
   static const String youHaveSuccessfullyResetPassword =
       "You have successfully reset your password.\nPlease use your new password when you're logging in";
 }

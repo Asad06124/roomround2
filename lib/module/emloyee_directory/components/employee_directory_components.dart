@@ -10,6 +10,7 @@ class EmployeeDirectoryComponents {
       bool titleActive = true,
       bool isUnderline = true,
       Color fillColor = AppColors.white,
+      Color statusTextColor = AppColors.black,
       Widget? statusWidget,
       GestureTapCallback? onTap,
       GestureTapCallback? onStatusPressed}) {
@@ -48,11 +49,11 @@ class EmployeeDirectoryComponents {
                     style: context.bodyLarge!.copyWith(
                       color: Colors.transparent,
                       decoration: isUnderline ? TextDecoration.underline : null,
-                      decorationColor: isUnderline ? AppColors.black : null,
+                      decorationColor: isUnderline ? statusTextColor : null,
                       fontWeight: FontWeight.w600,
                       shadows: [
                         Shadow(
-                            color: Colors.black,
+                            color: statusTextColor,
                             offset: Offset(0, isUnderline ? -2 : 0.01))
                       ],
                     ),
@@ -70,7 +71,7 @@ class EmployeeDirectoryComponents {
     );
   }
 
-  static void openDialog(int type, int index) {
+  static void openDialogEmployee(int type, int index) {
     if (type == 0) {
       Get.dialog(
         Dialog(
@@ -101,6 +102,33 @@ class EmployeeDirectoryComponents {
       Get.dialog(
         Dialog(
           child: OpenThreadDialogueArgue(),
+        ),
+        barrierDismissible: false,
+      );
+    }
+  }
+
+  static void openDialogManager(int type, int index) {
+    if (type == 0) {
+      Get.dialog(
+        Dialog(
+          child: ThreadTicketDialouge(),
+        ),
+        barrierDismissible: false,
+      );
+    }
+    if (type == 1) {
+      Get.dialog(
+        Dialog(
+          child: SeeThreadDialouge(),
+        ),
+        barrierDismissible: false,
+      );
+    }
+    if (type == 2) {
+      Get.dialog(
+        Dialog(
+          child: AssignedThreadDialouge(),
         ),
         barrierDismissible: false,
       );

@@ -538,12 +538,390 @@ class ArrangeAuditFunding extends StatelessWidget {
   }
 }
 
+///////////////// Manager Side dialogue //////////////////////////
+// ignore: must_be_immutable
+class ThreadTicketDialouge extends StatelessWidget {
+  ThreadTicketDialouge(
+      {Key? key,
+      this.assignment = 'Arrange audit findings?',
+      this.isUrgent = true,
+      this.member = 'Anthony Roye',
+      this.ticketStatus = 'Unable to resolve',
+      this.ticketText = 'The room keys are missing!',
+      this.title = 'Room A1'})
+      : super(key: key);
+  String title;
+  String ticketText;
+  String ticketStatus;
+  bool isUrgent;
+  String assignment;
+  String member;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      // height: context.height * 0.75,
+      width: context.width,
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DialougeComponents.closeBtn(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SB.h(15),
+                  DialougeComponents.labelTile(
+                    context,
+                    isBorder: true,
+                    title: title,
+                  ),
+                  SB.h(20),
+                  Text(
+                    "${AppStrings.tickets}:",
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.gry,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(5),
+                  DialougeComponents.detailWithBorder(context, ticketText),
+                  SB.h(20),
+                  DialougeComponents.tile(
+                    context,
+                    title: 'Status:',
+                    value: ticketStatus,
+                  ),
+                  SB.h(15),
+                  DialougeComponents.tile(
+                    context,
+                    title: 'Urgent:',
+                    value: isUrgent ? 'Yes' : 'No',
+                    isDecoration: isUrgent,
+                    decorationColor: AppColors.greenDark,
+                  ),
+                  SB.h(20),
+                  Text(
+                    AppStrings.assignment,
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.gry,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(15),
+                  DialougeComponents.detailWithBorder(
+                    context,
+                    assignment,
+                    borderRadius: 25,
+                    textColor: AppColors.textGrey,
+                    bgColor: AppColors.lightWhite,
+                  ),
+                  SB.h(20),
+                  Text(
+                    AppStrings.changeMember,
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.gry,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(15),
+                  DialougeComponents.nameTile(
+                    context,
+                    name: member,
+                  ),
+                  SB.h(20),
+                  AppButton.primary(
+                    background: AppColors.primary,
+                    title: AppStrings.completeTask,
+                    // onPressed: onYesPressed,
+                    height: 50,
+                    width: context.width,
+                  ),
+                  SB.h(10),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class SeeThreadDialouge extends StatelessWidget {
+  SeeThreadDialouge(
+      {Key? key,
+      this.assignment = 'Arrange audit findings?',
+      this.isUrgent = true,
+      this.ticketStatus = 'Outside Vendor',
+      this.ticketText = 'The room keys are missing!',
+      this.title = 'Room A1'})
+      : super(key: key);
+  String title;
+  String ticketText;
+  String ticketStatus;
+  bool isUrgent;
+  String assignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      // height: context.height * 0.75,
+      width: context.width,
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DialougeComponents.closeBtn(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SB.h(15),
+                  DialougeComponents.labelTile(
+                    context,
+                    isBorder: true,
+                    title: title,
+                  ),
+                  SB.h(20),
+                  DialougeComponents.labelTile(
+                    context,
+                    isBorder: false,
+                    title: AppStrings.assignment,
+                    status: title,
+                  ),
+                  SB.h(15),
+                  DialougeComponents.detailWithBorder(
+                    context,
+                    assignment,
+                    borderRadius: 25,
+                    textColor: AppColors.textGrey,
+                    bgColor: AppColors.lightWhite,
+                  ),
+                  SB.h(10),
+                  DialougeComponents.messageTile(context),
+                  SB.h(10),
+                  DialougeComponents.messageTile(context, sender: false),
+                  SB.h(20),
+                  DialougeComponents.tile(
+                    context,
+                    title: 'Status:',
+                    value: ticketStatus,
+                  ),
+                  SB.h(15),
+                  Text(
+                    AppStrings.comments,
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.gry,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(15),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.lightWhite,
+                    ),
+                    padding: const EdgeInsets.all(3),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomTextField(
+                          maxLines: 2,
+                          borderRadius: 0,
+                          borderColor: AppColors.lightWhite,
+                          hintText: AppStrings.writeComment.capitalizeFirst,
+                          isRequiredField: false,
+                          validator: (value) => null,
+                          fillColor: AppColors.lightWhite,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SB.w(10),
+                            Assets.icons.cameraCircle.svg(),
+                            SB.w(10),
+                            Assets.icons.mic.svg(),
+                          ],
+                        ),
+                        SB.h(5),
+                      ],
+                    ),
+                  ),
+                  SB.h(20),
+                  AppButton.primary(
+                    background: AppColors.primary,
+                    title: AppStrings.send,
+                    // onPressed: onYesPressed,
+                    height: 50,
+                    width: context.width,
+                  ),
+                  SB.h(10),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class AssignedThreadDialouge extends StatelessWidget {
+  AssignedThreadDialouge(
+      {Key? key,
+      this.assignedDate = '11/23/2024',
+      this.assignedTime = '1:03 pm',
+      this.isUrgent = true,
+      this.member = 'Anthony Roye',
+      this.ticketStatus = 'Assigned',
+      this.ticketText = 'Furniture cleaning needs to be done again!',
+      this.title = 'Room A1'})
+      : super(key: key);
+  String title;
+  String ticketText;
+  String ticketStatus;
+  bool isUrgent;
+  String assignedTime, assignedDate, member;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      // height: context.height * 0.75,
+      width: context.width,
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DialougeComponents.closeBtn(
+              isDeleteBtn: true,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SB.h(15),
+                  DialougeComponents.labelTile(
+                    context,
+                    isBorder: false,
+                    titleStyle: context.bodyLarge!.copyWith(
+                      color: AppColors.textGrey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    statusColor: AppColors.gry,
+                    title: title,
+                    status: ticketStatus,
+                  ),
+                  SB.h(20),
+                  Text(
+                    "${AppStrings.ticket}:",
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(5),
+                  DialougeComponents.detailWithBorder(context, ticketText),
+                  SB.h(20),
+                  Text(
+                    AppStrings.directory,
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(15),
+                  Text(
+                    "${AppStrings.assignedTo}:",
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.gry,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(15),
+                  DialougeComponents.nameTile(context, name: member),
+                  SB.h(15),
+                  DialougeComponents.dateTile(context,
+                      date: assignedDate, time: assignedTime),
+                  SB.h(20),
+                  Text(
+                    AppStrings.urgent,
+                    textAlign: TextAlign.start,
+                    style: context.bodyLarge!.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SB.h(15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      RoomMapComponents.radioButtton<YesNo>(
+                        context,
+                        YesNo.yes,
+                        YesNo.yes,
+                        AppStrings.yes,
+                        (value) {},
+                        width: context.width * 0.35,
+                      ),
+                      RoomMapComponents.radioButtton<YesNo>(
+                        context,
+                        YesNo.no,
+                        YesNo.yes,
+                        AppStrings.no,
+                        (value) {},
+                      ),
+                    ],
+                  ),
+                  SB.h(15),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class DialougeComponents {
   static Widget labelTile(
     BuildContext context, {
     String title = '',
     String status = '',
     bool isBorder = false,
+    Color? statusColor,
     TextStyle? titleStyle,
   }) {
     return Row(
@@ -561,9 +939,15 @@ class DialougeComponents {
         Text(
           status,
           style: context.bodyLarge!.copyWith(
-            color: AppColors.black,
+            color: Colors.transparent,
             decoration: isBorder ? TextDecoration.underline : null,
-            decorationColor: isBorder ? AppColors.black : null,
+            decorationColor: isBorder ? statusColor ?? AppColors.black : null,
+            shadows: [
+              BoxShadow(
+                color: statusColor ?? AppColors.black,
+                offset: Offset(0, isBorder ? -2 : 0.1),
+              )
+            ],
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -617,29 +1001,40 @@ class DialougeComponents {
     );
   }
 
-  static Widget closeBtn() {
-    return InkWell(
-      onTap: () => Get.back(),
-      child: Align(
-        alignment: Alignment.topRight,
-        child: Container(
-            decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(35),
-                border: Border.all(color: AppColors.gry)),
-            child: const Icon(
-              Icons.close,
-              color: AppColors.gry,
-              size: 18,
-            )),
-      ),
+  static Widget closeBtn(
+      {bool isDeleteBtn = false, GestureTapCallback? onDelete}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (isDeleteBtn) ...{
+          InkWell(
+            onTap: onDelete,
+            child: Assets.icons.bascket.svg(),
+          ),
+          SB.w(15),
+        },
+        InkWell(
+          onTap: () => Get.back(),
+          child: Container(
+              decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(35),
+                  border: Border.all(color: AppColors.gry)),
+              child: const Icon(
+                Icons.close,
+                color: AppColors.gry,
+                size: 18,
+              )),
+        ),
+      ],
     );
   }
 
   static Widget tile(BuildContext context,
       {String title = 'Assigned by:',
       String value = "Urgent",
-      bool isDecoration = true}) {
+      bool isDecoration = true,
+      Color decorationColor = AppColors.yellowDark}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -647,25 +1042,25 @@ class DialougeComponents {
           title,
           style: context.bodyLarge!.copyWith(
             color: AppColors.gry,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
         ),
         const Spacer(),
         Container(
           padding: isDecoration
-              ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
+              ? const EdgeInsets.symmetric(horizontal: 15, vertical: 5)
               : null,
           decoration: isDecoration
               ? BoxDecoration(
-                  color: AppColors.yellowLight.withOpacity(0.24),
+                  color: decorationColor.withOpacity(0.24),
                   borderRadius: BorderRadius.circular(35),
                 )
               : null,
           child: Text(
             value,
             style: context.bodyLarge!.copyWith(
-              color: isDecoration ? AppColors.yellowDark : AppColors.gry,
-              fontWeight: FontWeight.w500,
+              color: isDecoration ? decorationColor : AppColors.gry,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -711,25 +1106,27 @@ class DialougeComponents {
   }
 
   static Widget detailWithBorder(BuildContext context, String review,
-      {double borderRadius = 10,
-      Color bgColor = AppColors.white,
+      {Color? textColor,
+      double borderRadius = 10,
+      Color? bgColor,
       GestureTapCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: context.width,
         decoration: BoxDecoration(
-            color: bgColor,
+            color: bgColor ?? AppColors.white,
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: AppColors.textGrey,
+              color: bgColor ?? AppColors.gry,
             )),
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Text(
           review,
           textAlign: TextAlign.start,
           style: context.bodyLarge!.copyWith(
-            color: AppColors.black,
+            color: textColor ?? AppColors.black,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

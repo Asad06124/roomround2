@@ -2,7 +2,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 
 enum RoomType { allRooms, complete, incomplete }
 
-class RoomListController extends GetxController {
+class TaskListController extends GetxController {
   final List<YesNo> _tasks = [];
 
   List<YesNo> get tasks => _tasks;
@@ -21,6 +21,22 @@ class RoomListController extends GetxController {
 
   chnageTaskStatus(YesNo value, int index) {
     _tasks[index] = value;
+    update();
+  }
+}
+
+class RoomListController extends GetxController {
+  RoomType _roomType = RoomType.allRooms;
+  RoomType get roomType => _roomType;
+
+  chnageRoomType(String text) {
+    if (text == 'All Rooms') {
+      _roomType = RoomType.allRooms;
+    } else if (text == 'Completed') {
+      _roomType = RoomType.complete;
+    } else {
+      _roomType = RoomType.incomplete;
+    }
     update();
   }
 }

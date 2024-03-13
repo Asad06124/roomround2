@@ -67,7 +67,9 @@ class ChatView extends StatelessWidget {
                       children: [
                         SB.w(context.width),
                         Text(
-                          "Room #1A Manager",
+                          userData.type == UserType.manager
+                              ? 'Nancy / Cleaning Deapertment'
+                              : "Room #1A Manager",
                           style: context.titleSmall!
                               .copyWith(color: AppColors.textPrimary),
                         ),

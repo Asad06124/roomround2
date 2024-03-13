@@ -10,7 +10,9 @@ class MessageView extends StatelessWidget {
         context,
         height: 75,
         backButtunColor: AppColors.textPrimary,
-        title: AppStrings.messageAndResponse,
+        title: userData.type == UserType.manager
+            ? AppStrings.messages
+            : AppStrings.messageAndResponse,
         showNotificationIcon: false,
         notificationActive: true,
         titleStyle: context.titleLarge!.copyWith(color: AppColors.textPrimary),

@@ -5,7 +5,7 @@ class DashBoardController extends GetxController {
   int _curruntIndex = 0;
   int get curruntIndex => _curruntIndex;
   final List<Widget> _screenList = [
-    MainFeaturesView(),
+    const MainFeaturesView(),
     const SettingsView(),
     const ProfileView()
   ];

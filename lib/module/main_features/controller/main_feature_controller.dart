@@ -46,21 +46,18 @@ class MainFeatureController extends GetxController {
         AppStrings.facilitiesView,
         AppStrings.myTicket,
         AppStrings.employeeDirectory,
-        AppStrings.trackingQueesry,
       ];
       _images = [
         Assets.icons.assignedTasks,
         Assets.icons.roomMapView,
         Assets.icons.tickets,
         Assets.icons.emplyeeDirectory,
-        Assets.icons.roomMapView,
       ];
       _pages = [
         AppRoutes.ROOMLIST,
         AppRoutes.ROOMMAP,
         AppRoutes.EMPLOYEEDIRECTORy,
         AppRoutes.ASSIGNEDTASKS,
-        AppRoutes.TASKSLISTS,
       ];
     }
   }
