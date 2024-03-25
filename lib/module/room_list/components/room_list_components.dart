@@ -28,20 +28,18 @@ class RoomListComponents {
 
   static Widget statusWidget(BuildContext context, {bool isComplete = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: isComplete
             ? AppColors.green.withOpacity(0.5)
             : AppColors.yellowLight.withOpacity(0.5),
         borderRadius: BorderRadius.circular(30),
       ),
-      child: Center(
-        child: Text(
-          isComplete ? "Completed" : "Incomplete",
-          style: context.bodyLarge!.copyWith(
-            color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
-            fontWeight: FontWeight.w600,
-          ),
+      child: Text(
+        isComplete ? "Completed" : "Incomplete",
+        style: context.bodyLarge!.copyWith(
+          color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

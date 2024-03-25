@@ -143,17 +143,18 @@ class RoomMapComponents {
         child: Row(
           children: [
             CircleAvatar(
-              radius: 8,
+              radius: 6.5,
               backgroundColor: assignedVal == selectedVal
                   ? AppColors.primary
                   : AppColors.gry,
             ),
-            SB.w(10),
+            SB.w(5),
             Text(
               title,
-              style: context.titleSmall!.copyWith(
+              style: context.bodyLarge!.copyWith(
                 color: AppColors.black,
-                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                // fontSize: 18,
               ),
             )
           ],

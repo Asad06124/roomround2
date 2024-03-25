@@ -36,14 +36,15 @@ class EmployeeDirectoryComponents {
               prefixWidget,
               SB.w(5),
             },
-            Text(
-              title,
-              style: context.bodyLarge!.copyWith(
-                color: titleActive ? AppColors.textPrimary : AppColors.gry,
-                fontWeight: FontWeight.w600,
+            Expanded(
+              child: Text(
+                title,
+                style: context.bodyLarge!.copyWith(
+                  color: titleActive ? AppColors.textPrimary : AppColors.gry,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            const Spacer(),
             InkWell(
               onTap: onStatusPressed,
               child: statusWidget ??
