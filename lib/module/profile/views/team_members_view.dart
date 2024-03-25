@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/constants/app_globals.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class TeamMembersView extends StatelessWidget {
@@ -34,11 +35,11 @@ class TeamMembersView extends StatelessWidget {
                         child: ListView.builder(
                           shrinkWrap: true,
                           // physics: NeverScrollableScrollPhysics(),
-                          itemCount: 20,
+                          itemCount: AppGlobals.dummyData.length,
                           itemBuilder: (context, index) {
                             return ProfileComponents.teamTile(
                               context,
-                              name: "Anthony Roye",
+                              name: AppGlobals.dummyData[index].name,
                               isAdmin: true,
                             );
                           },

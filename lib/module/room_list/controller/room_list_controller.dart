@@ -7,6 +7,13 @@ class TaskListController extends GetxController {
 
   List<YesNo> get tasks => _tasks;
 
+  final List<String> _tasksTitle = [
+    'Arrange audit findings?',
+    'Manange audit findings?'
+  ];
+
+  List<String> get tasksTitle => _tasksTitle;
+
   @override
   void onInit() {
     super.onInit();
@@ -14,7 +21,7 @@ class TaskListController extends GetxController {
   }
 
   void _createTaskaList() {
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 2; i++) {
       _tasks.add(YesNo.no);
     }
   }

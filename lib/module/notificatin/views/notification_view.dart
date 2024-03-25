@@ -6,6 +6,12 @@ class NotificationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final not = [
+      'New task added in template',
+      'Task assigned to you',
+      'New task is removed',
+      'Template task is completed',
+    ];
     return GetBuilder<NotificationController>(
         init: NotificationController(),
         builder: (controller) {
@@ -87,10 +93,11 @@ class NotificationView extends StatelessWidget {
                                 )
                               : ListView.builder(
                                   shrinkWrap: true,
-                                  itemCount: 20,
+                                  itemCount: not.length,
                                   itemBuilder: (context, index) {
                                     return CustomeTiles.notificationTileSimple(
-                                        context);
+                                        context,
+                                        name: not[index]);
                                   },
                                 ),
                         )

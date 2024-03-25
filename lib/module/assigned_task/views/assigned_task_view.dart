@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/constants/app_globals.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class AssignedTasksView extends StatelessWidget {
@@ -76,9 +77,13 @@ class AssignedTasksView extends StatelessWidget {
                   Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 10,
+                      itemCount: AppGlobals.dummyData.length,
                       itemBuilder: (context, index) {
-                        return CustomeTiles.employeeTile(context);
+                        return CustomeTiles.employeeTile(
+                          context,
+                          name: AppGlobals.dummyData[index].name,
+                          desc: AppGlobals.dummyData[index].time,
+                        );
                       },
                     ),
                   )

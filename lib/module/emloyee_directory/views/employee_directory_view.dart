@@ -82,7 +82,7 @@ class EmployeeDirectoryView extends StatelessWidget {
                             context.paddingTop -
                             context.paddingBottom,
                     child: ListView.builder(
-                      itemCount: 15,
+                      itemCount: 8,
                       physics: const AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
@@ -128,6 +128,7 @@ class EmployeeDirectoryView extends StatelessWidget {
                                         TicketsType.assignedMe
                                     ? "See Thread"
                                     : 'Assigned',
+                                title: 'Room A${index + 1}',
                                 statusTextColor: controller.ticketsType ==
                                         TicketsType.assignedMe
                                     ? AppColors.black
@@ -178,12 +179,13 @@ class EmployeeDirectoryView extends StatelessWidget {
                           SizedBox(
                             height: context.height * 0.30,
                             child: ListView.builder(
-                              itemCount: 10,
+                              itemCount: 5,
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
                                 return EmployeeDirectoryComponents.tile(
                                   context,
                                   titleActive: false,
+                                  title: 'B${index + 1}',
                                   status: 'Closed',
                                   isUnderline: false,
                                   onTap: () {

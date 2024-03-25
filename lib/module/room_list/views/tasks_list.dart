@@ -73,7 +73,7 @@ class TasksList extends StatelessWidget {
                                   ), onTap: () {
                                 _showYesNoDialog();
                               },
-                                  title: 'Arrange audit findings?',
+                                  title: controller.tasksTitle[index],
                                   statusWidget: RoomListComponents.yesNoWidget(
                                       context, controller, index));
                             },

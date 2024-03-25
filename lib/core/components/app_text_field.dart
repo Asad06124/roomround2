@@ -18,7 +18,7 @@ class CustomTextField extends StatefulWidget {
     this.textAlign,
     this.textFieldBorder,
     this.onChange,
-    this.textCapitalization = TextCapitalization.words,
+    this.textCapitalization = TextCapitalization.sentences,
     this.fillColor = AppColors.white,
     this.borderColor = AppColors.white,
     this.showBorder = false,
@@ -104,6 +104,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             onTapOutside: (e) {
               FocusManager.instance.primaryFocus?.unfocus();
             },
+            textInputAction: TextInputAction.none,
             cursorColor: widget.textColor,
             readOnly: widget.readOnly,
             enabled: widget.enabled,

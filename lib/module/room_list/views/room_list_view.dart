@@ -65,6 +65,7 @@ class RoomListView extends StatelessWidget {
                                 return index % 2 != 0
                                     ? EmployeeDirectoryComponents.tile(
                                         context,
+                                        title: 'Room A${index + 1}',
                                         onTap: index % 2 != 0
                                             ? () => Get.toNamed(
                                                 AppRoutes.TASKSLISTS)
@@ -80,6 +81,7 @@ class RoomListView extends StatelessWidget {
                                 return index % 2 == 0
                                     ? EmployeeDirectoryComponents.tile(
                                         context,
+                                        title: 'Room A${index + 1}',
                                         onTap: index % 2 != 0
                                             ? () => Get.toNamed(
                                                 AppRoutes.TASKSLISTS)
@@ -93,6 +95,7 @@ class RoomListView extends StatelessWidget {
                               } else {
                                 return EmployeeDirectoryComponents.tile(
                                   context,
+                                  title: 'Room A${index + 1}',
                                   onTap: index % 2 != 0
                                       ? () => Get.toNamed(AppRoutes.TASKSLISTS)
                                       : null,

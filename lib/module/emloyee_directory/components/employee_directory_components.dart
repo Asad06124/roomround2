@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/utils/custome_dialogue.dart';
 
@@ -25,8 +27,9 @@ class EmployeeDirectoryComponents {
           ),
         ),
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (prefixWidget != null) ...{
@@ -71,66 +74,61 @@ class EmployeeDirectoryComponents {
     );
   }
 
+  static _showFullWidthDialog(
+    Widget child,
+  ) {
+    log("===============> Opening");
+    return showDialog(
+      barrierDismissible: false,
+      context: Get.context!,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 14),
+        child: child,
+      ),
+    );
+  }
+
   static void openDialogEmployee(int type, int index) {
     if (type == 0) {
-      Get.dialog(
-        Dialog(
-          child: CloseTicketDialouge(
-            isUrgent: index % 2 == 0,
-          ),
+      _showFullWidthDialog(
+        CloseTicketDialouge(
+          isUrgent: index % 2 == 0,
         ),
-        barrierDismissible: false,
       );
     } else if (type == 1) {
-      Get.dialog(
-        Dialog(
-          child: ClosedTicketDialouge(),
-        ),
-        barrierDismissible: false,
+      _showFullWidthDialog(
+        ClosedTicketDialouge(),
       );
     } else if (type == 2) {
-      Get.dialog(
-        Dialog(
-          child: OpenThreadDialogue(
-            isUrgent: true,
-            urgentText: 'Urgent',
-          ),
+      _showFullWidthDialog(
+        OpenThreadDialogue(
+          isUrgent: true,
+          urgentText: 'Urgent',
         ),
-        barrierDismissible: false,
       );
     } else if (type == 3) {
-      Get.dialog(
-        Dialog(
-          child: OpenThreadDialogueArgue(),
-        ),
-        barrierDismissible: false,
+      _showFullWidthDialog(
+        OpenThreadDialogueArgue(),
       );
     }
   }
 
   static void openDialogManager(int type, int index) {
     if (type == 0) {
-      Get.dialog(
-        Dialog(
-          child: ThreadTicketDialouge(),
-        ),
-        barrierDismissible: false,
+      _showFullWidthDialog(
+        ThreadTicketDialouge(),
       );
     }
     if (type == 1) {
-      Get.dialog(
-        Dialog(
-          child: SeeThreadDialouge(),
-        ),
-        barrierDismissible: false,
+      _showFullWidthDialog(
+        SeeThreadDialouge(),
       );
     }
     if (type == 2) {
-      Get.dialog(
-        Dialog(
-          child: AssignedThreadDialouge(),
-        ),
-        barrierDismissible: false,
+      _showFullWidthDialog(
+        AssignedThreadDialouge(),
       );
     }
   }

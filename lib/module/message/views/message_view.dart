@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/constants/app_globals.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class MessageView extends StatelessWidget {
@@ -40,11 +41,13 @@ class MessageView extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 child: ListView.builder(
-                  itemCount: 12,
+                  itemCount: AppGlobals.dummyData.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return CustomeTiles.employeeTile(
                       context,
+                      name: AppGlobals.dummyData[index].name,
+                      desc: AppGlobals.dummyData[index].time,
                       notificationCount: index,
                       onPressed: () => Get.toNamed(AppRoutes.CHAT),
                     );
