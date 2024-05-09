@@ -104,7 +104,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             onTapOutside: (e) {
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            textInputAction: TextInputAction.none,
+            // textInputAction: TextInputAction.none,
             cursorColor: widget.textColor,
             readOnly: widget.readOnly,
             enabled: widget.enabled,
