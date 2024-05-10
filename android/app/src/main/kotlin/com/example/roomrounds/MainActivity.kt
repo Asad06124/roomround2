@@ -1,4 +1,4 @@
-package com.example.roomrounds
+package com.roomrounds.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -2,7 +2,7 @@ import 'package:roomrounds/core/constants/app_enum.dart';
 
 class AppGlobals {
   static const String appName = "RoomRounds";
-  static const String packageName = "com.example.roomrounds";
+  static const String packageName = "com.roomrounds.app";
   static List<DummyUser> dummyData = [
     DummyUser(
         name: 'Wahab Sohail',
