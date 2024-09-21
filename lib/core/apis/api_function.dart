@@ -1,3 +1,177 @@
+import 'dart:convert';
+import 'dart:developer';
+// import 'package:logger/logger.dart';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
+import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/constants/utilities.dart';
+import 'package:roomrounds/utils/custom_overlays.dart';
+
+class APIFunction {
+  static Future<dynamic> call(
+    APIMethods method,
+    String endPoint, {
+    var dataMap,
+    // var model,
+    File? file,
+    String? fileKey,
+    bool showLoader = true,
+    bool showErrorMessage = true,
+    bool showSuccessMessage = false,
+    bool getOnlyStatusCode = false,
+    Function(Map<String, dynamic>)? fromJson,
+  }) async {
+    try {
+      final String url = Urls.baseUrl + endPoint;
+      final Uri uri = Uri.parse(url);
+      final String apiMethod = method.name.toUpperCase();
+
+      // log(userData.token);
+      bool isConnected = await Utilities.hasConnection();
+
+      if (isConnected == false) {
+        // No Internet connection
+        CustomOverlays.showSnackBar(AppStrings.noInternetConnection);
+
+        return false;
+      }
+
+      if (showLoader) CustomOverlays.showLoader();
+
+      Map<String, String> headers = {
+        "Authorization": "token ",
+        "Content-Type": "application/json"
+      };
+
+      http.BaseRequest request;
+      String encodedData = jsonEncode(dataMap);
+
+      if (file != null) {
+        // Multipart request for file upload
+        var multipartRequest = http.MultipartRequest(apiMethod, uri);
+        multipartRequest.fields.addAll(dataMap);
+        multipartRequest.files.add(
+          await http.MultipartFile.fromPath(fileKey ?? "", file.path),
+        );
+        request = multipartRequest;
+      } else {
+        // Standard request for non-file data
+        var normalRequest = http.Request(method.name.toUpperCase(), uri);
+        normalRequest.body = encodedData;
+        request = normalRequest;
+      }
+
+      request.headers.addAll(headers);
+
+      customLogger(
+        "Url: $url"
+        "\nInput Data: $encodedData",
+      );
+
+      http.StreamedResponse response = await request.send();
+
+      if (getOnlyStatusCode) {
+        return response.statusCode;
+      }
+
+      String? data = await response.stream.bytesToString();
+      // log("Response Data $data");
+
+      if (response.statusCode == 401) {
+        //&& userData.token.isNotEmpty) {
+        CustomOverlays.dismissLoader();
+        // Logout
+
+        // Get.back();
+        // Get.offAll(() => WelcomeScreen());
+        // storageBox.erase();
+        // userData = LoginModel();
+        return null;
+      }
+
+      final decodedResponse = json.decode(data);
+      customLogger("Url: $url \nResponse:$data", type: LoggerType.info);
+
+      final BaseModel baseModel = BaseModel.fromJson(decodedResponse);
+
+      if (showLoader) CustomOverlays.dismissLoader();
+
+      var result;
+      if (response.statusCode == 200 && (baseModel.succeeded ?? false)) {
+        // log(baseModel.result.toString());
+
+        if (baseModel.data != null) {
+          if (fromJson != null) {
+            if (baseModel.data is List) {
+              result = [];
+              for (final data in baseModel.data) {
+                result.add(fromJson(data));
+              }
+              customLogger("Result: ${result.length}");
+            } else {
+              // Logger().e(baseModel.data);
+              result = fromJson(baseModel.data);
+              // customLogger("Result: $result");
+            }
+          }
+        }
+
+        if (showSuccessMessage) {
+          CustomOverlays.showToastMessage(
+              message: baseModel.message, isSuccess: true);
+        }
+        return result ?? baseModel.data ?? baseModel.succeeded ?? false;
+      }
+
+      if (showErrorMessage) {
+        CustomOverlays.showToastMessage(message: baseModel.message);
+      }
+      // Utilities.showErrorMessage(error: baseModel.message);
+
+      return null; // Change return false to null for handle error
+    } catch (e) {
+      if (showLoader) CustomOverlays.dismissLoader();
+      if (showErrorMessage) {
+        CustomOverlays.showToastMessage(message: e.toString());
+      }
+
+      customLogger(
+        e.toString(),
+        error: 'hasConnection',
+        type: LoggerType.error,
+      );
+
+      return null;
+    }
+  }
+
+  static Map<String, dynamic> get _apiHeader => {
+        "Authorization": "token ",
+        "Content-Type": "application/json",
+      };
+
+  static T parseModel<T>(
+      T Function(Map<String, dynamic>) fromJson, Map<String, dynamic> json) {
+    return fromJson(json);
+  }
+}
+
+
+
+
+// Future<bool> _checkInternetConnectivity() async {
+//   bool hasInternet = false;
+//   final connectivityResult = await Connectivity().checkConnectivity();
+//   if (connectivityResult == ConnectivityResult.none) {
+//     return hasInternet;
+//   }
+//   // return await InternetConnectionChecker().hasConnection;
+//   return Future.value(true);
+// }
+
+
 // // ignore_for_file: constant_identifier_names
 
 // import 'dart:convert';
@@ -124,22 +298,6 @@
 //       "Content-Type": "application/json"
 //     };
 
-import 'package:roomrounds/core/constants/imports.dart';
-
-void showSnackBar(String? message,
-    {Color backgroundColor = AppColors.primary}) {
-  ScaffoldMessenger.of(Get.context!).removeCurrentSnackBar();
-  final snackBar = SnackBar(
-    content: Text(
-      message ?? "",
-      style: const TextStyle(color: AppColors.white),
-    ),
-    backgroundColor: backgroundColor,
-    // showCloseIcon: true,
-    // closeIconColor: AppColors.white,
-  );
-  ScaffoldMessenger.of(Get.context!).showSnackBar(snackBar);
-}
 
 // Future<bool> _checkInternetConnectivity() async {
 //   bool hasInternet = false;

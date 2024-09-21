@@ -24,7 +24,9 @@ class CustomeDropDown {
         items: list,
         initialItem: list[0],
         onChanged: (value) {
-          onSelect(value);
+          if (value != null) {
+            onSelect(value);
+          }
         },
         closedHeaderPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

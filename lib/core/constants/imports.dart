@@ -34,7 +34,7 @@ export 'package:roomrounds/module/profile/components/profile_components.dart';
 export 'package:roomrounds/module/settings/components/settings_components.dart';
 export 'package:roomrounds/module/emloyee_directory/components/employee_directory_components.dart';
 export 'package:roomrounds/module/room_map/components/room_map_components.dart';
-export 'package:roomrounds/core/user_data/user_data_globel.dart';
+export 'package:roomrounds/core/apis/models/user_data/user_data_globel.dart';
 export 'package:roomrounds/core/extensions/form_extension.dart';
 export 'package:roomrounds/core/mixins/validators.dart';
 ///////////////   Pages     //////////////////////
