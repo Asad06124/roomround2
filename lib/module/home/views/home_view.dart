@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/constants/controllers.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class HomeView extends StatelessWidget {
@@ -11,7 +12,8 @@ class HomeView extends StatelessWidget {
         height: 120,
         showWlcomeMessage: true,
         isHome: true,
-        title: userData.name,
+        // title: userData.name,
+        title: profileController.user?.username,
       ),
       child: Stack(
         alignment: Alignment.center,

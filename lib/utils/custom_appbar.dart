@@ -13,7 +13,7 @@ class CustomAppbar {
       Color? iconsClor,
       TextStyle? titleStyle,
       Widget? decriptionWidget,
-      String title = "Robert Brown"}) {
+      String? title}) {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
@@ -54,14 +54,15 @@ class CustomAppbar {
                   // ),
                   SB.w(0),
                 },
-                Text(
-                  title,
-                  style: isHome
-                      ? context.displaySmall!.copyWith(
-                          color: AppColors.white,
-                        )
-                      : txtStyle,
-                ),
+                if (title?.isNotEmpty == true)
+                  Text(
+                    title ?? '',
+                    style: isHome
+                        ? context.displaySmall!.copyWith(
+                            color: AppColors.white,
+                          )
+                        : txtStyle,
+                  ),
                 const Spacer(),
                 Row(
                   mainAxisSize: MainAxisSize.min,

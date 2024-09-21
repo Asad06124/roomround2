@@ -5,8 +5,8 @@ class ProfileComponents {
     BuildContext context, {
     bool isBackButtun = false,
     String title = "Profile",
-    String name = "Mr. Antony Roy",
-    String decs = "Staff / Employee",
+    String? name,
+    String? description,
   }) {
     return Container(
       height: context.height * 0.32,
@@ -92,11 +92,11 @@ class ProfileComponents {
             child: Column(
               children: [
                 Text(
-                  name,
+                  name ?? '',
                   style: context.titleMedium,
                 ),
                 Text(
-                  decs,
+                  description ?? '',
                   style: context.bodyLarge!
                       .copyWith(color: AppColors.lightWhite.withOpacity(0.7)),
                 ),

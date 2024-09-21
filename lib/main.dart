@@ -1,9 +1,19 @@
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/routes/app_pages.dart';
+import 'package:roomrounds/helpers/data_storage_helper.dart';
+import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
-void main() {
+import 'core/constants/controllers.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await DataStorageHelper.init();
+  _initControllers();
   runApp(const MyApp());
+}
+
+void _initControllers() {
+  profileController = Get.put(ProfileController());
 }
 
 class MyApp extends StatelessWidget {
