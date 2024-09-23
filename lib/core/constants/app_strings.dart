@@ -1,10 +1,10 @@
+import 'package:roomrounds/core/constants/imports.dart';
+
 class AppStrings {
   static const String about = "About";
   static const String account = "Account";
   static const String alreadyRegistered = "Already registered?";
   static const String andText = "and";
-  static const String appName = "RoomRounds";
-  static const String appNameSpace = "Room Rounds";
   static const String assign = "Assign";
   static const String assignRoom = "Assign Room";
   static const String assignedTasks = "Assigned Tasks";
@@ -58,7 +58,7 @@ class AppStrings {
   static const String home = "Home";
   static const String inbox = "Inbox";
   static const String keepUpDataWithSatausOf =
-      "Keep up to date with the status of your RoomRounds";
+      "Keep up to date with the status of your ${AppConstants.appName}";
 
   static const String login = 'Login';
   static const String loginNow = 'Login Now';

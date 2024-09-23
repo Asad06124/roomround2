@@ -1,13 +1,12 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/extensions/datetime_extension.dart';
 
 class AssignedTaskComponents {
   static Widget appBatTile(BuildContext context,
-      {String name = "Robert Brown",
-      String desc = "Staff / Employee",
-      String date = "11/23/2023",
-      EdgeInsets? pading}) {
+      {String? name, String? desc, double padding = 15}) {
+    String? Date = DateTime.now().format();
     return Padding(
-      padding: pading ?? const EdgeInsets.only(left: 15),
+      padding: EdgeInsets.only(left: padding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -19,11 +18,11 @@ class AssignedTaskComponents {
             children: [
               SB.h(10),
               Text(
-                name,
+                name ?? '',
                 style: context.titleMedium,
               ),
               Text(
-                desc,
+                desc ?? '',
                 style: context.bodyLarge!
                     .copyWith(color: AppColors.lightWhite.withOpacity(0.7)),
               ),
@@ -32,13 +31,13 @@ class AssignedTaskComponents {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withOpacity(0.35),
               borderRadius: BorderRadius.circular(35),
             ),
             child: Center(
               child: Text(
-                date,
-                style: context.bodySmall!.copyWith(
+                Date,
+                style: context.bodyLarge!.copyWith(
                     fontWeight: FontWeight.w500, color: AppColors.white),
               ),
             ),

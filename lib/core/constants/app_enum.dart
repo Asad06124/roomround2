@@ -1,14 +1,20 @@
 enum YesNo { yes, no }
 
-enum UserType { employee, manager }
+enum UserType {
+  superAdmin,
+  organizationAdmin,
+  manager,
+  departmentHead,
+  employee,
+}
 
 enum APIMethods {
-  GET,
-  POST,
-  PUT,
-  UPDATE,
-  DELETE,
-  PATCH,
+  get,
+  post,
+  put,
+  update,
+  delete,
+  patch,
 }
 
 enum LoggerType { debug, info, warning, error }

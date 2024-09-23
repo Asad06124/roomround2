@@ -22,7 +22,7 @@ class SplashView extends StatelessWidget {
                   Assets.icons.splashLogo.svg(),
                   SB.h(10),
                   Text(
-                    AppStrings.appName,
+                    AppConstants.appName,
                     style: context.titleMedium!
                         .copyWith(color: AppColors.textPrimary),
                   ),

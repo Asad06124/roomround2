@@ -12,10 +12,28 @@ class ProfileController extends GetxController {
   void setUser(User user, {bool saveUser = false}) {
     _user = user;
     refresh();
-    
+
     if (saveUser) {
       DataStorageHelper.saveModel(AppKeys.userData, user);
     }
+  }
+
+  UserType get userType {
+    String? userRole = _user?.role?.trim();
+    if (userRole != null && userRole.isNotEmpty) {
+      String? role = userRole.camelCase;
+
+      if (role != null && role.isNotEmpty) {
+        if (UserType.organizationAdmin.name == role) {
+          return UserType.organizationAdmin;
+        } else if (UserType.manager.name == role) {
+          return UserType.manager;
+        } else if (UserType.employee.name == role) {
+          return UserType.employee;
+        }
+      }
+    }
+    return UserType.employee;
   }
 
   void logout() {

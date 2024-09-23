@@ -51,7 +51,7 @@ class HomeView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        AppStrings.appNameSpace,
+                        AppConstants.appNameSpace,
                         style: context.displaySmall!.copyWith(
                           color: AppColors.textPrimary,
                         ),

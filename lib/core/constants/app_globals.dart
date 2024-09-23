@@ -1,8 +1,6 @@
 import 'package:roomrounds/core/constants/app_enum.dart';
 
 class AppGlobals {
-  static const String appName = "RoomRounds";
-  static const String packageName = "com.roomrounds.llc";
   static List<DummyUser> dummyData = [
     DummyUser(
         name: 'Wahab Sohail',
@@ -25,11 +23,6 @@ class AppGlobals {
         time: '1:20 pm',
         type: UserType.manager),
   ];
-
-  // static const String playStoreLink =
-  //     "https://play.google.com/store/apps/details?id=$packageName";
-  // static const String appStoreLink =
-  //     "https://play.google.com/store/apps/details?id=$packageName";
 }
 
 class DummyUser {

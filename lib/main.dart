@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: AppStrings.appName,
+      title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeDark().theme,
       initialRoute: AppRoutes.SPLASH_SCREEN,

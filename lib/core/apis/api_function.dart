@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 // import 'package:logger/logger.dart';
 import 'dart:io';
 
@@ -35,7 +34,7 @@ class APIFunction {
         // No Internet connection
         CustomOverlays.showSnackBar(AppStrings.noInternetConnection);
 
-        return false;
+        return null;
       }
 
       if (showLoader) CustomOverlays.showLoader();
@@ -58,7 +57,7 @@ class APIFunction {
         request = multipartRequest;
       } else {
         // Standard request for non-file data
-        var normalRequest = http.Request(method.name.toUpperCase(), uri);
+        var normalRequest = http.Request(apiMethod, uri);
         normalRequest.body = encodedData;
         request = normalRequest;
       }
@@ -79,6 +78,13 @@ class APIFunction {
       String? data = await response.stream.bytesToString();
       // log("Response Data $data");
 
+      customLogger(
+        "Url: $url \nResponse (${response.statusCode}): $data",
+        type: LoggerType.info,
+      );
+
+      if (showLoader) CustomOverlays.dismissLoader();
+
       if (response.statusCode == 401) {
         //&& userData.token.isNotEmpty) {
         CustomOverlays.dismissLoader();
@@ -91,42 +97,43 @@ class APIFunction {
         return null;
       }
 
-      final decodedResponse = json.decode(data);
-      customLogger("Url: $url \nResponse:$data", type: LoggerType.info);
+      String? errorMessage;
 
-      final BaseModel baseModel = BaseModel.fromJson(decodedResponse);
+      if (data.isNotEmpty) {
+        final decodedResponse = json.decode(data);
+        final BaseModel baseModel = BaseModel.fromJson(decodedResponse);
 
-      if (showLoader) CustomOverlays.dismissLoader();
+        var result;
+        if (response.statusCode == 200 && (baseModel.succeeded ?? false)) {
+          // log(baseModel.result.toString());
 
-      var result;
-      if (response.statusCode == 200 && (baseModel.succeeded ?? false)) {
-        // log(baseModel.result.toString());
-
-        if (baseModel.data != null) {
-          if (fromJson != null) {
-            if (baseModel.data is List) {
-              result = [];
-              for (final data in baseModel.data) {
-                result.add(fromJson(data));
+          if (baseModel.data != null) {
+            if (fromJson != null) {
+              if (baseModel.data is List) {
+                result = [];
+                for (final data in baseModel.data) {
+                  result.add(fromJson(data));
+                }
+                customLogger("Result: ${result.length}");
+              } else {
+                // Logger().e(baseModel.data);
+                result = fromJson(baseModel.data);
+                // customLogger("Result: $result");
               }
-              customLogger("Result: ${result.length}");
-            } else {
-              // Logger().e(baseModel.data);
-              result = fromJson(baseModel.data);
-              // customLogger("Result: $result");
             }
           }
-        }
 
-        if (showSuccessMessage) {
-          CustomOverlays.showToastMessage(
-              message: baseModel.message, isSuccess: true);
+          if (showSuccessMessage) {
+            CustomOverlays.showToastMessage(
+                message: baseModel.message, isSuccess: true);
+          }
+          return result ?? baseModel.data ?? baseModel.succeeded ?? false;
         }
-        return result ?? baseModel.data ?? baseModel.succeeded ?? false;
+        errorMessage = baseModel.message;
       }
 
       if (showErrorMessage) {
-        CustomOverlays.showToastMessage(message: baseModel.message);
+        CustomOverlays.showToastMessage(message: errorMessage);
       }
       // Utilities.showErrorMessage(error: baseModel.message);
 

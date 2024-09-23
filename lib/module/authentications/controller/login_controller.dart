@@ -17,7 +17,7 @@ class LoginController extends GetxController {
       String password = passwordController.text.trim();
 
       var response = await APIFunction.call(
-        APIMethods.POST,
+        APIMethods.post,
         Urls.login,
         dataMap: {
           "usernameOrEmail": username,
@@ -26,7 +26,7 @@ class LoginController extends GetxController {
         fromJson: User.fromJson,
       );
 
-      if (response != null) {
+      if (response != null && response is User) {
         Get.offNamed(AppRoutes.HOME);
         profileController.setUser(response, saveUser: true);
       }
