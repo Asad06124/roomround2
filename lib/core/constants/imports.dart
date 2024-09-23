@@ -37,6 +37,7 @@ export 'package:roomrounds/module/room_map/components/room_map_components.dart';
 export 'package:roomrounds/core/apis/models/user_data/user_data_globel.dart';
 export 'package:roomrounds/core/extensions/form_extension.dart';
 export 'package:roomrounds/core/mixins/validators.dart';
+export 'package:roomrounds/core/constants/controllers.dart';
 export 'package:roomrounds/core/apis/models/user_data/user_model.dart';
 ///////////////   Pages     //////////////////////
 export 'package:roomrounds/module/splash/views/splash_view.dart';

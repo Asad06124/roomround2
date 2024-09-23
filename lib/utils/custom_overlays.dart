@@ -16,7 +16,7 @@ class CustomOverlays {
     dismissLoader();
 
     Get.dialog(
-      const CustomLoader(),
+      const CustomLoader(isDialog: true),
       barrierDismissible: barrierDismissible,
     );
   }

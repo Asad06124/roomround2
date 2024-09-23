@@ -9,6 +9,14 @@ class MainFeaturesComponents {
     List<MainFeature> features = const [],
     required Function(String? page) onPressed,
   }) {
+    if (features.isEmpty) {
+      return Center(
+        child: Text(
+          AppStrings.noResultsFound,
+          style: context.bodyLarge!.copyWith(color: AppColors.black),
+        ),
+      );
+    }
     return isGridView
         ? GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

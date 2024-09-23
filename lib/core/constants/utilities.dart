@@ -64,18 +64,20 @@ Logger _logger = Logger(
 
 void customLogger(String? message,
     {var error, LoggerType type = LoggerType.debug}) {
-  switch (type) {
-    case LoggerType.info:
-      _logger.i(message);
-      break;
-    case LoggerType.warning:
-      _logger.w(message);
-      break;
-    case LoggerType.error:
-      _logger.e(message, error: error);
-      break;
-    default:
-      _logger.d(message);
-      break;
+  if (!kReleaseMode) {
+    switch (type) {
+      case LoggerType.info:
+        _logger.i(message);
+        break;
+      case LoggerType.warning:
+        _logger.w(message);
+        break;
+      case LoggerType.error:
+        _logger.e(message, error: error);
+        break;
+      default:
+        _logger.d(message);
+        break;
+    }
   }
 }

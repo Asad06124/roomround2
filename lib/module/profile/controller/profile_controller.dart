@@ -8,16 +8,9 @@ class ProfileController extends GetxController {
   User? _user;
 
   User? get user => _user;
-
-  void setUser(User user, {bool saveUser = false}) {
-    _user = user;
-    refresh();
-
-    if (saveUser) {
-      DataStorageHelper.saveModel(AppKeys.userData, user);
-    }
-  }
-
+  int? get userId => _user?.userId;
+  String? get userRole => _user?.role;
+  String? get userToken => _user?.token;
   UserType get userType {
     String? userRole = _user?.role?.trim();
     if (userRole != null && userRole.isNotEmpty) {
@@ -41,5 +34,14 @@ class ProfileController extends GetxController {
     DataStorageHelper.removeAll();
     CustomOverlays.dismissLoader();
     Get.offAllNamed(AppRoutes.LOGIN);
+  }
+
+  void setUser(User user, {bool saveUser = false}) {
+    _user = user;
+    refresh();
+
+    if (saveUser) {
+      DataStorageHelper.saveModel(AppKeys.userData, user);
+    }
   }
 }

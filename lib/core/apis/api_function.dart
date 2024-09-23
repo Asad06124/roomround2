@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
+import 'package:roomrounds/core/constants/controllers.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
@@ -39,10 +40,7 @@ class APIFunction {
 
       if (showLoader) CustomOverlays.showLoader();
 
-      Map<String, String> headers = {
-        "Authorization": "token ",
-        "Content-Type": "application/json"
-      };
+      Map<String, String> headers = _apiHeaders();
 
       http.BaseRequest request;
       String encodedData = jsonEncode(dataMap);
@@ -85,18 +83,6 @@ class APIFunction {
 
       if (showLoader) CustomOverlays.dismissLoader();
 
-      if (response.statusCode == 401) {
-        //&& userData.token.isNotEmpty) {
-        CustomOverlays.dismissLoader();
-        // Logout
-
-        // Get.back();
-        // Get.offAll(() => WelcomeScreen());
-        // storageBox.erase();
-        // userData = LoginModel();
-        return null;
-      }
-
       String? errorMessage;
 
       if (data.isNotEmpty) {
@@ -128,6 +114,13 @@ class APIFunction {
                 message: baseModel.message, isSuccess: true);
           }
           return result ?? baseModel.data ?? baseModel.succeeded ?? false;
+        } else if (response.statusCode == 401 &&
+            profileController.userToken?.isNotEmpty == true) {
+          // Logout
+          profileController.logout();
+          // In case ShowError = false
+          CustomOverlays.showToastMessage(message: baseModel.message);
+          return null;
         }
         errorMessage = baseModel.message;
       }
@@ -146,7 +139,7 @@ class APIFunction {
 
       customLogger(
         e.toString(),
-        error: 'hasConnection',
+        error: 'APIFunction Call',
         type: LoggerType.error,
       );
 
@@ -154,14 +147,12 @@ class APIFunction {
     }
   }
 
-  static Map<String, dynamic> get _apiHeader => {
-        "Authorization": "token ",
-        "Content-Type": "application/json",
-      };
-
-  static T parseModel<T>(
-      T Function(Map<String, dynamic>) fromJson, Map<String, dynamic> json) {
-    return fromJson(json);
+  static Map<String, String> _apiHeaders() {
+    String? token = profileController.userToken;
+    return {
+      "Authorization": "Bearer ${token ?? ''}",
+      "Content-Type": "application/json",
+    };
   }
 }
 

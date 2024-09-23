@@ -5,8 +5,8 @@ import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class EmployeeDirectoryComponents {
   static Widget tile(BuildContext context,
-      {String title = "Room A1",
-      String status = "Close",
+      {String? title,
+      String? status,
       bool isAcvtive = false,
       Widget? prefixWidget,
       bool titleActive = true,
@@ -38,7 +38,9 @@ class EmployeeDirectoryComponents {
             },
             Expanded(
               child: Text(
-                title,
+                title ?? '',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: context.bodyLarge!.copyWith(
                   color: titleActive ? AppColors.textPrimary : AppColors.gry,
                   fontWeight: FontWeight.w600,
@@ -49,7 +51,7 @@ class EmployeeDirectoryComponents {
               onTap: onStatusPressed,
               child: statusWidget ??
                   Text(
-                    status,
+                    status ?? '',
                     style: context.bodyLarge!.copyWith(
                       color: Colors.transparent,
                       decoration: isUnderline ? TextDecoration.underline : null,

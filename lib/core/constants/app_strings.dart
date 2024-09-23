@@ -82,6 +82,7 @@ class AppStrings {
       'You have no notifications right now.\ncome back later';
 
   static const String noNotificationFound = 'No Notifications found';
+  static const String noResultsFound = "No results found!";
   static const String notification = 'Notifications';
   static const String notificationSettings = "Notification Settings";
   static const String oldPassword = "Old password";

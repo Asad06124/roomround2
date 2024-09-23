@@ -1,6 +1,11 @@
+import 'package:roomrounds/core/apis/models/user_data/user_model.dart';
 import 'package:roomrounds/core/constants/app_enum.dart';
 
 class AppGlobals {
+  
+  
+  User? _user; 
+  
   static List<DummyUser> dummyData = [
     DummyUser(
         name: 'Wahab Sohail',
