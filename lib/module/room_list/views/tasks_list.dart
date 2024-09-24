@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_list/components/room_list_components.dart';
 import 'package:roomrounds/module/room_list/controller/room_list_controller.dart';
@@ -17,12 +18,16 @@ class TasksList extends StatelessWidget {
         titleStyle: context.titleLarge,
         title: AppStrings.roomStatusList,
         isHome: false,
-        decriptionWidget: AssignedTaskComponents.appBatTile(context,
-            name: AppStrings.managinfStaff, desc: 'Philo Dairin '),
+        decriptionWidget: AssignedTaskComponents.appBatTile(
+          context,
+          name: AppStrings.managinfStaff,
+          desc: profileController.user?.username,
+        ),
       ),
       child: GetBuilder<TaskListController>(
           init: TaskListController(),
           builder: (controller) {
+            String? roomName = controller.roomName?.trim();
             return Column(
               children: [
                 Expanded(
@@ -52,7 +57,7 @@ class TasksList extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '(Room A1)',
+                              roomName?.isNotEmpty == true ? '($roomName)' : '',
                               style: context.bodyLarge!.copyWith(
                                 color: AppColors.gry,
                               ),
@@ -61,24 +66,11 @@ class TasksList extends StatelessWidget {
                         ),
                         SB.h(10),
                         Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: controller.tasks.length,
-                            itemBuilder: (context, index) {
-                              return EmployeeDirectoryComponents.tile(context,
-                                  prefixWidget: const Icon(
-                                    Icons.keyboard_arrow_down_outlined,
-                                    color: AppColors.gry,
-                                    size: 20,
-                                  ), onTap: () {
-                                _showYesNoDialog();
-                              },
-                                  title: controller.tasksTitle[index],
-                                  statusWidget: RoomListComponents.yesNoWidget(
-                                      context, controller, index));
-                            },
-                          ),
-                        )
+                          child: controller.hasData
+                              ? _buildTasksList(
+                                  context, controller, controller.tasks)
+                              : CustomLoader(),
+                        ),
                       ],
                     ),
                   ),
@@ -87,6 +79,44 @@ class TasksList extends StatelessWidget {
             );
           }),
     );
+  }
+
+  Widget _buildTasksList(BuildContext context, TaskListController controller,
+      List<RoomTask> list) {
+    if (list.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          RoomTask task = list[index];
+
+          return EmployeeDirectoryComponents.tile(
+            context,
+            prefixWidget: const Icon(
+              Icons.keyboard_arrow_down_outlined,
+              color: AppColors.gry,
+              size: 20,
+            ),
+            onTap: () {
+              _showYesNoDialog();
+            },
+            title: task.taskName,
+            statusWidget:
+                RoomListComponents.yesNoWidget(context, controller, index),
+          );
+        },
+      );
+    } else {
+      // No Tasks found
+      return Center(
+        child: Text(
+          AppStrings.noTasksFound,
+          style: context.bodyLarge!.copyWith(
+            color: AppColors.black,
+          ),
+        ),
+      );
+    }
   }
 
   void _showYesNoDialog() {

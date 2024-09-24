@@ -1,13 +1,23 @@
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/room/room_model.dart';
+import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-
-enum RoomType { allRooms, complete, incomplete }
+import 'package:roomrounds/core/constants/utilities.dart';
 
 class TaskListController extends GetxController {
-  final List<YesNo> _tasks = [];
+  // TaskListController({this.roomId});
+  int? roomId;
+  String? roomName;
 
-  List<YesNo> get tasks => _tasks;
+  bool hasData = false;
+
+  List<RoomTask> _tasks = [];
+
+  List<RoomTask> get tasks => _tasks;
+
+  // final List<YesNo> _tasks = [];
+
+  // List<YesNo> get tasks => _tasks;
 
   final List<String> _tasksTitle = [
     'Arrange audit findings?',
@@ -19,17 +29,68 @@ class TaskListController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _createTaskaList();
+    _getRoomIdAndTasks();
   }
 
-  void _createTaskaList() {
-    for (var i = 0; i < 2; i++) {
-      _tasks.add(YesNo.no);
+  void _getRoomIdAndTasks() {
+    try {
+      roomId = Get.arguments['roomId'] as int?;
+      roomName = Get.arguments['roomName'] as String?;
+
+      // if (roomId != null) {
+      _fetchTasksList(roomId);
+      // }
+    } catch (e) {
+      customLogger(
+        e.toString(),
+        type: LoggerType.error,
+        error: '_getRoomIdAndTasks',
+      );
     }
   }
 
-  chnageTaskStatus(YesNo value, int index) {
-    _tasks[index] = value;
+  void _fetchTasksList(int? roomId) async {
+    int? managerId = profileController.userId;
+
+    _updateHasData(false);
+
+    Map<String, dynamic> data = {
+      "managerId": managerId,
+      "roomId": roomId,
+      // "roomId": 32, // Testing
+      "pageNo": 1,
+      "size": 20,
+      "isPagination": false,
+    };
+
+    var resp = await APIFunction.call(
+      APIMethods.post,
+      Urls.getAllTasks,
+      dataMap: data,
+      fromJson: RoomTask.fromJson,
+      showLoader: false,
+      showErrorMessage: false,
+    );
+
+    if (resp != null && resp is List && resp.isNotEmpty) {
+      _tasks = List.from(resp);
+      // update();
+    }
+
+    _updateHasData(true);
+
+    // for (var i = 0; i < 2; i++) {
+    //   _tasks.add(YesNo.no);
+    // }
+  }
+
+  changeTaskStatus(YesNo value, int index) {
+    // _tasks[index] = value;
+    // update();
+  }
+
+  void _updateHasData(bool value) {
+    hasData = value;
     update();
   }
 }
@@ -40,18 +101,9 @@ class RoomListController extends GetxController {
 
   bool hasData = false;
 
-  List<Room> roomsList = [];
+  List<Room> _roomsList = [];
 
-  void changeRoomType(String text) {
-    if (text == 'All Rooms') {
-      _roomType = RoomType.allRooms;
-    } else if (text == 'Completed') {
-      _roomType = RoomType.complete;
-    } else {
-      _roomType = RoomType.incomplete;
-    }
-    update();
-  }
+  List<Room> get roomsList => _roomsList;
 
   @override
   void onInit() {
@@ -61,13 +113,18 @@ class RoomListController extends GetxController {
 
   void _fetchRoomsList() async {
     int? managerId = profileController.userId;
+    bool? roomStatus = getRoomStatus();
+    _updateHasData(false);
 
     Map<String, dynamic> data = {
-      "managerId": 3,
+      // "managerId": managerId,
+      // "managerId": 3, // Testing
+      "roomStatus": roomStatus,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
     };
+
     var resp = await APIFunction.call(
       APIMethods.post,
       Urls.getAllRooms,
@@ -77,15 +134,39 @@ class RoomListController extends GetxController {
       showErrorMessage: false,
     );
 
-    _updateLoader(true);
-
-    if (resp != null  && resp is List && resp.isNotEmpty) {
-      roomsList = List.from(resp);
-      update();
+    if (resp != null && resp is List && resp.isNotEmpty) {
+      _roomsList = List.from(resp);
+    } else {
+      _roomsList = [];
     }
+    _updateHasData(true);
   }
 
-  void _updateLoader(bool value) {
+  void changeRoomType(String text) {
+    if (text == AppStrings.inProgress) {
+      _roomType = RoomType.inProgress;
+    } else if (text == AppStrings.complete) {
+      _roomType = RoomType.complete;
+    } else {
+      _roomType = RoomType.allRooms;
+    }
+    update();
+    _fetchRoomsList();
+  }
+
+  bool? getRoomStatus() {
+    bool? status;
+
+    if (_roomType == RoomType.complete) {
+      status = true;
+    } else if (_roomType == RoomType.inProgress) {
+      status = false;
+    }
+
+    return status;
+  }
+
+  void _updateHasData(bool value) {
     hasData = value;
     update();
   }

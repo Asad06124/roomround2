@@ -12,6 +12,8 @@ class RoomListView extends StatelessWidget {
         init: RoomListController(),
         builder: (controller) {
           User? user = profileController.user;
+          List<Room> roomsList = controller.roomsList;
+
           return CustomContainer(
             padding: const EdgeInsets.all(0),
             appBar: CustomAppbar.simpleAppBar(
@@ -50,7 +52,10 @@ class RoomListView extends StatelessWidget {
                           children: [
                             const SizedBox(),
                             Text(
-                              AppStrings.auditTemplete,
+                              controller.hasData
+                                  ? roomsList.firstOrNull?.templateName ??
+                                      AppStrings.template
+                                  : AppStrings.template,
                               style: context.titleMedium!.copyWith(
                                 color: AppColors.textPrimary,
                               ),
@@ -59,71 +64,14 @@ class RoomListView extends StatelessWidget {
                         ),
                         SB.h(10),
                         RoomListComponents.filter(
-                            context, controller.changeRoomType),
+                          context,
+                          controller.changeRoomType,
+                        ),
                         SB.h(10),
                         Expanded(
                           child: controller.hasData
-                              ? ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: controller.roomsList.length,
-                                  itemBuilder: (context, index) {
-                                    Room room = controller.roomsList[index];
-
-                                    if (controller.roomType ==
-                                        RoomType.complete) {
-                                      return index % 2 != 0
-                                          ? EmployeeDirectoryComponents.tile(
-                                              context,
-                                              title: 'Room A${index + 1}',
-                                              onTap: index % 2 != 0
-                                                  ? () => Get.toNamed(
-                                                      AppRoutes.TASKSLISTS)
-                                                  : null,
-                                              statusWidget: RoomListComponents
-                                                  .statusWidget(context,
-                                                      isComplete:
-                                                          index % 2 != 0),
-                                            )
-                                          : const SizedBox();
-                                    } else if (controller.roomType ==
-                                        RoomType.incomplete) {
-                                      return index % 2 == 0
-                                          ? EmployeeDirectoryComponents.tile(
-                                              context,
-                                              title: 'Room A${index + 1}',
-                                              onTap: index % 2 != 0
-                                                  ? () => Get.toNamed(
-                                                      AppRoutes.TASKSLISTS)
-                                                  : null,
-                                              statusWidget: RoomListComponents
-                                                  .statusWidget(context,
-                                                      isComplete:
-                                                          index % 2 != 0),
-                                            )
-                                          : const SizedBox();
-                                    } else {
-                                      String? roomStatus = room.roomStatus;
-                                      bool isCompleted = false;
-                                      if (roomStatus == 'Completed') {
-                                        isCompleted = true;
-                                      }
-                                      return EmployeeDirectoryComponents.tile(
-                                        context,
-                                        title: room.roomName,
-                                        onTap: index % 2 != 0
-                                            ? () => Get.toNamed(
-                                                AppRoutes.TASKSLISTS)
-                                            : null,
-                                        statusWidget:
-                                            RoomListComponents.statusWidget(
-                                          context,
-                                          isComplete: isCompleted,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                )
-                              : CustomLoader(),
+                              ? _buildRoomsList(context, roomsList)
+                              : const CustomLoader(),
                         )
                       ],
                     ),
@@ -133,5 +81,71 @@ class RoomListView extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Widget _buildRoomsList(BuildContext context, List<Room> list) {
+    if (list.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          Room room = list[index];
+
+          /* if (controller.roomType == RoomType.complete) {
+            return index % 2 != 0
+                ? EmployeeDirectoryComponents.tile(
+                    context,
+                    title: 'Room A${index + 1}',
+                    onTap: index % 2 != 0
+                        ? () => Get.toNamed(AppRoutes.TASKSLISTS)
+                        : null,
+                    statusWidget: RoomListComponents.statusWidget(context,
+                        isComplete: index % 2 != 0),
+                  )
+                : const SizedBox();
+          } else if (controller.roomType == RoomType.inProgress) {
+            return index % 2 == 0
+                ? EmployeeDirectoryComponents.tile(
+                    context,
+                    title: 'Room A${index + 1}',
+                    onTap: index % 2 != 0
+                        ? () => Get.toNamed(AppRoutes.TASKSLISTS)
+                        : null,
+                    statusWidget: RoomListComponents.statusWidget(context,
+                        isComplete: index % 2 != 0),
+                  )
+                : const SizedBox();
+          } else { */
+          bool isCompleted = room.roomStatus == true;
+
+          return EmployeeDirectoryComponents.tile(
+            context,
+            title: room.roomName,
+            onTap: () => Get.toNamed(
+              AppRoutes.TASKSLISTS,
+              arguments: {
+                "roomId": room.roomId,
+                "roomName": room.roomName,
+              },
+            ),
+            statusWidget: RoomListComponents.statusWidget(
+              context,
+              isComplete: isCompleted,
+            ),
+          );
+          // }
+        },
+      );
+    } else {
+      // No Rooms found
+      return Center(
+        child: Text(
+          AppStrings.noRoomsFound,
+          style: context.bodyLarge!.copyWith(
+            color: AppColors.black,
+          ),
+        ),
+      );
+    }
   }
 }

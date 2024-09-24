@@ -17,4 +17,6 @@ enum APIMethods {
   patch,
 }
 
+enum RoomType { allRooms, complete, inProgress }
+
 enum LoggerType { debug, info, warning, error }

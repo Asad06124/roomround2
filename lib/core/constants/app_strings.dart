@@ -3,6 +3,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 class AppStrings {
   static const String about = "About";
   static const String account = "Account";
+  static const String allRooms = "All Rooms";
   static const String alreadyRegistered = "Already registered?";
   static const String andText = "and";
   static const String assign = "Assign";
@@ -22,7 +23,9 @@ class AppStrings {
   static const String codeSendTo = "Code send to";
   static const String comment = 'Comment';
   static const String comments = 'Comments';
+  static const String complete = "Complete";
   static const String completeTask = 'Complete Task';
+  static const String completed = "Completed";
   static const String confirmPassword = "Confirm password";
   static const String connect = "Connect";
   static const String connecting = "Connecting.....";
@@ -56,7 +59,9 @@ class AppStrings {
   static const String forgotYourPassword = "Forgot your password?";
   static const String help = "Help";
   static const String home = "Home";
+  static const String inProgress = "In Progress";
   static const String inbox = "Inbox";
+  static const String incomplete = "Incomplete";
   static const String keepUpDataWithSatausOf =
       "Keep up to date with the status of your ${AppConstants.appName}";
 
@@ -83,6 +88,8 @@ class AppStrings {
 
   static const String noNotificationFound = 'No Notifications found';
   static const String noResultsFound = "No results found!";
+  static const String noRoomsFound = "No rooms found";
+  static const String noTasksFound = "No tasks found";
   static const String notification = 'Notifications';
   static const String notificationSettings = "Notification Settings";
   static const String oldPassword = "Old password";
@@ -120,6 +127,7 @@ class AppStrings {
   static const String successDescription = 'Your device is connected';
   static const String takePhoto = "Take Photo";
   static const String teamMember = "Team Members";
+  static const String template = "Template";
   static const String thisCodeExpireIn = 'This code will expired in';
   static const String ticket = "Ticket";
   static const String ticketDetails = "Ticket Details";
