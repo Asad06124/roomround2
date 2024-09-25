@@ -3,6 +3,8 @@ import 'package:roomrounds/core/constants/imports.dart';
 class AppStrings {
   static const String about = "About";
   static const String account = "Account";
+  static const String allEmployees = "All Employees";
+  static const String allManagers = "All Managers";
   static const String allRooms = "All Rooms";
   static const String alreadyRegistered = "Already registered?";
   static const String andText = "and";
@@ -111,6 +113,7 @@ class AppStrings {
   static const String searchEmployee = "Search employee";
   static const String searchRoom = "Search Room";
   static const String seeAll = 'See all';
+  static const String select = "Select";
   static const String send = "Send";
   static const String sendEmail = "Send email";
   static const String sessions = "Sessions";

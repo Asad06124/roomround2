@@ -4,8 +4,9 @@ class CustomeDropDown {
   static Widget simple<T>(
     BuildContext context, {
     required List<T> list,
+    T? initialItem,
     required Function(T value) onSelect,
-    String hintText = "All Emplyees",
+    String hintText = AppStrings.select,
     double borderRadius = 5,
     List<String>? labels,
     bool borderRadiusBoth = true,
@@ -22,7 +23,7 @@ class CustomeDropDown {
       child: CustomDropdown<T>(
         hintText: hintText,
         items: list,
-        initialItem: list[0],
+        initialItem: initialItem,
         onChanged: (value) {
           if (value != null) {
             onSelect(value);

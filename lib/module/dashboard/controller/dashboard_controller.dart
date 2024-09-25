@@ -1,4 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 import 'package:roomrounds/module/profile/views/profile_view.dart';
 
 class DashBoardController extends GetxController {
@@ -32,6 +33,16 @@ class DashBoardController extends GetxController {
   final labels = [AppStrings.home, AppStrings.settings, AppStrings.profile];
 
   Widget get curruntScreen => _screenList[_curruntIndex];
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initDepartments();
+  }
+
+  void _initDepartments() async {
+    departmentsController = Get.put(DepartmentsController());
+  }
 
   buttumButtunClick(int indx) {
     _curruntIndex = indx;

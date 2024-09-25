@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/constants/app_globals.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
@@ -49,17 +50,16 @@ class EmployeeDirectoryView extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CustomeDropDown.simple(context,
-                          list: ['All Employees', 'All Managers'],
-                          onSelect: (String value) {}),
-                      CustomeDropDown.simple(context,
-                          list: [
-                            'Departments',
-                            'Nursing, DON',
-                            'Administration ',
-                            'Nursing, ADON'
-                          ],
-                          onSelect: (String value) {}),
+                      CustomeDropDown.simple(
+                        context,
+                        list: [AppStrings.allEmployees, AppStrings.allManagers],
+                        onSelect: (String value) {},
+                      ),
+                      CustomeDropDown.simple(
+                        context,
+                        list: departmentsController.getDepartmentsNames(),
+                        onSelect: departmentsController.onDepartmentSelect,
+                      ),
                     ],
                   ),
                   SB.h(15),
@@ -72,6 +72,9 @@ class EmployeeDirectoryView extends StatelessWidget {
                       return null;
                     },
                     suffixIcon: AppImages.search,
+                    onSuffixTap: (){
+                      // Search
+                    },
                   ),
                   SB.h(10),
                   Expanded(

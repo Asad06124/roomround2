@@ -13,4 +13,8 @@ class Urls {
   static const String _ticket = "/ticket";
   static const String getAllRooms = "$_ticket/getAllRooms";
   static const String getAllTasks = "$_ticket/getAllTasks";
+
+  // Departments
+  static const String _departments = "/departments";
+  static const String getAllDepartments = "$_departments/getAll";
 }
