@@ -1,5 +1,6 @@
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/department/department_model.dart';
+import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 enum TicketsType { assignedMe, assignedTo, sendTo }
@@ -7,6 +8,58 @@ enum TicketsType { assignedMe, assignedTo, sendTo }
 class EmployeeDirectoryController extends GetxController {
   TicketsType _ticketsType = TicketsType.assignedMe;
   TicketsType get ticketsType => _ticketsType;
+
+  final TextEditingController searchTextField = TextEditingController();
+
+  List<Employee> _searchResults = [];
+
+  List<Employee> get searchResults => _searchResults;
+
+  bool hasData = false;
+
+  bool managersOnly = false;
+
+  @override
+  void onInit() {
+    super.onInit();
+    onSearch('');
+  }
+
+  void onSearch(String? text) async {
+    _updateHasData(false);
+
+    int? departmentId = departmentsController.selectedDepartmentId;
+
+    Map<String, dynamic> data = {
+      "search": text?.trim(),
+      "isManager": managersOnly,
+      "departmentId": departmentId,
+      "pageNo": 1,
+      "size": 20,
+      "isPagination": false,
+    };
+
+    var resp = await APIFunction.call(
+      APIMethods.post,
+      Urls.getAllEmployee,
+      dataMap: data,
+      fromJson: Employee.fromJson,
+      showLoader: false,
+      showErrorMessage: false,
+    );
+
+    if (resp != null && resp is List && resp.isNotEmpty) {
+      _searchResults = List.from(resp);
+    } else {
+      _searchResults = [];
+    }
+    _updateHasData(true);
+  }
+
+  void _updateHasData(bool value) {
+    hasData = value;
+    update();
+  }
 
   void changeTicketsType(String val) {
     if (userData.type == UserType.employee) {
@@ -38,6 +91,7 @@ class DepartmentsController extends GetxController {
   Department? _selectedDepartment;
 
   Department? get selectedDepartment => _selectedDepartment;
+  int? get selectedDepartmentId => _selectedDepartment?.departmentId;
 
   bool hasData = false;
 
@@ -77,12 +131,12 @@ class DepartmentsController extends GetxController {
     List<String> names = [];
 
     if (_departments.isNotEmpty) {
-      _departments.forEach((dep) {
+      for (var dep in _departments) {
         String? name = dep.departmentName?.trim();
         if (name != null && name.isNotEmpty) {
           names.add(name);
         }
-      });
+      }
     }
 
     return names;

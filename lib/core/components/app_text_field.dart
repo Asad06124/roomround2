@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -11,6 +13,7 @@ class CustomTextField extends StatefulWidget {
     this.readOnly = false,
     this.enabled = true,
     this.keyboardType,
+    this.textInputAction,
     this.hintTextColor = AppColors.gry,
     this.textColor = AppColors.black,
     this.suffixIcon,
@@ -18,6 +21,7 @@ class CustomTextField extends StatefulWidget {
     this.textAlign,
     this.textFieldBorder,
     this.onChange,
+    this.onFieldSubmitted,
     this.textCapitalization = TextCapitalization.sentences,
     this.fillColor = AppColors.white,
     this.borderColor = AppColors.white,
@@ -40,6 +44,7 @@ class CustomTextField extends StatefulWidget {
   final bool enabled;
   final bool isShadow;
   final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
   final Color textColor, fillColor, borderColor;
   final Color hintTextColor, sufficIconBackgroundColor;
   final Widget? prefixIcon;
@@ -48,6 +53,7 @@ class CustomTextField extends StatefulWidget {
   final TextAlign? textAlign;
   final InputBorder? textFieldBorder;
   final Function(String value)? onChange;
+  final Function(String)? onFieldSubmitted;
   final TextCapitalization? textCapitalization;
   final bool showBorder;
   final int maxLines;
@@ -110,10 +116,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
             enabled: widget.enabled,
             controller: widget.controller,
             onChanged: widget.onChange,
+            onFieldSubmitted: widget.onFieldSubmitted,
             textCapitalization:
                 widget.textCapitalization ?? TextCapitalization.none,
             textAlign: widget.textAlign ?? TextAlign.start,
             keyboardType: widget.keyboardType,
+            textInputAction: widget.textInputAction,
             maxLines: widget.maxLines,
             validator: widget.validator ??
                 (value) => value!.toString().trim().isEmpty
@@ -300,5 +308,20 @@ class SimpleTextField extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       borderSide: const BorderSide(color: Colors.transparent),
     );
+  }
+}
+
+class Debouncer {
+  Debouncer({this.milliseconds = 600});
+
+  final int milliseconds;
+
+  Timer? _timer;
+
+  run(VoidCallback action) {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
   }
 }

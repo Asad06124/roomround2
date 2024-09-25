@@ -17,4 +17,8 @@ class Urls {
   // Departments
   static const String _departments = "/departments";
   static const String getAllDepartments = "$_departments/getAll";
+
+  // Employee
+  static const String _employee = "/employee";
+  static const String getAllEmployee = "$_employee/getAll";
 }

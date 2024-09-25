@@ -74,7 +74,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.EMPLOYEEDIRECTORy,
-      page: () => const EmployeeDirectoryView(),
+      page: () =>  EmployeeDirectoryView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

@@ -3,8 +3,8 @@ import 'package:roomrounds/core/constants/imports.dart';
 class CustomeTiles {
   static Widget employeeTile(BuildContext context,
       {Widget? image,
-      String name = "Anthony Roy",
-      String desc = "4:30 PM",
+      String? name,
+      String? desc,
       GestureTapCallback? onPressed,
       int? notificationCount}) {
     return Column(
@@ -34,7 +34,7 @@ class CustomeTiles {
                     SizedBox(
                       width: context.width * 0.65,
                       child: Text(
-                        name,
+                        name??'',
                         maxLines: 1,
                         style: context.titleSmall!.copyWith(
                           color: AppColors.darkGrey,
@@ -43,7 +43,7 @@ class CustomeTiles {
                       ),
                     ),
                     Text(
-                      desc,
+                      desc??'',
                       style: context.bodySmall!.copyWith(
                         color: AppColors.darkGrey,
                         fontWeight: FontWeight.w500,
