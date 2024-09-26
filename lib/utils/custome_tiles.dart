@@ -1,10 +1,11 @@
+import 'package:roomrounds/core/components/app_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomeTiles {
   static Widget employeeTile(BuildContext context,
-      {Widget? image,
-      String? name,
+      {String? name,
       String? desc,
+      String? image,
       GestureTapCallback? onPressed,
       int? notificationCount}) {
     return Column(
@@ -19,14 +20,21 @@ class CustomeTiles {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  child: Assets.images.person.image(
-                    height: 40,
-                    width: 40,
-                    fit: BoxFit.cover,
-                  ),
+                AppImage.network(
+                  imageUrl: image ?? AppImages.personPlaceholder,
+                  borderRadius: BorderRadius.circular(20),
+                  fit: BoxFit.cover,
+                  height: 40,
+                  width: 40,
                 ),
+                // CircleAvatar(
+                //   radius: 20,
+                //   child: Assets.images.person.image(
+                //     height: 40,
+                //     width: 40,
+                //     fit: BoxFit.cover,
+                //   ),
+                // ),
                 SB.w(20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +42,7 @@ class CustomeTiles {
                     SizedBox(
                       width: context.width * 0.65,
                       child: Text(
-                        name??'',
+                        name ?? '',
                         maxLines: 1,
                         style: context.titleSmall!.copyWith(
                           color: AppColors.darkGrey,
@@ -43,7 +51,7 @@ class CustomeTiles {
                       ),
                     ),
                     Text(
-                      desc??'',
+                      desc ?? '',
                       style: context.bodySmall!.copyWith(
                         color: AppColors.darkGrey,
                         fontWeight: FontWeight.w500,

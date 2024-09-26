@@ -1,4 +1,4 @@
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:logger/logger.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
@@ -29,7 +29,7 @@ class Utilities {
     bool isConnected = false;
 
     try {
-      isConnected = await InternetConnectionChecker().hasConnection;
+      isConnected = await InternetConnection().hasInternetAccess;
     } catch (e) {
       customLogger(
         e.toString(),

@@ -8,6 +8,8 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User? user = profileController.user;
+    UserType userType = profileController.userType;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -21,11 +23,11 @@ class ProfileView extends StatelessWidget {
               //     : "Department Manager",
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SB.h(25),
+                  // SB.h(25),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -36,40 +38,52 @@ class ProfileView extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      InkWell(
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                            Text(
+                              AppStrings.edit,
+                              style: context.titleMedium!.copyWith(
+                                color: AppColors.deepSkyBlue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: AppColors.deepSkyBlue,
+                              size: 15,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   SB.h(10),
-                  Text(
-                    AppStrings.edit,
-                    style: context.titleMedium!.copyWith(
-                      color: AppColors.deepSkyBlue,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SB.h(20),
+                  // SB.h(20),
                   SettingsComponents.tile(context, title: user?.username),
                   SettingsComponents.tile(context, title: "Roye"),
                   SettingsComponents.tile(context, title: "Male"),
                   SettingsComponents.tile(context, title: user?.email),
                   SettingsComponents.tile(context, title: "**********"),
-                  if (userData.type == UserType.manager)
-                    GestureDetector(
+                  if (userType == UserType.manager)
+                    InkWell(
                       onTap: () => Get.toNamed(AppRoutes.TEAMMEMBERS),
                       child: Text(
                         AppStrings.teamMember,
                         style: context.titleSmall!.copyWith(
+                          fontWeight: FontWeight.w600,
                           color: AppColors.black,
                         ),
                       ),
                     ),
                   SB.h(10),
                   InkWell(
-                    onTap: () {
-                      profileController.logout();
-                    },
+                    onTap: () => profileController.logout(),
                     child: Text(
                       AppStrings.logout,
                       style: context.titleSmall!.copyWith(
+                        fontWeight: FontWeight.w600,
                         color: AppColors.black,
                       ),
                     ),

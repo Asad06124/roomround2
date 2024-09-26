@@ -80,6 +80,7 @@ class AppStrings {
   static const String member = "Member";
   static const String messageAndResponse = "Messages & Responses";
   static const String messages = "Messages";
+  static const String myEmployees = "My Employees";
   static const String myTicket = "My Tickets";
   static const String newPassword = 'New password';
   static const String next = 'Next';

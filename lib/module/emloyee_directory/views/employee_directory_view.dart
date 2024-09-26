@@ -61,11 +61,8 @@ class EmployeeDirectoryView extends StatelessWidget {
                           children: [
                             CustomeDropDown.simple(
                               context,
-                              list: [
-                                AppStrings.allEmployees,
-                                AppStrings.allManagers
-                              ],
-                              onSelect: (String value) {},
+                              list: controller.employeeTypes,
+                              onSelect: controller.onChangeEmployeeType,
                             ),
                             CustomeDropDown.simple(
                               context,
@@ -129,6 +126,7 @@ class EmployeeDirectoryView extends StatelessWidget {
             context,
             name: employee.employeeName,
             desc: employee.departmentName,
+            image: employee.imageKey,
           );
         },
       );

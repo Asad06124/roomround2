@@ -15,25 +15,53 @@ class EmployeeDirectoryController extends GetxController {
 
   List<Employee> get searchResults => _searchResults;
 
+  final List<String> _employeeTypes = [
+    AppStrings.allEmployees,
+    AppStrings.allManagers,
+  ];
+
+  List<String> get employeeTypes => _employeeTypes;
+
   bool hasData = false;
 
   bool managersOnly = false;
 
+  bool myEmployees = false;
+
   @override
   void onInit() {
     super.onInit();
+    _addMyEmployeesType();
+    _resetSelectedDepartment();
     onSearch('');
+  }
+
+  void _resetSelectedDepartment() {
+    departmentsController.onDepartmentSelect(null);
+  }
+
+  void _addMyEmployeesType() {
+    UserType? userType = profileController.userType;
+
+    if (userType == UserType.manager) {
+      _employeeTypes.add(AppStrings.myEmployees);
+    }
   }
 
   void onSearch(String? text) async {
     _updateHasData(false);
 
     int? departmentId = departmentsController.selectedDepartmentId;
+    int? managerId;
+    if (myEmployees) {
+      managerId = profileController.userId;
+    }
 
     Map<String, dynamic> data = {
       "search": text?.trim(),
       "isManager": managersOnly,
       "departmentId": departmentId,
+      "managerId": managerId,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
@@ -54,6 +82,26 @@ class EmployeeDirectoryController extends GetxController {
       _searchResults = [];
     }
     _updateHasData(true);
+  }
+
+  void onChangeEmployeeType(String? type) {
+    switch (type) {
+      case AppStrings.myEmployees:
+        managersOnly = false;
+        myEmployees = true;
+        break;
+      case AppStrings.allManagers:
+        managersOnly = true;
+        myEmployees = false;
+        break;
+      case AppStrings.allEmployees:
+        managersOnly = false;
+        myEmployees = false;
+        break;
+      default:
+        break;
+    }
+    onSearch(searchTextField.text);
   }
 
   void _updateHasData(bool value) {
@@ -151,6 +199,8 @@ class DepartmentsController extends GetxController {
           _selectedDepartment = department;
         }
       }
+    } else {
+      _selectedDepartment = null;
     }
   }
 

@@ -74,7 +74,7 @@ class ProfileComponents {
                   right: 0,
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 13, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     decoration: BoxDecoration(
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(15),
