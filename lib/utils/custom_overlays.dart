@@ -1,11 +1,15 @@
 import 'package:get/get.dart';
 import 'package:roomrounds/core/constants/app_colors.dart';
 import 'package:roomrounds/core/constants/app_strings.dart';
+import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/utils/custom_loader.dart';
 
 class CustomOverlays {
   static void dismissLoader() {
-    if (Get.isDialogOpen == true) Get.back(closeOverlays: true);
+    bool? isDialogOpen = Get.isDialogOpen;
+
+    customLogger("IsDialogOpen: $isDialogOpen");
+    if (isDialogOpen == true) Get.back(closeOverlays: true);
   }
 
   static void dismissToast() {

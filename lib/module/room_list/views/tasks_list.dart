@@ -1,11 +1,11 @@
+import 'package:roomrounds/core/apis/models/room/room_model.dart';
 import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_list/components/room_list_components.dart';
-import 'package:roomrounds/module/room_list/controller/room_list_controller.dart';
-import 'package:roomrounds/utils/custome_dialogue.dart';
+import 'package:roomrounds/module/room_list/controller/room_tasks_controller.dart';
 
 class TasksList extends StatelessWidget {
-  const TasksList({Key? key}) : super(key: key);
+  const TasksList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +24,16 @@ class TasksList extends StatelessWidget {
           desc: profileController.user?.username,
         ),
       ),
-      child: GetBuilder<TaskListController>(
-          init: TaskListController(),
+      child: GetBuilder<RoomTasksController>(
+          init: RoomTasksController(),
           builder: (controller) {
-            String? roomName = controller.roomName?.trim();
+            String? roomName, templateName;
+            Room? room = controller.room;
+            if (room != null) {
+              roomName = room.roomName?.trim();
+              templateName = room.templateName?.trim();
+            }
+
             return Column(
               children: [
                 Expanded(
@@ -51,7 +57,7 @@ class TasksList extends StatelessWidget {
                           children: [
                             const SizedBox(),
                             Text(
-                              AppStrings.auditTempleteTasks,
+                              templateName ?? AppStrings.template,
                               style: context.titleMedium!.copyWith(
                                 color: AppColors.textPrimary,
                               ),
@@ -81,7 +87,7 @@ class TasksList extends StatelessWidget {
     );
   }
 
-  Widget _buildTasksList(BuildContext context, TaskListController controller,
+  Widget _buildTasksList(BuildContext context, RoomTasksController controller,
       List<RoomTask> list) {
     if (list.isNotEmpty) {
       return ListView.builder(
@@ -89,20 +95,27 @@ class TasksList extends StatelessWidget {
         itemCount: list.length,
         itemBuilder: (context, index) {
           RoomTask task = list[index];
+          bool isTaskCompleted = task.taskStatus ?? false;
 
           return EmployeeDirectoryComponents.tile(
             context,
-            prefixWidget: const Icon(
-              Icons.keyboard_arrow_down_outlined,
-              color: AppColors.gry,
-              size: 20,
-            ),
-            onTap: () {
-              _showYesNoDialog();
-            },
             title: task.taskName,
-            statusWidget:
-                RoomListComponents.yesNoWidget(context, controller, index),
+            showPrefixDropdown: true,
+            trailingWidget: RoomListComponents.statusWidget(
+              context,
+              isComplete: isTaskCompleted,
+            ),
+            subtitleWidget: IgnorePointer(
+              ignoring: isTaskCompleted,
+              child: RoomListComponents.yesNoWidget(
+                context,
+                task.userSelection,
+                (newVal) => controller.changeTaskStatus(index, newVal),
+              ),
+            ),
+            // onTap: () {
+            //   _showYesNoDialog();
+            // },
           );
         },
       );
@@ -119,10 +132,10 @@ class TasksList extends StatelessWidget {
     }
   }
 
-  void _showYesNoDialog() {
+  /*  void _showYesNoDialog() {
     Get.dialog(
       Dialog(
-        child: YesNoDialouge(
+        child: YesNoDialog(
           title: 'Is audit findings needs to be arranged?',
           onYesPressed: () {
             Get.back();
@@ -139,5 +152,5 @@ class TasksList extends StatelessWidget {
       const Dialog(child: ArrangeAuditFunding()),
       barrierDismissible: false,
     );
-  }
+  } */
 }

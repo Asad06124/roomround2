@@ -7,15 +7,16 @@ class EmployeeDirectoryComponents {
   static Widget tile(BuildContext context,
       {String? title,
       String? status,
-      bool isAcvtive = false,
-      Widget? prefixWidget,
+      bool showIsActiveDot = false,
+      bool showPrefixDropdown = false,
       bool titleActive = true,
       bool isUnderline = true,
       Color fillColor = AppColors.white,
       Color statusTextColor = AppColors.black,
-      Widget? statusWidget,
-      GestureTapCallback? onTap,
-      GestureTapCallback? onStatusPressed}) {
+      Widget? trailingWidget,
+      Widget? subtitleWidget,
+      GestureTapCallback? onStatusPressed,
+      GestureTapCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -28,49 +29,66 @@ class EmployeeDirectoryComponents {
         ),
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (prefixWidget != null) ...{
-              prefixWidget,
-              SB.w(5),
-            },
-            Expanded(
-              child: Text(
-                title ?? '',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: context.bodyLarge!.copyWith(
-                  color: titleActive ? AppColors.textPrimary : AppColors.gry,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            InkWell(
-              onTap: onStatusPressed,
-              child: statusWidget ??
-                  Text(
-                    status ?? '',
-                    style: context.bodyLarge!.copyWith(
-                      color: Colors.transparent,
-                      decoration: isUnderline ? TextDecoration.underline : null,
-                      decorationColor: isUnderline ? statusTextColor : null,
-                      fontWeight: FontWeight.w600,
-                      shadows: [
-                        Shadow(
-                            color: statusTextColor,
-                            offset: Offset(0, isUnderline ? -2 : 0.01))
-                      ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (showPrefixDropdown)
+                  Container(
+                    margin: const EdgeInsets.only(right: 5),
+                    child: const Icon(
+                      Icons.keyboard_arrow_down_outlined,
+                      color: AppColors.gry,
+                      size: 20,
                     ),
                   ),
+                Expanded(
+                  child: Text(
+                    title ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.bodyLarge!.copyWith(
+                      color:
+                          titleActive ? AppColors.textPrimary : AppColors.gry,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                if (trailingWidget != null) trailingWidget,
+                if (status != null && status.isNotEmpty)
+                  InkWell(
+                    onTap: onStatusPressed,
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: Text(
+                        status,
+                        style: context.bodyLarge!.copyWith(
+                          color: Colors.transparent,
+                          decoration:
+                              isUnderline ? TextDecoration.underline : null,
+                          decorationColor: isUnderline ? statusTextColor : null,
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              color: statusTextColor,
+                              offset: Offset(0, isUnderline ? -2 : 0.01),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                CircleAvatar(
+                  radius: 4,
+                  backgroundColor:
+                      showIsActiveDot ? AppColors.orange : Colors.transparent,
+                ),
+              ],
             ),
-            SB.w(statusWidget == null ? 5 : 0),
-            CircleAvatar(
-              radius: 4,
-              backgroundColor:
-                  isAcvtive ? AppColors.orange : Colors.transparent,
-            ),
+            if (subtitleWidget != null) subtitleWidget,
           ],
         ),
       ),

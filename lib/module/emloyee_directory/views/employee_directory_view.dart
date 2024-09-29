@@ -122,11 +122,16 @@ class EmployeeDirectoryView extends StatelessWidget {
         itemBuilder: (context, index) {
           Employee employee = list[index];
 
+          String? image;
+          if (employee.imageKey?.isURL == true) {
+            image = employee.imageKey;
+          }
+
           return CustomeTiles.employeeTile(
             context,
             name: employee.employeeName,
             desc: employee.departmentName,
-            image: employee.imageKey,
+            image: image,
           );
         },
       );

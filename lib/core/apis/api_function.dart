@@ -21,6 +21,7 @@ class APIFunction {
     bool showErrorMessage = true,
     bool showSuccessMessage = false,
     bool getOnlyStatusCode = false,
+    bool getStatusOnly = false,
     Function(Map<String, dynamic>)? fromJson,
   }) async {
     try {
@@ -93,19 +94,20 @@ class APIFunction {
         if (response.statusCode == 200 && (baseModel.succeeded ?? false)) {
           // log(baseModel.result.toString());
 
-          if (baseModel.data != null) {
-            if (fromJson != null) {
-              if (baseModel.data is List) {
-                result = [];
-                for (final data in baseModel.data) {
-                  result.add(fromJson(data));
-                }
-                customLogger("Result: ${result.length}");
-              } else {
-                // Logger().e(baseModel.data);
-                result = fromJson(baseModel.data);
-                // customLogger("Result: $result");
+          var respData = baseModel.data;
+          if (respData != null && fromJson != null) {
+            if (respData is List) {
+              result = [];
+              for (final data in respData) {
+                result.add(fromJson(data));
               }
+              customLogger("Total Results: ${result.length}");
+            } else {
+              // if (respData is Map) {
+              // Logger().e(baseModel.data);
+              result = fromJson(respData);
+              // customLogger("Result: $result");
+              // }
             }
           }
 
@@ -113,7 +115,7 @@ class APIFunction {
             CustomOverlays.showToastMessage(
                 message: baseModel.message, isSuccess: true);
           }
-          return result ?? baseModel.data ?? baseModel.succeeded ?? false;
+          return result ?? respData ?? baseModel.succeeded ?? false;
         } else if (response.statusCode == 401 &&
             profileController.userToken?.isNotEmpty == true) {
           // Logout

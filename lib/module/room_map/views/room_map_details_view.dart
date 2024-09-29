@@ -81,14 +81,14 @@ class RoomMapDetailsView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              RoomMapComponents.radioButtton<YesNo>(
+                              RoomMapComponents.radioButton<YesNo>(
                                   context,
                                   YesNo.yes,
                                   controller.isUrgent,
                                   AppStrings.yes, (value) {
                                 controller.onUrgentChange(value);
                               }),
-                              RoomMapComponents.radioButtton<YesNo>(
+                              RoomMapComponents.radioButton<YesNo>(
                                   context,
                                   YesNo.no,
                                   controller.isUrgent,

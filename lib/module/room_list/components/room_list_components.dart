@@ -1,31 +1,32 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/room_list/controller/room_list_controller.dart';
 
 class RoomListComponents {
-  static Widget yesNoWidget(
-      BuildContext context, TaskListController controller, int index) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        RoomMapComponents.radioButtton<YesNo>(
+  static Widget yesNoWidget(BuildContext context, YesNo? selectedValue,
+      Function(YesNo) onTaskValueChanged) {
+    return Container(
+      margin: EdgeInsets.only(top: 15, left: 25),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // SB.w(25),
+          RoomMapComponents.radioButton<YesNo>(
             context,
-            YesNo.yes,
-            YesNo.no,
-            //  ' controller.tasks[index]',
-            AppStrings.yes,
-            (value) => controller.changeTaskStatus(value, index),
-            width: 0),
-        SB.w(10),
-        RoomMapComponents.radioButtton<YesNo>(
-          context,
-          YesNo.no,
-          YesNo.yes,
-          // controller.tasks[index],
-          AppStrings.no,
-          width: 0,
-          (value) => controller.changeTaskStatus(value, index),
-        ),
-      ],
+            YesNo.yes, // AssignedValue
+            selectedValue, // SelectedValue
+            AppStrings.yes, // Title
+            (value) => onTaskValueChanged(value),
+            width: context.width * 0.4,
+          ),
+          RoomMapComponents.radioButton<YesNo>(
+            context,
+            YesNo.no, // AssignedValue
+            selectedValue, // SelectedValue
+            AppStrings.no, // Title
+            (value) => onTaskValueChanged(value),
+            width: 0,
+          ),
+        ],
+      ),
     );
   }
 
@@ -35,7 +36,7 @@ class RoomListComponents {
       decoration: BoxDecoration(
         color: isComplete
             ? AppColors.green.withOpacity(0.5)
-            : AppColors.yellowLight.withOpacity(0.5),
+            : AppColors.yellowLight.withOpacity(0.4),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(

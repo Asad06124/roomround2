@@ -132,12 +132,12 @@ class RoomMapComponents {
     );
   }
 
-  static Widget radioButtton<T>(BuildContext context, T assignedVal,
-      T selectedVal, String title, Function(T value) onSelect,
+  static Widget radioButton<T>(BuildContext context, T assignedVal,
+      T? selectedVal, String title, Function(T value)? onSelect,
       {double? width}) {
     width ?? context.width * 0.5 - 30;
     return InkWell(
-      onTap: () => onSelect(assignedVal),
+      onTap: onSelect != null ? () => onSelect(assignedVal) : null,
       child: SizedBox(
         width: width == 0 ? null : width,
         child: Row(

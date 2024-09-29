@@ -121,14 +121,10 @@ class RoomListView extends StatelessWidget {
           return EmployeeDirectoryComponents.tile(
             context,
             title: room.roomName,
-            onTap: () => Get.toNamed(
-              AppRoutes.TASKSLISTS,
-              arguments: {
-                "roomId": room.roomId,
-                "roomName": room.roomName,
-              },
-            ),
-            statusWidget: RoomListComponents.statusWidget(
+            onTap: () {
+              Get.toNamed(AppRoutes.TASKSLISTS, arguments: room);
+            },
+            trailingWidget: RoomListComponents.statusWidget(
               context,
               isComplete: isCompleted,
             ),

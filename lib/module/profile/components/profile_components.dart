@@ -111,7 +111,8 @@ class ProfileComponents {
 
   static Widget teamTile(
     BuildContext context, {
-    String name = "Anthony Roy",
+    String? title,
+    String? subtitle,
     bool isAdmin = false,
     GestureDetector? onPressed,
   }) {
@@ -133,11 +134,30 @@ class ProfileComponents {
                 ),
               ),
               SB.w(20),
-              Text(
-                name,
-                style: context.bodyLarge!.copyWith(
-                  color: AppColors.darkGrey,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.bodyLarge!.copyWith(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (subtitle != null)
+                      Text(
+                        subtitle ,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.bodyLarge!.copyWith(
+                          color: AppColors.darkGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                  ],
                 ),
               ),
               if (isAdmin) ...{

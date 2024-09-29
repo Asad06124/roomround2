@@ -1,3 +1,5 @@
+import 'package:roomrounds/core/constants/app_enum.dart';
+
 class RoomTask {
   int? assignTemplateRoomId;
   int? assignTemplateTaskId;
@@ -10,6 +12,8 @@ class RoomTask {
   bool? roomStatus;
   bool? taskStatus;
 
+  YesNo? userSelection;
+
   RoomTask({
     this.assignTemplateRoomId,
     this.assignTemplateTaskId,
@@ -20,7 +24,8 @@ class RoomTask {
     this.roomName,
     this.taskName,
     this.roomStatus,
-    this.taskStatus
+    this.taskStatus,
+    this.userSelection,
   });
 
   RoomTask.fromJson(Map<String, dynamic> json) {

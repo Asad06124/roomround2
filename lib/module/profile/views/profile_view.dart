@@ -68,7 +68,10 @@ class ProfileView extends StatelessWidget {
                   SettingsComponents.tile(context, title: "**********"),
                   if (userType == UserType.manager)
                     InkWell(
-                      onTap: () => Get.toNamed(AppRoutes.TEAMMEMBERS),
+                      onTap: () => Get.toNamed(
+                        AppRoutes.TEAMMEMBERS,
+                        arguments: {"myTeam": true},
+                      ),
                       child: Text(
                         AppStrings.teamMember,
                         style: context.titleSmall!.copyWith(

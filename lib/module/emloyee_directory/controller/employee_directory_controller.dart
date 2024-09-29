@@ -2,6 +2,7 @@ import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/constants/utilities.dart';
 
 enum TicketsType { assignedMe, assignedTo, sendTo }
 
@@ -45,6 +46,18 @@ class EmployeeDirectoryController extends GetxController {
 
     if (userType == UserType.manager) {
       _employeeTypes.add(AppStrings.myEmployees);
+    }
+    try {
+      bool? searchTeam = Get.arguments?["myTeam"] as bool?;
+      if (searchTeam != null) {
+        myEmployees = searchTeam;
+      }
+    } catch (e) {
+      customLogger(
+        "$e",
+        error: '_addMyEmployeesType',
+        type: LoggerType.error,
+      );
     }
   }
 

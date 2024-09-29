@@ -1,8 +1,5 @@
-
-
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
-
 
 class AssignedTasksView extends StatelessWidget {
   const AssignedTasksView({super.key});
@@ -92,7 +89,7 @@ class AssignedTasksView extends StatelessWidget {
                         return userData.type == UserType.employee
                             ? EmployeeDirectoryComponents.tile(
                                 context,
-                                isAcvtive: controller.ticketsType ==
+                                showIsActiveDot: controller.ticketsType ==
                                         TicketsType.assignedMe
                                     ? index % 2 == 0
                                     : false,
@@ -125,7 +122,7 @@ class AssignedTasksView extends StatelessWidget {
                               )
                             : EmployeeDirectoryComponents.tile(
                                 context,
-                                isAcvtive: controller.ticketsType ==
+                                showIsActiveDot: controller.ticketsType ==
                                     TicketsType.assignedMe,
                                 status: controller.ticketsType ==
                                         TicketsType.assignedMe
