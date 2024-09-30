@@ -66,7 +66,7 @@ class AssignedTasksView extends StatelessWidget {
                         borderRadius: 20,
                         closedFillColor: AppColors.lightWhite,
                         showShadow: true,
-                        closedShaddow: false,
+                        closedShadow: false,
                       ),
                     ],
                   ),

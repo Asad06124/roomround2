@@ -8,6 +8,9 @@ class AppStrings {
   static const String allRooms = "All Rooms";
   static const String alreadyRegistered = "Already registered?";
   static const String andText = "and";
+  static const String areYouSureWantToRemove =
+      "Are you sure you want to remove";
+
   static const String assign = "Assign";
   static const String assignRoom = "Assign Room";
   static const String assignedTasks = "Assigned Tasks";

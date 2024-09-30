@@ -1,4 +1,5 @@
 import 'package:roomrounds/core/apis/api_function.dart';
+import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/room/room_model.dart';
 import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
@@ -16,7 +17,7 @@ class RoomTasksController extends GetxController {
 
   bool hasData = false;
   Rx<YesNo?> urgent = Rx<YesNo?>(null);
-  Rx<User?> assignedTo = Rx<User?>(null);
+  Rx<Employee?> assignedTo = Rx<Employee?>(null);
 
   List<RoomTask> _tasks = [
     /*   RoomTask(
@@ -182,22 +183,28 @@ class RoomTasksController extends GetxController {
   }
 
   void _showCreateTicketDialog(RoomTask? task) {
+    bool _showMyTeamMembers = profileController.userType == UserType.manager;
+    int? _departmentId;
+
     Get.dialog(
-      Dialog(
-        child: Obx(
-          () => CreateTicketDialog(
-            title: task?.taskName,
-            selectedUrgent: urgent.value,
-            textFieldController: _commentsController,
-            onUrgentChanged: _onUrgentValueChanged,
-            onDoneTap: () {
-              _createNewTicket(task);
-            },
+        Dialog(
+          child: Obx(
+            () => CreateTicketDialog(
+              title: task?.taskName,
+              selectedUrgent: urgent.value,
+              textFieldController: _commentsController,
+              onUrgentChanged: _onUrgentValueChanged,
+              onSelectItem: (emp) => assignedTo.value = emp,
+              onDoneTap: () => _createNewTicket(task),
+            ),
           ),
         ),
-      ),
-      // barrierDismissible: false,
-    );
+        arguments: {
+          "myTeam": _showMyTeamMembers,
+          "departmentId": _departmentId,
+        }
+        // barrierDismissible: false,
+        );
   }
 
   void _createNewTicket(RoomTask? task) async {

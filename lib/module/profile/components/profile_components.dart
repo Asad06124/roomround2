@@ -113,8 +113,8 @@ class ProfileComponents {
     BuildContext context, {
     String? title,
     String? subtitle,
-    bool isAdmin = false,
-    GestureDetector? onPressed,
+    VoidCallback? onTap,
+    VoidCallback? onRemoveTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
@@ -149,7 +149,7 @@ class ProfileComponents {
                     ),
                     if (subtitle != null)
                       Text(
-                        subtitle ,
+                        subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: context.bodyLarge!.copyWith(
@@ -160,14 +160,14 @@ class ProfileComponents {
                   ],
                 ),
               ),
-              if (isAdmin) ...{
-                const Spacer(),
+              if (onRemoveTap != null)
+                // const Spacer(),
                 InkWell(
-                  onTap: () {},
+                  onTap: onRemoveTap,
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(35),
-                        border: Border.all(color: AppColors.gry)),
+                        border: Border.all(color: AppColors.gry),),
                     child: const Icon(
                       Icons.remove,
                       color: AppColors.gry,
@@ -175,7 +175,6 @@ class ProfileComponents {
                     ),
                   ),
                 ),
-              },
             ],
           ),
           SB.h(5),

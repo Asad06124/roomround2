@@ -3,7 +3,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
 class TeamMembersView extends StatelessWidget {
-  const TeamMembersView({Key? key}) : super(key: key);
+  const TeamMembersView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,11 @@ class TeamMembersView extends StatelessWidget {
                                         context,
                                         title: employee.employeeName,
                                         subtitle: employee.roleName,
-                                        isAdmin: true,
+                                        onRemoveTap: () {
+                                          controller
+                                              .showRemoveConfirmationDialog(
+                                                  employee);
+                                        },
                                       );
                                     },
                                   )

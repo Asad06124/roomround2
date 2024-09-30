@@ -1,4 +1,7 @@
+import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
+import 'package:roomrounds/core/components/app_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
 // ignore: must_be_immutable
 class CloseTicketDialouge extends StatefulWidget {
@@ -415,11 +418,13 @@ class CreateTicketDialog extends StatelessWidget {
       this.selectedUrgent,
       this.onUrgentChanged,
       this.textFieldController,
+      required this.onSelectItem,
       this.onDoneTap});
   final String? title;
   final YesNo? selectedUrgent;
   final Function(YesNo)? onUrgentChanged;
   final TextEditingController? textFieldController;
+  final dynamic Function(Employee) onSelectItem;
   final VoidCallback? onDoneTap;
 
   @override
@@ -502,12 +507,15 @@ class CreateTicketDialog extends StatelessWidget {
             SB.h(10),
             DialougeComponents.labelTile(
               context,
-              isBorder: true,
-              status: '',
-              title: 'Change Member:',
+              title: AppStrings.changeMember,
+              // isBorder: true,
+              // status: '',
             ),
             SB.h(10),
-            DialougeComponents.nameTile(context, name: "Anthony Roy"),
+            // DialougeComponents.nameTile(context, name: "Anthony Roy"),
+
+            _buildEmployeeDropDown(context),
+
             SB.h(10),
             // DialougeComponents.dateTile(context,
             //     time: '1:03 PM', date: '11/23/2023'),
@@ -559,6 +567,51 @@ class CreateTicketDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildEmployeeDropDown(BuildContext context) {
+    return GetBuilder<EmployeeDirectoryController>(
+        init: EmployeeDirectoryController(),
+        builder: (controller) {
+          List<Employee> employees = List.from(controller.searchResults);
+          if (employees.isEmpty) {
+            User? user = profileController.user;
+
+            if (user != null) {
+              employees.add(Employee(
+                employeeId: user.userId,
+                employeeName: user.username,
+                employeeImage: user.image,
+              ));
+            }
+          }
+
+          return CustomeDropDown.simple<Employee>(
+            context,
+            list: employees,
+            borderRadius: 30,
+            closedShadow: false,
+            width: context.width,
+            onSelect: onSelectItem,
+            initialItem: employees.firstOrNull,
+            closedFillColor: AppColors.lightWhite,
+            headerBuilder: (context, selectedItem, enabled) {
+              return DialougeComponents.nameTile(
+                context,
+                isSelected: true,
+                name: selectedItem.employeeName,
+                image: selectedItem.employeeImage,
+              );
+            },
+            listItemBuilder: (context, item, isSelected, onItemSelect) {
+              return DialougeComponents.nameTile(
+                context,
+                name: item.employeeName,
+                image: item.employeeImage,
+              );
+            },
+          );
+        });
   }
 }
 
@@ -1095,36 +1148,59 @@ class DialougeComponents {
   }
 
   static Widget nameTile(BuildContext context,
-      {String name = '', String desc = ''}) {
+      {String? name,
+      String? desc,
+      String? image,
+      Widget? trailing,
+      bool isFilled = false,
+      bool isSelected = false}) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.gry.withOpacity(0.24),
-        borderRadius: BorderRadius.circular(35),
-      ),
+      decoration: isFilled
+          ? BoxDecoration(
+              color: AppColors.gry.withOpacity(0.24),
+              borderRadius: BorderRadius.circular(35),
+            )
+          : null,
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          CircleAvatar(
-            child: Assets.images.person.image(height: 35, width: 35),
+          // if (image != null && image.trim().isNotEmpty)
+          AppImage.network(
+            imageUrl: image != null && image.trim().isNotEmpty
+                ? image
+                : AppImages.personPlaceholder,
+            borderRadius: BorderRadius.circular(20),
+            fit: BoxFit.cover,
+            height: 30,
+            width: 30,
           ),
+          // CircleAvatar(
+          //   child: Assets.images.person.image(height: 35, width: 35),
+          // ),
           SB.w(6),
-          Text(
-            name,
-            style: context.bodyLarge!.copyWith(
-              color: AppColors.textGrey,
-              fontWeight: FontWeight.w500,
+          Expanded(
+            child: Text(
+              name ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.bodyLarge!.copyWith(
+                color: isSelected ? AppColors.black : AppColors.textGrey,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
             ),
           ),
-          const Spacer(),
-          Text(
-            desc,
-            style: context.bodyLarge!.copyWith(
-              color: AppColors.textGrey,
-              fontWeight: FontWeight.w500,
+          // const Spacer(),
+          if (desc != null && desc.trim().isNotEmpty)
+            Text(
+              desc,
+              style: context.bodyLarge!.copyWith(
+                color: AppColors.textGrey,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
+          if (trailing != null) trailing,
           SB.w(5),
         ],
       ),

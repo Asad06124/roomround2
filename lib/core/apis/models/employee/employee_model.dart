@@ -73,4 +73,9 @@ class Employee {
     data['isDeleted'] = isDeleted;
     return data;
   }
+
+  @override
+  String toString() {
+    return employeeName ?? '';
+  }
 }

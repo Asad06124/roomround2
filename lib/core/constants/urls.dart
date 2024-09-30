@@ -23,4 +23,8 @@ class Urls {
   // Employee
   static const String _employee = "/employee";
   static const String getAllEmployee = "$_employee/getAll";
+
+  // Assistant Manager
+  static const String _assistantManager = "/assistantManager";
+  static const String removeDepartment = "$_assistantManager/removeDepartment";
 }

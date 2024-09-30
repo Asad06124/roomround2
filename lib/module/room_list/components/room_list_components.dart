@@ -68,7 +68,7 @@ class RoomListComponents {
               closedFillColor: AppColors.textPrimary,
               expandFillColor: AppColors.textPrimary,
               showShadow: false,
-              closedShaddow: false,
+              closedShadow: false,
               textColor: AppColors.white,
               list: [
                 AppStrings.allRooms,

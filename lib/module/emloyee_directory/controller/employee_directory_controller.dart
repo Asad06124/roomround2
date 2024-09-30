@@ -3,6 +3,7 @@ import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
+import 'package:roomrounds/utils/custome_dialogue.dart';
 
 enum TicketsType { assignedMe, assignedTo, sendTo }
 
@@ -29,6 +30,8 @@ class EmployeeDirectoryController extends GetxController {
 
   bool myEmployees = false;
 
+  int? myDepartmentId;
+
   @override
   void onInit() {
     super.onInit();
@@ -49,8 +52,12 @@ class EmployeeDirectoryController extends GetxController {
     }
     try {
       bool? searchTeam = Get.arguments?["myTeam"] as bool?;
+      int? departmentId = Get.arguments?["departmentId"] as int?;
       if (searchTeam != null) {
         myEmployees = searchTeam;
+      }
+      if (departmentId != null && departmentId > 0) {
+        myDepartmentId = departmentId;
       }
     } catch (e) {
       customLogger(
@@ -64,7 +71,8 @@ class EmployeeDirectoryController extends GetxController {
   void onSearch(String? text) async {
     _updateHasData(false);
 
-    int? departmentId = departmentsController.selectedDepartmentId;
+    int? departmentId =
+        myDepartmentId ?? departmentsController.selectedDepartmentId;
     int? managerId;
     if (myEmployees) {
       managerId = profileController.userId;
@@ -93,6 +101,21 @@ class EmployeeDirectoryController extends GetxController {
       _searchResults = List.from(resp);
     } else {
       _searchResults = [];
+      /*  _searchResults = [
+         // Dummy Data
+        Employee(
+          employeeId: 1,
+          employeeName: 'John Doe',
+        ),
+        Employee(
+          employeeId: 2,
+          employeeName: 'Jane Smith',
+        ),
+        Employee(
+          employeeId: 3,
+          employeeName: 'Michael Johnson',
+        ),
+      ]; */
     }
     _updateHasData(true);
   }
@@ -115,6 +138,47 @@ class EmployeeDirectoryController extends GetxController {
         break;
     }
     onSearch(searchTextField.text);
+  }
+
+  void showRemoveConfirmationDialog(Employee? employee) async {
+    if (employee != null) {
+      String description =
+          "${AppStrings.areYouSureWantToRemove} ${employee.employeeName ?? ''}?";
+      Get.dialog(
+        Dialog(
+          child: YesNoDialog(
+            title: description,
+            onYesPressed: () {
+              Get.back(); // Close Dialog
+              _removeEmployee(employee);
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _removeEmployee(Employee? employee) async {
+    int? employeeId = employee?.employeeId;
+    
+    if (employeeId != null) {
+      String params = "?employeeId=$employeeId";
+      String url = Urls.removeDepartment + params;
+
+      var resp = await APIFunction.call(
+        APIMethods.get,
+        url,
+        showLoader: true,
+        showErrorMessage: true,
+        showSuccessMessage: true,
+      );
+
+      if (resp != null && resp is bool && resp == true) {
+        // Remove from List
+        _searchResults.removeWhere((e) => e.employeeId == employeeId);
+        update();
+      }
+    }
   }
 
   void _updateHasData(bool value) {
