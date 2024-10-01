@@ -15,7 +15,8 @@ class TeamMembersView extends StatelessWidget {
             builder: (controller) {
               return Column(
                 children: [
-                  ProfileComponents.mainCard(context, isBackButtun: true),
+                  ProfileComponents.profileHeader(context,
+                      showBackButton: true),
                   Expanded(
                     // height: context.height * 0.68,
                     child: Padding(
@@ -37,27 +38,7 @@ class TeamMembersView extends StatelessWidget {
                             //     30 -
                             //     context.paddingTop,
                             child: controller.hasData
-                                ? ListView.builder(
-                                    shrinkWrap: true,
-                                    padding: EdgeInsets.zero,
-                                    itemCount: controller.searchResults.length,
-                                    // physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      Employee? employee =
-                                          controller.searchResults[index];
-
-                                      return ProfileComponents.teamTile(
-                                        context,
-                                        title: employee.employeeName,
-                                        subtitle: employee.roleName,
-                                        onRemoveTap: () {
-                                          controller
-                                              .showRemoveConfirmationDialog(
-                                                  employee);
-                                        },
-                                      );
-                                    },
-                                  )
+                                ? _buildMembersList(context, controller)
                                 : CustomLoader(),
                           ),
                           SB.h(10),
@@ -70,5 +51,35 @@ class TeamMembersView extends StatelessWidget {
             }),
       ),
     );
+  }
+
+  Widget _buildMembersList(
+      BuildContext context, EmployeeDirectoryController controller) {
+    List<Employee> members = controller.searchResults;
+
+    if (members.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        itemCount: controller.searchResults.length,
+        // physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          Employee? employee = controller.searchResults[index];
+
+          return ProfileComponents.teamTile(
+            context,
+            title: employee.employeeName,
+            subtitle: employee.roleName,
+            onRemoveTap: () {
+              controller.showRemoveConfirmationDialog(employee);
+            },
+          );
+        },
+      );
+    } else {
+      // No Team Members found
+      return SettingsComponents.noResultsFound(
+          context, AppStrings.noMembersFound);
+    }
   }
 }

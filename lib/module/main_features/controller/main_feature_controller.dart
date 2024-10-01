@@ -37,22 +37,22 @@ class MainFeatureController extends GetxController {
     MainFeature roomRoundFeature = MainFeature(
       title: AppConstants.appName,
       image: Assets.icons.assignedTasks,
-      page: AppRoutes.ROOMLIST,
+      page: AppRoutes.ROOMS_LIST,
     );
     MainFeature facilitiesViewFeature = MainFeature(
       title: isManager ? AppStrings.facilitiesView : AppStrings.roommapView,
       image: Assets.icons.roomMapView,
-      page: AppRoutes.ROOMMAP,
+      page: AppRoutes.ROOM_MAP,
     );
     MainFeature assignedTaskFeature = MainFeature(
       title: isManager ? AppStrings.myTicket : AppStrings.assignedTasks,
       image: isManager ? Assets.icons.tickets : Assets.icons.assignedTasks,
-      page: AppRoutes.ASSIGNEDTASKS,
+      page: AppRoutes.ASSIGNED_TASKS,
     );
     MainFeature employeeDirectoryFeature = MainFeature(
       title: AppStrings.employeeDirectory,
       image: Assets.icons.emplyeeDirectory,
-      page: AppRoutes.EMPLOYEEDIRECTORy,
+      page: AppRoutes.EMPLOYEE_DIRECTORy,
     );
 
     if (isManager) {

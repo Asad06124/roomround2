@@ -27,4 +27,9 @@ class Urls {
   // Assistant Manager
   static const String _assistantManager = "/assistantManager";
   static const String removeDepartment = "$_assistantManager/removeDepartment";
+
+  // Settings
+  static const String _settings = "/settings";
+  static const String updateUser = "$_settings/updateUser";
+  static const String updatePassword = "$_settings/updatePassword";
 }

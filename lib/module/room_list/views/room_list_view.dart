@@ -122,7 +122,7 @@ class RoomListView extends StatelessWidget {
             context,
             title: room.roomName,
             onTap: () {
-              Get.toNamed(AppRoutes.TASKSLISTS, arguments: room);
+              Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
             },
             trailingWidget: RoomListComponents.statusWidget(
               context,
@@ -134,14 +134,8 @@ class RoomListView extends StatelessWidget {
       );
     } else {
       // No Rooms found
-      return Center(
-        child: Text(
-          AppStrings.noRoomsFound,
-          style: context.bodyLarge!.copyWith(
-            color: AppColors.black,
-          ),
-        ),
-      );
+      return SettingsComponents.noResultsFound(
+          context, AppStrings.noRoomsFound);
     }
   }
 }

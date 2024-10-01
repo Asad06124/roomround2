@@ -9,6 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
   _initControllers();
+  
   runApp(const MyApp());
 }
 

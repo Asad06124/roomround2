@@ -48,6 +48,7 @@ class AppStrings {
   static const String dontHaveAccount = "Don't have an account?";
   static const String dontReceivedCode = "Don't received the code?";
   static const String edit = "Edit";
+  static const String editProfile = "Edit Profile";
   static const String emailAddress = "Email address";
   static const String employeeDirectory = "Employee Directory";
   static const String enter4DigitVerificationCode =
@@ -85,11 +86,15 @@ class AppStrings {
   static const String messages = "Messages";
   static const String myEmployees = "My Employees";
   static const String myTicket = "My Tickets";
+  static const String newAndOldPasswordShouldNotSame =
+      "New Password and Old Password should be the same";
+
   static const String newPassword = 'New password';
   static const String next = 'Next';
   static const String no = "No";
   static const String noEmployeesFound = "No employees found";
   static const String noInternetConnection = "No Internet Connection!";
+  static const String noMembersFound = "No members found";
   static const String noNotificationDescription =
       'You have no notifications right now.\ncome back later';
 
@@ -106,6 +111,7 @@ class AppStrings {
   static const String phoneNumber = "Phone number";
   static const String privacyPolicy = "privacy policy";
   static const String profile = "Profile";
+  static const String updateProfile = "Update Profile";
   static const String queries = "Queries";
   static const String rateUs = "Rate Us";
   static const String reply = "Reply";
@@ -143,6 +149,7 @@ class AppStrings {
   static const String trackingQuery = "Tracking Query";
   static const String typeeMessageHere = "Type message here...";
   static const String unableToLogin = "Unable to login? ";
+  static const String updatePassword = "Update Password";
   static const String uploadfromDevice = "Upload from device";
   static const String urgent = "Urgent";
   static const String userName = "User Name";

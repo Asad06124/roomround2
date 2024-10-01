@@ -34,7 +34,9 @@ class APIFunction {
 
       if (isConnected == false) {
         // No Internet connection
-        CustomOverlays.showSnackBar(AppStrings.noInternetConnection);
+        // CustomOverlays.showSnackBar(AppStrings.noInternetConnection);
+        CustomOverlays.showToastMessage(
+            message: AppStrings.noInternetConnection);
 
         return null;
       }

@@ -5,15 +5,17 @@ abstract class AppRoutes {
   static const LOGIN = "/login";
   static const HOME = "/home";
   static const DASHBOARD = '/dashboard';
-  static const TEAMMEMBERS = '/team_members';
-  static const ASSIGNEDTASKS = '/assigned_tasks';
+  static const TEAM_MEMBERS = '/team_members';
+  static const EDIT_PROFILE = '/edit_profile';
+  static const CHANGE_PASSWORD = '/change_password';
+  static const ASSIGNED_TASKS = '/assigned_tasks';
   static const MESSAGE = '/message';
   static const NOTIFICATION = "/notification";
-  static const EMPLOYEEDIRECTORy = '/employee_directory';
-  static const ROOMMAP = '/room_map';
-  static const ROOMAMPDETAILS = '/romm_map_details';
+  static const EMPLOYEE_DIRECTORy = '/employee_directory';
+  static const ROOM_MAP = '/room_map';
+  static const ROOM_MAP_DETAILS = '/room_map_details';
   static const CHAT = '/chat';
-  static const ROOMLIST = '/room_list';
-  static const TASKSLISTS = '/tasks_list';
-  static const ROOMMAPMANAGER = '/room_map_manager';
+  static const ROOMS_LIST = '/rooms_list';
+  static const TASKS_LISTS = '/tasks_list';
+  static const ROOM_MAP_MANAGER = '/room_map_manager';
 }

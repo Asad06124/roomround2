@@ -121,14 +121,8 @@ class TasksList extends StatelessWidget {
       );
     } else {
       // No Tasks found
-      return Center(
-        child: Text(
-          AppStrings.noTasksFound,
-          style: context.bodyLarge!.copyWith(
-            color: AppColors.black,
-          ),
-        ),
-      );
+      return SettingsComponents.noResultsFound(
+          context, AppStrings.noTasksFound);
     }
   }
 

@@ -1,4 +1,6 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/profile/change_password/view/change_password_view.dart';
+import 'package:roomrounds/module/profile/views/edit_profile_view.dart';
 
 class AppPages {
   static Transition? transitionType;
@@ -41,7 +43,7 @@ class AppPages {
       ),
     ),
     GetPage(
-      name: AppRoutes.TEAMMEMBERS,
+      name: AppRoutes.TEAM_MEMBERS,
       page: () => const TeamMembersView(),
       transition: transitionType,
       binding: BindingsBuilder(
@@ -49,7 +51,23 @@ class AppPages {
       ),
     ),
     GetPage(
-      name: AppRoutes.ASSIGNEDTASKS,
+      name: AppRoutes.EDIT_PROFILE,
+      page: () => const EditProfileView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.CHANGE_PASSWORD,
+      page: () => const ChangePasswordView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.ASSIGNED_TASKS,
       page: () => const AssignedTasksView(),
       transition: transitionType,
       binding: BindingsBuilder(
@@ -73,15 +91,15 @@ class AppPages {
       ),
     ),
     GetPage(
-      name: AppRoutes.EMPLOYEEDIRECTORy,
-      page: () =>  EmployeeDirectoryView(),
+      name: AppRoutes.EMPLOYEE_DIRECTORy,
+      page: () => EmployeeDirectoryView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},
       ),
     ),
     GetPage(
-      name: AppRoutes.ROOMMAP,
+      name: AppRoutes.ROOM_MAP,
       page: () => const RoomMapView(),
       transition: transitionType,
       binding: BindingsBuilder(
@@ -89,7 +107,7 @@ class AppPages {
       ),
     ),
     GetPage(
-      name: AppRoutes.ROOMAMPDETAILS,
+      name: AppRoutes.ROOM_MAP_DETAILS,
       page: () => const RoomMapDetailsView(),
       transition: transitionType,
       binding: BindingsBuilder(
@@ -105,7 +123,7 @@ class AppPages {
       ),
     ),
     GetPage(
-      name: AppRoutes.ROOMLIST,
+      name: AppRoutes.ROOMS_LIST,
       page: () => const RoomListView(),
       transition: transitionType,
       binding: BindingsBuilder(
@@ -113,7 +131,7 @@ class AppPages {
       ),
     ),
     GetPage(
-      name: AppRoutes.TASKSLISTS,
+      name: AppRoutes.TASKS_LISTS,
       page: () => const TasksList(),
       transition: transitionType,
       binding: BindingsBuilder(
@@ -121,7 +139,7 @@ class AppPages {
       ),
     ),
     GetPage(
-      name: AppRoutes.ROOMMAPMANAGER,
+      name: AppRoutes.ROOM_MAP_MANAGER,
       page: () => const RoomMapManagerView(),
       transition: transitionType,
       binding: BindingsBuilder(

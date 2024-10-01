@@ -89,8 +89,8 @@ class RoomMapView extends StatelessWidget {
       bottomSheet: RoomMapComponents.bottomSheet(
         context,
         onTab: () => Get.toNamed(userData.type == UserType.manager
-            ? AppRoutes.ROOMMAPMANAGER
-            : AppRoutes.ROOMAMPDETAILS),
+            ? AppRoutes.ROOM_MAP_MANAGER
+            : AppRoutes.ROOM_MAP_DETAILS),
       ),
     );
   }

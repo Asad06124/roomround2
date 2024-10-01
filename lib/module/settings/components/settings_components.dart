@@ -2,7 +2,10 @@ import 'package:roomrounds/core/constants/imports.dart';
 
 class SettingsComponents {
   static Widget tile(BuildContext context,
-      {String? title, GestureTapCallback? onPressed}) {
+      {String? title,
+      TextStyle? style,
+      GestureTapCallback? onPressed,
+      bool isDisabled = false}) {
     if (title != null && title.isNotEmpty) {
       return GestureDetector(
           onTap: onPressed,
@@ -13,10 +16,11 @@ class SettingsComponents {
             children: [
               Text(
                 title,
-                style: context.bodyLarge!.copyWith(
-                  color: AppColors.textGrey,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: style ??
+                    context.bodyLarge!.copyWith(
+                      color: isDisabled ? AppColors.gry : AppColors.textGrey,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               SB.h(2),
               Divider(
@@ -30,5 +34,16 @@ class SettingsComponents {
           ));
     }
     return SizedBox();
+  }
+
+  static Widget noResultsFound(BuildContext context, String? message) {
+    return Center(
+      child: Text(
+        message ?? AppStrings.noResultsFound,
+        style: context.bodyLarge!.copyWith(
+          color: AppColors.black,
+        ),
+      ),
+    );
   }
 }
