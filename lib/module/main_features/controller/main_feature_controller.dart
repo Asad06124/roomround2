@@ -33,6 +33,7 @@ class MainFeatureController extends GetxController {
   _creatingMainFeatures() {
     bool isManager = _userType == UserType.manager;
     bool isEmployee = _userType == UserType.employee;
+    bool isOrgAdmin = _userType == UserType.organizationAdmin;
 
     MainFeature roomRoundFeature = MainFeature(
       title: AppConstants.appName,
@@ -55,7 +56,7 @@ class MainFeatureController extends GetxController {
       page: AppRoutes.EMPLOYEE_DIRECTORy,
     );
 
-    if (isManager) {
+    if (isManager || isOrgAdmin) {
       _features = [
         roomRoundFeature,
         facilitiesViewFeature,
