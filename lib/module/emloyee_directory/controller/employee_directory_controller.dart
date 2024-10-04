@@ -45,19 +45,26 @@ class EmployeeDirectoryController extends GetxController {
   }
 
   void _addMyEmployeesType() {
-    UserType? userType = profileController.userType;
-
-    if (userType == UserType.manager) {
-      _employeeTypes.add(AppStrings.myEmployees);
-    }
     try {
-      bool? searchTeam = Get.arguments?["myTeam"] as bool?;
-      int? departmentId = Get.arguments?["departmentId"] as int?;
-      if (searchTeam != null) {
-        myEmployees = searchTeam;
+      bool isManager = profileController.isManager;
+
+      if (isManager) {
+        _employeeTypes.add(AppStrings.myEmployees);
       }
-      if (departmentId != null && departmentId > 0) {
-        myDepartmentId = departmentId;
+
+      if (Get.arguments != null) {
+        bool? searchTeam = Get.arguments?["myTeam"] as bool?;
+        bool? searchManager = Get.arguments?["myManager"] as bool?;
+        int? departmentId = Get.arguments?["departmentId"] as int?;
+        if (searchTeam != null) {
+          myEmployees = searchTeam;
+        }
+        if (searchManager != null) {
+          managersOnly = searchManager;
+        }
+        if (departmentId != null && departmentId > 0) {
+          myDepartmentId = departmentId;
+        }
       }
     } catch (e) {
       customLogger(
@@ -140,6 +147,13 @@ class EmployeeDirectoryController extends GetxController {
     onSearch(searchTextField.text);
   }
 
+  void onChangeDepartment(String? name) {
+    if (name != null) {
+      departmentsController.onDepartmentSelect(name);
+      onSearch(searchTextField.text);
+    }
+  }
+
   void showRemoveConfirmationDialog(Employee? employee) async {
     if (employee != null) {
       String description =
@@ -160,7 +174,7 @@ class EmployeeDirectoryController extends GetxController {
 
   Future<void> _removeEmployee(Employee? employee) async {
     int? employeeId = employee?.employeeId;
-    
+
     if (employeeId != null) {
       String params = "?employeeId=$employeeId";
       String url = Urls.removeDepartment + params;

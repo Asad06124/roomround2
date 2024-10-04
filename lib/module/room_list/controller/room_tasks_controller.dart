@@ -172,7 +172,7 @@ class RoomTasksController extends GetxController {
       showSuccessMessage: true,
     );
 
-    if (resp != null && resp is bool) {
+    if (resp != null && resp is bool && resp == true) {
       if (resp && index < _tasks.length) {
         _tasks[index].taskStatus = resp;
         // update();
@@ -183,8 +183,11 @@ class RoomTasksController extends GetxController {
   }
 
   void _showCreateTicketDialog(RoomTask? task) {
-    bool _showMyTeamMembers = profileController.userType == UserType.manager;
-    int? _departmentId;
+    bool showMyTeamMembers = profileController.isManager;
+    bool showMyManager = profileController.isEmployee;
+    int? departmentId = profileController.user?.departmentId;
+
+    _onAssignedToChange(null);
 
     Get.dialog(
         Dialog(
@@ -194,14 +197,15 @@ class RoomTasksController extends GetxController {
               selectedUrgent: urgent.value,
               textFieldController: _commentsController,
               onUrgentChanged: _onUrgentValueChanged,
-              onSelectItem: (emp) => assignedTo.value = emp,
+              onSelectItem: _onAssignedToChange,
               onDoneTap: () => _createNewTicket(task),
             ),
           ),
         ),
         arguments: {
-          "myTeam": _showMyTeamMembers,
-          "departmentId": _departmentId,
+          "myManager": showMyManager,
+          "myTeam": showMyTeamMembers,
+          "departmentId": departmentId,
         }
         // barrierDismissible: false,
         );
@@ -243,6 +247,10 @@ class RoomTasksController extends GetxController {
     }
 
     // _updateHasData(true);
+  }
+
+  void _onAssignedToChange(Employee? employee) {
+    assignedTo.value = employee;
   }
 
   void _onUrgentValueChanged(YesNo? value) {

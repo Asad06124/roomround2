@@ -7,6 +7,9 @@ class User {
   String? role;
   int? organizationId;
   String? image;
+  String? map;
+  int? departmentId;
+  String? rgbColor;
   String? token;
 
   User(
@@ -18,6 +21,9 @@ class User {
       this.role,
       this.organizationId,
       this.image,
+      this.map,
+      this.departmentId,
+      this.rgbColor,
       this.token});
 
   User.fromJson(Map<String, dynamic> json) {
@@ -29,6 +35,9 @@ class User {
     role = json['role'];
     organizationId = json['organizationId'];
     image = json['image'];
+    map = json['map'];
+    departmentId = json['departmentId'];
+    rgbColor = json['rgbColor'];
     token = json['token'];
   }
 
@@ -42,6 +51,9 @@ class User {
     data['role'] = role;
     data['organizationId'] = organizationId;
     data['image'] = image;
+    data['map'] = map;
+    data['departmentId'] = departmentId;
+    data['rgbColor'] = rgbColor;
     data['token'] = token;
     return data;
   }

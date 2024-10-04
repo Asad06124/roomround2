@@ -18,7 +18,7 @@ class ProfileView extends StatelessWidget {
                 String? userName = user?.username;
                 String? userEmail = user?.email;
                 String? userRole = user?.role;
-                UserType userType = controller.userType;
+                bool isManager = controller.isManager;
 
                 TextStyle? tileTextStyle = context.titleSmall!.copyWith(
                   fontWeight: FontWeight.w600,
@@ -78,7 +78,7 @@ class ProfileView extends StatelessWidget {
                         AppRoutes.CHANGE_PASSWORD,
                       ),
                     ),
-                    if (userType != UserType.manager)
+                    if (isManager)
                       SettingsComponents.tile(
                         context,
                         style: tileTextStyle,
@@ -92,7 +92,7 @@ class ProfileView extends StatelessWidget {
                       context,
                       style: tileTextStyle,
                       title: AppStrings.logout,
-                      onPressed: () => controller.logout(),
+                      onPressed: controller.showLogoutDialog,
                     ),
                     /*   InkWell(
                         onTap: () => Get.toNamed(

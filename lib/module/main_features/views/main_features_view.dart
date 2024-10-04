@@ -9,10 +9,8 @@ class MainFeaturesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserType userType = profileController.userType;
-
     return GetBuilder<MainFeatureController>(
-        init: MainFeatureController(userType: userType),
+        init: MainFeatureController(),
         builder: (controller) {
           User? user = profileController.user;
           return CustomContainer(

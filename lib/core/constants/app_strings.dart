@@ -8,6 +8,9 @@ class AppStrings {
   static const String allRooms = "All Rooms";
   static const String alreadyRegistered = "Already registered?";
   static const String andText = "and";
+  static const String areYouSureWantToLogout =
+      "Are you sure you want to log out?";
+
   static const String areYouSureWantToRemove =
       "Are you sure you want to remove";
 
@@ -111,7 +114,6 @@ class AppStrings {
   static const String phoneNumber = "Phone number";
   static const String privacyPolicy = "privacy policy";
   static const String profile = "Profile";
-  static const String updateProfile = "Update Profile";
   static const String queries = "Queries";
   static const String rateUs = "Rate Us";
   static const String reply = "Reply";
@@ -150,8 +152,10 @@ class AppStrings {
   static const String typeeMessageHere = "Type message here...";
   static const String unableToLogin = "Unable to login? ";
   static const String updatePassword = "Update Password";
+  static const String updateProfile = "Update Profile";
   static const String uploadfromDevice = "Upload from device";
   static const String urgent = "Urgent";
+  static const String userIsUpToDated = "User is up to dated";
   static const String userName = "User Name";
   static const String verifyCode = "Verify Code";
   static const String welcome = 'Welcome!';

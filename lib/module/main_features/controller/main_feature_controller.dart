@@ -2,38 +2,28 @@ import 'package:roomrounds/core/apis/models/feature/main_feature.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class MainFeatureController extends GetxController {
-  MainFeatureController({UserType? userType}) {
-    if (userType != null) {
-      _userType = userType;
-    }
-    _creatingMainFeatures();
-  }
-  UserType _userType = UserType.employee;
+  // UserType _userType = UserType.employee;
 
   bool _isGridView = true;
   bool get isGridView => _isGridView;
 
-  // List<String> _titles = [];
-  // List<SvgGenImage> _images = [];
-
-  // List<String> _pages = [];
-
-  // List<String> get titles => _titles;
-  // List<SvgGenImage> get images => _images;
-  // List<String> get pages => _pages;
-
   List<MainFeature> _features = [];
   List<MainFeature> get features => _features;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _createMainFeatures();
+  }
 
   changeLayout(bool val) {
     _isGridView = val;
     update();
   }
 
-  _creatingMainFeatures() {
-    bool isManager = _userType == UserType.manager;
-    bool isEmployee = _userType == UserType.employee;
-    bool isOrgAdmin = _userType == UserType.organizationAdmin;
+  void _createMainFeatures() {
+    bool isManager = profileController.isManager;
+    bool isEmployee = profileController.isEmployee;
 
     MainFeature roomRoundFeature = MainFeature(
       title: AppConstants.appName,
@@ -56,7 +46,7 @@ class MainFeatureController extends GetxController {
       page: AppRoutes.EMPLOYEE_DIRECTORy,
     );
 
-    if (isManager || isOrgAdmin) {
+    if (isManager) {
       _features = [
         roomRoundFeature,
         facilitiesViewFeature,
@@ -70,6 +60,7 @@ class MainFeatureController extends GetxController {
         facilitiesViewFeature,
       ];
     }
+    // update();
 
     /* if (_userType == UserType.employee) {
       _titles = [

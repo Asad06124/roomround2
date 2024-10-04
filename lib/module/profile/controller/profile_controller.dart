@@ -4,6 +4,7 @@ import 'package:roomrounds/core/constants/app_keys.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
+import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class ProfileController extends GetxController {
   final TextEditingController userNameController = TextEditingController();
@@ -36,6 +37,11 @@ class ProfileController extends GetxController {
     return UserType.employee;
   }
 
+  bool get isManager =>
+      userType == UserType.manager || userType == UserType.organizationAdmin;
+
+  bool get isEmployee => userType == UserType.employee;
+
   void setUser(User? user, {bool saveUser = false}) {
     if (user != null) {
       _user = user;
@@ -57,25 +63,50 @@ class ProfileController extends GetxController {
       String userName = userNameController.text.trim();
       String email = emailController.text.trim();
 
-      var resp = await APIFunction.call(
-        APIMethods.post,
-        Urls.updateUser,
-        dataMap: {"userName": userName, "email": email},
-        showLoader: true,
-        showErrorMessage: true,
-        showSuccessMessage: true,
-      );
+      bool hasChange =
+          user?.username?.trim() != userName || user?.email?.trim() != email;
 
-      if (resp != null && resp is bool && resp == true) {
-        User? newUser = _user;
-        newUser?.username = userName;
-        setUser(newUser);
-        Get.back();
+      if (hasChange) {
+        var resp = await APIFunction.call(
+          APIMethods.post,
+          Urls.updateUser,
+          dataMap: {"userName": userName, "email": email},
+          showLoader: true,
+          showErrorMessage: true,
+          showSuccessMessage: true,
+        );
+
+        if (resp != null && resp is bool && resp == true) {
+          User? newUser = _user;
+          newUser?.username = userName;
+          setUser(newUser, saveUser: true);
+          // Get.back();
+        }
+      } else {
+        CustomOverlays.showToastMessage(
+          message: AppStrings.userIsUpToDated,
+          isSuccess: true,
+        );
       }
     }
   }
 
   void onEditImage() async {}
+
+  void showLogoutDialog() {
+    String description = AppStrings.areYouSureWantToLogout;
+    Get.dialog(
+      Dialog(
+        child: YesNoDialog(
+          title: description,
+          onYesPressed: () {
+            Get.back(); // Close Dialog
+            logout();
+          },
+        ),
+      ),
+    );
+  }
 
   void logout() {
     _user = null;

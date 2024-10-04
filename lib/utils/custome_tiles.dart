@@ -3,8 +3,9 @@ import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomeTiles {
   static Widget employeeTile(BuildContext context,
-      {String? name,
-      String? desc,
+      {String? title,
+      String? subtile,
+      String? subHeading,
       String? image,
       GestureTapCallback? onPressed,
       int? notificationCount}) {
@@ -36,42 +37,61 @@ class CustomeTiles {
                 //   ),
                 // ),
                 SB.w(20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: context.width * 0.65,
-                      child: Text(
-                        name ?? '',
-                        maxLines: 1,
-                        style: context.titleSmall!.copyWith(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              title ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.titleSmall!.copyWith(
+                                color: AppColors.darkGrey,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          if (subHeading != null &&
+                              subHeading.trim().isNotEmpty)
+                            Padding(
+                                   padding: const EdgeInsets.only(left: 5),
+                              child: Text(
+                                '($subHeading)',
+                                style: context.bodyMedium!.copyWith(
+                                  color: AppColors.darkGrey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      Text(
+                        subtile ?? '',
+                        style: context.bodySmall!.copyWith(
                           color: AppColors.darkGrey,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (notificationCount != null && notificationCount != 0)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: CircleAvatar(
+                      radius: 12,
+                      backgroundColor: AppColors.primary,
+                      child: Center(
+                        child: Text(
+                          notificationCount.toString(),
+                          style: context.bodyExtraSmall,
                         ),
                       ),
                     ),
-                    Text(
-                      desc ?? '',
-                      style: context.bodySmall!.copyWith(
-                        color: AppColors.darkGrey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                if (notificationCount != null && notificationCount != 0) ...{
-                  const Spacer(),
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: AppColors.primary,
-                    child: Center(
-                      child: Text(
-                        notificationCount.toString(),
-                        style: context.bodyExtraSmall,
-                      ),
-                    ),
-                  )
-                }
+                  ),
               ],
             ),
           ),
