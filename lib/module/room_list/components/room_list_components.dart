@@ -50,6 +50,12 @@ class RoomListComponents {
   }
 
   static Widget filter(BuildContext context, Function(String value) onSelect) {
+    List<String> list = [
+      AppStrings.allRooms,
+      AppStrings.inProgress,
+      AppStrings.complete,
+    ];
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -65,17 +71,14 @@ class RoomListComponents {
           Expanded(
             child: CustomeDropDown.simple<String>(
               context,
-              closedFillColor: AppColors.textPrimary,
-              expandFillColor: AppColors.textPrimary,
               showShadow: false,
               closedShadow: false,
               textColor: AppColors.white,
-              list: [
-                AppStrings.allRooms,
-                AppStrings.inProgress,
-                AppStrings.complete,
-              ],
+              closedFillColor: AppColors.textPrimary,
+              expandFillColor: AppColors.textPrimary,
+              list: list,
               onSelect: onSelect,
+              initialItem: list.firstOrNull,
             ),
           )
         ],

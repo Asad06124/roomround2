@@ -24,6 +24,12 @@ class Urls {
   static const String _employee = "/employee";
   static const String getAllEmployee = "$_employee/getAll";
 
+  // Notifications
+  static const String _notification = "/notification";
+  static const String getAllNotifications = "$_notification/getAll";
+  static const String readAllNotifications = "$_notification/readAll";
+  static const String readNotification = "$_notification/read";
+
   // Assistant Manager
   static const String _assistantManager = "/assistantManager";
   static const String removeDepartment = "$_assistantManager/removeDepartment";

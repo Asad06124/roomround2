@@ -64,6 +64,8 @@ class AppStrings {
   static const String error = "Error";
   static const String facilitiesView = "Facilities View";
   static const String female = "Female";
+  static const String selectType = "Select Type";
+  static const String selectDepartment = "Select Department";
   static const String forgotPassword = "Forgot Password";
   static const String forgotYourPassword = "Forgot your password?";
   static const String help = "Help";

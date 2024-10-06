@@ -12,37 +12,42 @@ class CustomeDropDown {
     double borderRadius = 5,
     List<String>? labels,
     bool borderRadiusBoth = true,
-    Color closedFillColor = AppColors.white,
-    Color expandFillColor = AppColors.white,
+    Color? closedFillColor,
+    Color? expandFillColor,
     Color textColor = AppColors.black,
     bool showShadow = true,
     bool closedShadow = true,
     double? width,
   }) {
-    width = width ?? context.width * 0.40;
+    width = width ?? context.width * 0.41;
     return SizedBox(
       width: width,
       child: CustomDropdown<T>(
-        hintText: hintText,
         items: list,
+        hintText: hintText,
         initialItem: initialItem,
         onChanged: (value) {
           if (value != null) {
             onSelect(value);
           }
         },
+        excludeSelected: false,
+        // hideSelectedFieldWhenExpanded: true,
         listItemBuilder: listItemBuilder,
         headerBuilder: headerBuilder,
         closedHeaderPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: CustomDropdownDecoration(
-          listItemStyle: context.bodySmall!.copyWith(
+          listItemStyle: context.bodyMedium!.copyWith(
             color: textColor,
             fontWeight: FontWeight.w500,
           ),
           headerStyle: context.bodyLarge!.copyWith(
             color: textColor,
             fontWeight: FontWeight.w600,
+          ),
+          listItemDecoration: ListItemDecoration(
+            selectedColor: expandFillColor,
           ),
           closedFillColor: closedFillColor,
           expandedFillColor: expandFillColor,
@@ -60,7 +65,7 @@ class CustomeDropDown {
           expandedShadow: showShadow
               ? [
                   BoxShadow(
-                    color: AppColors.gry.withOpacity(0.5),
+                    color: AppColors.gry.withOpacity(0.4),
                     spreadRadius: 3,
                     blurRadius: 5,
                     offset: const Offset(0, 2),
@@ -70,7 +75,7 @@ class CustomeDropDown {
           closedShadow: closedShadow
               ? [
                   BoxShadow(
-                    color: AppColors.gry.withOpacity(0.5),
+                    color: AppColors.gry.withOpacity(0.3),
                     spreadRadius: 1,
                     blurRadius: 1,
                     offset: const Offset(0, 2),

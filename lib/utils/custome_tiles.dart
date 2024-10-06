@@ -8,6 +8,7 @@ class CustomeTiles {
       String? subHeading,
       String? image,
       GestureTapCallback? onPressed,
+      GestureTapCallback? onRemoveTap,
       int? notificationCount}) {
     return Column(
       children: [
@@ -36,7 +37,7 @@ class CustomeTiles {
                 //     fit: BoxFit.cover,
                 //   ),
                 // ),
-                SB.w(20),
+                SB.w(16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +58,7 @@ class CustomeTiles {
                           if (subHeading != null &&
                               subHeading.trim().isNotEmpty)
                             Padding(
-                                   padding: const EdgeInsets.only(left: 5),
+                              padding: const EdgeInsets.only(left: 5),
                               child: Text(
                                 '($subHeading)',
                                 style: context.bodyMedium!.copyWith(
@@ -92,6 +93,21 @@ class CustomeTiles {
                       ),
                     ),
                   ),
+                if (onRemoveTap != null)
+                  InkWell(
+                    onTap: onRemoveTap,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(35),
+                        border: Border.all(color: AppColors.gry),
+                      ),
+                      child: const Icon(
+                        Icons.remove,
+                        color: AppColors.gry,
+                        size: 16,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -107,7 +123,8 @@ class CustomeTiles {
   }
 
   static Widget notificationTileSimple(BuildContext context,
-      {String name = "New task added in template",
+      {String? title,
+      String? description,
       GestureTapCallback? onCloseTap,
       GestureTapCallback? onPressed,
       int? notificationCount}) {
@@ -132,18 +149,34 @@ class CustomeTiles {
                   ),
                 ),
                 SB.w(20),
-                SizedBox(
-                  width: context.width * 0.65,
-                  child: Text(
-                    name,
-                    maxLines: 2,
-                    style: context.bodyLarge!.copyWith(
-                      color: AppColors.darkGrey,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Expanded(
+                  // width: context.width * 0.65,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title ?? '',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.bodyLarge!.copyWith(
+                          color: AppColors.darkGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (description != null && description.isNotEmpty)
+                        Text(
+                          description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.bodyMedium!.copyWith(
+                            color: AppColors.darkGrey,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                const Spacer(),
+                SB.w(8),
+                // const Spacer(),
                 GestureDetector(
                   onTap: onCloseTap,
                   child: CircleAvatar(

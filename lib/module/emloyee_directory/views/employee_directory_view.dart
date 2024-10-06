@@ -61,11 +61,13 @@ class EmployeeDirectoryView extends StatelessWidget {
                           children: [
                             CustomeDropDown.simple(
                               context,
+                              hintText: AppStrings.selectType,
                               list: controller.employeeTypes,
                               onSelect: controller.onChangeEmployeeType,
                             ),
                             CustomeDropDown.simple(
                               context,
+                              hintText: AppStrings.selectDepartment,
                               list: departmentsController.getDepartmentsNames(),
                               onSelect: controller.onChangeDepartment,
                             ),
@@ -128,10 +130,10 @@ class EmployeeDirectoryView extends StatelessWidget {
 
           return CustomeTiles.employeeTile(
             context,
+            image: image,
             title: employee.employeeName,
             subHeading: employee.roleName,
             subtile: employee.departmentName,
-            image: image,
           );
         },
       );

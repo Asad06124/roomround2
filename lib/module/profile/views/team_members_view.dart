@@ -66,14 +66,24 @@ class TeamMembersView extends StatelessWidget {
         itemBuilder: (context, index) {
           Employee? employee = controller.searchResults[index];
 
-          return ProfileComponents.teamTile(
+          return CustomeTiles.employeeTile(
+            context,
+            image: employee.employeeImage,
+            title: employee.employeeName,
+            subHeading: employee.roleName,
+            onRemoveTap: () {
+              controller.showRemoveConfirmationDialog(employee);
+            },
+          );
+
+          /* return ProfileComponents.teamTile(
             context,
             title: employee.employeeName,
             subtitle: employee.roleName,
             onRemoveTap: () {
               controller.showRemoveConfirmationDialog(employee);
             },
-          );
+          ); */
         },
       );
     } else {
