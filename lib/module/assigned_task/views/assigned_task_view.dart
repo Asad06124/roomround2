@@ -1,23 +1,25 @@
+import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
+import 'package:roomrounds/module/assigned_task/controller/assigned_task_controller.dart';
 
 class AssignedTasksView extends StatelessWidget {
   const AssignedTasksView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<EmployeeDirectoryController>(
-        init: EmployeeDirectoryController(),
+    return GetBuilder<AssignedTaskController>(
+        init: AssignedTaskController(),
         builder: (controller) {
+          User? user = profileController.user;
+          bool isManager = profileController.isManager;
+
           return Scaffold(
             backgroundColor: AppColors.white,
             appBar: CustomAppbar.simpleAppBar(
               context,
               height: 70,
               backButtunColor: AppColors.primary,
-              title: userData.type == UserType.manager
-                  ? AppStrings.queries
-                  : AppStrings.assignedTasks,
+              title: isManager ? AppStrings.queries : AppStrings.assignedTasks,
               showMailIcon: true,
               showNotificationIcon: true,
               notificationActive: true,
@@ -29,9 +31,9 @@ class AssignedTasksView extends StatelessWidget {
             ),
             body: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ListView(
-                // crossAxisAlignment: CrossAxisAlignment.start,\
-                physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                // physics: const NeverScrollableScrollPhysics(),
                 children: [
                   Text(
                     userData.type == UserType.employee
@@ -59,19 +61,29 @@ class AssignedTasksView extends StatelessWidget {
                       ),
                       CustomeDropDown.simple<String>(
                         context,
-                        list: userData.type == UserType.manager
-                            ? ["Assigned Me", "Assigned To"]
-                            : ["Assigned Me", 'Send To'],
+                        list: controller.ticketsTypesList,
+                        initialItem: controller.ticketsTypesList.firstOrNull,
                         onSelect: controller.changeTicketsType,
-                        borderRadius: 20,
                         closedFillColor: AppColors.lightWhite,
+                        borderRadius: 20,
                         showShadow: true,
                         closedShadow: false,
                       ),
                     ],
                   ),
+                  controller.hasData
+                      ? _buildOpenTicketsList(
+                          controller.openTicketsList,
+                          controller.ticketsType,
+                        )
+                      : _loader(),
+                  SB.h(10),
+                  _buildClosedTicketsList(
+                    controller.closedTicketsList,
+                    controller.ticketsType,
+                  ),
                   AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 400),
                     height: userData.type == UserType.employee
                         ? controller.ticketsType == TicketsType.assignedMe
                             ? context.height * 0.3800
@@ -205,5 +217,59 @@ class AssignedTasksView extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Widget _buildOpenTicketsList(List<Ticket> list, TicketsType type) {
+    return Expanded(
+      child: list.isNotEmpty
+          ? ListView.builder(
+              itemCount: 8,
+              shrinkWrap: true,
+              // physics: const AlwaysScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return EmployeeDirectoryComponents.tile(
+                  context,
+                  showIsActiveDot:
+                      type == TicketsType.assignedMe ? index % 2 == 0 : false,
+                  status:
+                      type == TicketsType.assignedMe ? "Close" : "Open Thread",
+                  onStatusPressed: () {
+                    if (type == TicketsType.sendTo) {
+                      EmployeeDirectoryComponents.openDialogEmployee(3, index);
+                      return;
+                    }
+                  },
+                  onTap: () {
+                    // // close ticket dialoue = 0 //
+                    // // closed ticket dialoue = 1
+                    // // Open thread dialoue = 2 // send to
+                    // // Open thread Send to dialoue = 3
+                    // if (controller.ticketsType == TicketsType.sendTo) {
+                    //   EmployeeDirectoryComponents.openDialogEmployee(2, index);
+                    //   return;
+                    // }
+                    EmployeeDirectoryComponents.openDialogEmployee(0, index);
+                  },
+                );
+              },
+            )
+          : _noResultsFound(),
+    );
+  }
+
+  Widget _buildClosedTicketsList(List<Ticket> list, TicketsType type) {
+    if (type == TicketsType.assignedMe) {
+      return Expanded(child: SizedBox());
+    } else {
+      return SizedBox();
+    }
+  }
+
+  Widget _loader() => Center(child: CustomLoader());
+
+  Widget _noResultsFound() {
+    return Center(
+      child: Text(AppStrings.noTicketsFound),
+    );
   }
 }

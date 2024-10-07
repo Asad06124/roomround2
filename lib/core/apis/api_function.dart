@@ -103,7 +103,7 @@ class APIFunction {
               for (final data in respData) {
                 result.add(fromJson(data));
               }
-              customLogger("Total Results: ${result.length}");
+              customLogger("$endPoint Results: ${result.length}");
             } else {
               // if (respData is Map) {
               // Logger().e(baseModel.data);

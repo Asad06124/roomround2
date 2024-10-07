@@ -16,6 +16,7 @@ class AppStrings {
 
   static const String assign = "Assign";
   static const String assignRoom = "Assign Room";
+  static const String assignedMe = "Assigned Me";
   static const String assignedTasks = "Assigned Tasks";
   static const String assignedTo = "Assigned to";
   static const String assignment = "Assignment";
@@ -64,8 +65,6 @@ class AppStrings {
   static const String error = "Error";
   static const String facilitiesView = "Facilities View";
   static const String female = "Female";
-  static const String selectType = "Select Type";
-  static const String selectDepartment = "Select Department";
   static const String forgotPassword = "Forgot Password";
   static const String forgotYourPassword = "Forgot your password?";
   static const String help = "Help";
@@ -107,6 +106,7 @@ class AppStrings {
   static const String noResultsFound = "No results found!";
   static const String noRoomsFound = "No rooms found";
   static const String noTasksFound = "No tasks found";
+  static const String noTicketsFound = "No tickets found.";
   static const String notification = 'Notifications';
   static const String notificationSettings = "Notification Settings";
   static const String oldPassword = "Old password";
@@ -129,8 +129,11 @@ class AppStrings {
   static const String searchRoom = "Search Room";
   static const String seeAll = 'See all';
   static const String select = "Select";
+  static const String selectDepartment = "Select Department";
+  static const String selectType = "Select Type";
   static const String send = "Send";
   static const String sendEmail = "Send email";
+  static const String sendTo = "Send To";
   static const String sessions = "Sessions";
   static const String settings = "Settings";
   static const String signIn = "Sign In";

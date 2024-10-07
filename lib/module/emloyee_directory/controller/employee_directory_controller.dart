@@ -5,12 +5,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/utils/custome_dialogue.dart';
 
-enum TicketsType { assignedMe, assignedTo, sendTo }
-
 class EmployeeDirectoryController extends GetxController {
-  TicketsType _ticketsType = TicketsType.assignedMe;
-  TicketsType get ticketsType => _ticketsType;
-
   final TextEditingController searchTextField = TextEditingController();
 
   List<Employee> _searchResults = [];
@@ -198,27 +193,6 @@ class EmployeeDirectoryController extends GetxController {
   void _updateHasData(bool value) {
     hasData = value;
     update();
-  }
-
-  void changeTicketsType(String val) {
-    if (userData.type == UserType.employee) {
-      if (val == 'Assigned Me') {
-        _ticketsType = TicketsType.assignedMe;
-      } else {
-        _ticketsType = TicketsType.sendTo;
-      }
-    } else {
-      changeTicketsTypeManager(val);
-    }
-    update();
-  }
-
-  void changeTicketsTypeManager(String val) {
-    if (val == 'Assigned Me') {
-      _ticketsType = TicketsType.assignedMe;
-    } else {
-      _ticketsType = TicketsType.assignedTo;
-    }
   }
 }
 

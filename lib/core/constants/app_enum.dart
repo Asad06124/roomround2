@@ -19,4 +19,6 @@ enum APIMethods {
 
 enum RoomType { allRooms, complete, inProgress }
 
+enum TicketsType { assignedMe, assignedTo, sendTo }
+
 enum LoggerType { debug, info, warning, error }
