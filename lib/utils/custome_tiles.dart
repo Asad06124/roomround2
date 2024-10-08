@@ -112,12 +112,13 @@ class CustomeTiles {
             ),
           ),
         ),
-        Divider(
-          indent: 0,
-          endIndent: 0,
-          color: AppColors.gry.withOpacity(0.3),
-          thickness: 0.8,
-        ),
+        divider(),
+        // Divider(
+        //   indent: 0,
+        //   endIndent: 0,
+        //   color: AppColors.gry.withOpacity(0.3),
+        //   thickness: 0.8,
+        // ),
       ],
     );
   }
@@ -194,14 +195,24 @@ class CustomeTiles {
             ),
           ),
           SB.h(3),
-          Divider(
-            indent: 0,
-            endIndent: 0,
-            color: AppColors.gry.withOpacity(0.3),
-            thickness: 0.8,
-          ),
+          divider(),
+          // Divider(
+          //   indent: 0,
+          //   endIndent: 0,
+          //   color: AppColors.gry.withOpacity(0.3),
+          //   thickness: 0.8,
+          // ),
         ],
       ),
+    );
+  }
+
+  static Widget divider() {
+    return Divider(
+      indent: 0,
+      endIndent: 0,
+      color: AppColors.gry.withOpacity(0.3),
+      thickness: 0.8,
     );
   }
 }

@@ -20,7 +20,7 @@ class TasksList extends StatelessWidget {
         isHome: false,
         decriptionWidget: AssignedTaskComponents.appBatTile(
           context,
-          name: AppStrings.managinfStaff,
+          name: AppStrings.managingStaff,
           desc: profileController.user?.username,
         ),
       ),

@@ -196,12 +196,13 @@ class ProfileComponents {
             ],
           ),
           SB.h(5),
-          Divider(
-            indent: 0,
-            endIndent: 0,
-            color: AppColors.gry.withOpacity(0.3),
-            thickness: 0.8,
-          ),
+          CustomeTiles.divider(),
+          // Divider(
+          //   indent: 0,
+          //   endIndent: 0,
+          //   color: AppColors.gry.withOpacity(0.3),
+          //   thickness: 0.8,
+          // ),
         ],
       ),
     );

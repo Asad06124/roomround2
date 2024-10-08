@@ -47,6 +47,8 @@ class AppStrings {
   static const String continueWithEmail = "Continue with email";
   static const String continueWithGoogle = "Continue with Google";
   static const String createTicket = "Create Ticket";
+  static const String department = "Department";
+  static const String description = "Description";
   static const String directory = "Directory";
   static const String done = "Done";
   static const String dontHaveAccount = "Don't have an account?";
@@ -62,6 +64,8 @@ class AppStrings {
   static const String enterEmail4DigitCodeSend =
       "Enter your email for the verification process.\nWe will send 4 digits code to your email.";
 
+  static const String enterFloor = "Enter Floor";
+  static const String enterRoomNo = "Enter Room No.";
   static const String error = "Error";
   static const String facilitiesView = "Facilities View";
   static const String female = "Female";
@@ -83,7 +87,9 @@ class AppStrings {
       'Make sure using the strongest combination\nfor your new password';
 
   static const String male = 'Male';
-  static const String managinfStaff = "Managing Staff";
+  static const String manager = "Manager";
+  static const String managerEmployee = "Manager / Employee";
+  static const String managingStaff = "Managing Staff";
   static const String mapView = "Map View";
   static const String member = "Member";
   static const String messageAndResponse = "Messages & Responses";
@@ -167,6 +173,7 @@ class AppStrings {
   static const String welcomeBack = 'Welcome Back';
   static const String welcomeUser = 'Welcome, John!';
   static const String writeComment = "Write Comment ";
+  static const String writeDescription = "Write Description";
   static const String writeMessage = "Write message...";
   static const String yes = "Yes";
   static const String youHaveSuccessfullyResetPassword =

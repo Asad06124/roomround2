@@ -25,7 +25,7 @@ class RoomListView extends StatelessWidget {
               isHome: false,
               decriptionWidget: AssignedTaskComponents.appBatTile(
                 context,
-                name: AppStrings.managinfStaff,
+                name: AppStrings.managingStaff,
                 desc: user?.username,
               ),
             ),
