@@ -3,9 +3,10 @@ import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
+import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/utils/custome_dialogue.dart';
 
-class EmployeeDirectoryController extends GetxController {
+class EmployeeDirectoryController extends GetxController with EmployeeMixin {
   final TextEditingController searchTextField = TextEditingController();
 
   List<Employee> _searchResults = [];
@@ -37,6 +38,7 @@ class EmployeeDirectoryController extends GetxController {
 
   void _resetSelectedDepartment() {
     departmentsController.onDepartmentSelect(null);
+    departmentsController.getDepartments();
   }
 
   void _addMyEmployeesType() {
@@ -80,7 +82,14 @@ class EmployeeDirectoryController extends GetxController {
       managerId = profileController.userId;
     }
 
-    Map<String, dynamic> data = {
+    List<Employee> resp = await getEmployeeList(
+      search: text,
+      managerId: managerId,
+      departmentId: departmentId,
+      managersOnly: managersOnly,
+    );
+
+    /*   Map<String, dynamic> data = {
       "search": text?.trim(),
       "isManager": managersOnly,
       "departmentId": departmentId,
@@ -97,9 +106,9 @@ class EmployeeDirectoryController extends GetxController {
       fromJson: Employee.fromJson,
       showLoader: false,
       showErrorMessage: false,
-    );
+    ); */
 
-    if (resp != null && resp is List && resp.isNotEmpty) {
+    if (resp.isNotEmpty) {
       _searchResults = List.from(resp);
     } else {
       _searchResults = [];
@@ -211,15 +220,16 @@ class DepartmentsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _getDepartments();
+    getDepartments();
   }
 
-  void _getDepartments() async {
+  Future<List<Department>> getDepartments({int? departmentId}) async {
     _updateHasData(false);
 
     Map<String, dynamic> data = {
       // "managerId": managerId,
       // "managerId": 3, // Testing
+      "departmentId": departmentId,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
@@ -238,6 +248,7 @@ class DepartmentsController extends GetxController {
       _departments = List.from(resp);
     }
     _updateHasData(true);
+    return _departments;
   }
 
   List<String> getDepartmentsNames() {
@@ -256,7 +267,7 @@ class DepartmentsController extends GetxController {
   }
 
   void onDepartmentSelect(String? name) {
-    if (name != null && name.isNotEmpty) {
+    if (name != null && name.trim().isNotEmpty) {
       if (_departments.isNotEmpty) {
         Department? department = _departments
             .firstWhereOrNull((dep) => dep.departmentName?.trim() == name);

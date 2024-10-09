@@ -19,7 +19,8 @@ class ProfileController extends GetxController {
   String? get userRole => _user?.role;
   String? get userToken => _user?.token;
   String? get userName => _user?.username;
-  
+  int? get departmentId => _user?.departmentId;
+
   UserType get userType {
     String? userRole = _user?.role?.trim();
     if (userRole != null && userRole.isNotEmpty) {

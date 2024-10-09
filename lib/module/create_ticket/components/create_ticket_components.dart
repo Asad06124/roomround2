@@ -2,7 +2,11 @@ import 'package:roomrounds/core/constants/imports.dart';
 
 class CreateTicketComponents {
   static Widget customDropdown(BuildContext context,
-      {String? title, required Function(String) onSelect}) {
+      {String? title,
+      String? hintText,
+      String? selectedItem,
+      List<String> list = const [],
+      required Function(String) onSelect}) {
     TextStyle headingTextStyle =
         context.titleSmall!.copyWith(color: AppColors.black);
     TextStyle bodyTextStyle = context.bodyLarge!.copyWith(color: AppColors.gry);
@@ -15,11 +19,12 @@ class CreateTicketComponents {
             if (title != null) Text(title, style: headingTextStyle),
             CustomeDropDown.simple(
               context,
+              list: list,
               closedShadow: false,
               width: context.width * 0.5,
-              hintText: AppStrings.selectDepartment,
-              list: departmentsController.getDepartmentsNames(),
+              initialItem: selectedItem,
               onSelect: onSelect,
+              hintText: hintText ?? AppStrings.select,
             ),
           ],
         ),

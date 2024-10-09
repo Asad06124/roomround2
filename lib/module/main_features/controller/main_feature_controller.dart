@@ -33,7 +33,8 @@ class MainFeatureController extends GetxController {
     MainFeature facilitiesViewFeature = MainFeature(
       title: isManager ? AppStrings.facilitiesView : AppStrings.roommapView,
       image: Assets.icons.roomMapView,
-      page: AppRoutes.ROOM_MAP,
+      // page: AppRoutes.ROOM_MAP,
+      page: AppRoutes.CREATE_TICKET,
     );
     MainFeature assignedTaskFeature = MainFeature(
       title: isManager ? AppStrings.myTicket : AppStrings.assignedTasks,

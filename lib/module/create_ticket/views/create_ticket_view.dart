@@ -56,14 +56,22 @@ class CreateTicketView extends StatelessWidget with Validators {
                         CreateTicketComponents.customDropdown(
                           context,
                           title: AppStrings.department,
+                          hintText: AppStrings.selectDepartment,
+                          selectedItem: departmentsController
+                              .selectedDepartment?.departmentName,
+                          list: departmentsController.getDepartmentsNames(),
                           onSelect: controller.onChangeDepartment,
                         ),
                         CreateTicketComponents.customDropdown(
                           context,
                           title: isManager
-                              ? AppStrings.managerEmployee
+                              ? AppStrings.managerOrEmployee
                               : AppStrings.manager,
-                          onSelect: controller.onChangeManager,
+                          list: controller.employeesNamesList,
+                          hintText: AppStrings.selectAssignee,
+                          selectedItem:
+                              controller.selectedEmployee?.employeeName,
+                          onSelect: controller.onChangeEmployee,
                         ),
                       ],
                     ),
@@ -89,6 +97,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                           validator: (value) => null,
                           borderColor: AppColors.gry,
                           hintText: AppStrings.writeDescription,
+                          controller: controller.descriptionController,
                         ),
                         SB.h(20),
                         Text(AppStrings.urgent, style: headingTextStyle),
@@ -116,7 +125,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                         SB.h(20),
                         AppButton.primary(
                           title: AppStrings.send,
-                          onPressed: () {},
+                          onPressed: controller.onSubmitTicket,
                         ),
                       ],
                     ),

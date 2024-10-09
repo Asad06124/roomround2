@@ -88,7 +88,7 @@ class AppStrings {
 
   static const String male = 'Male';
   static const String manager = "Manager";
-  static const String managerEmployee = "Manager / Employee";
+  static const String managerOrEmployee = "Manager / Employee";
   static const String managingStaff = "Managing Staff";
   static const String mapView = "Map View";
   static const String member = "Member";
@@ -132,6 +132,7 @@ class AppStrings {
   static const String save = 'Save';
   static const String search = 'Search';
   static const String searchEmployee = "Search employee";
+  static const String selectAssignee = "Select assignee";
   static const String searchRoom = "Search Room";
   static const String seeAll = 'See all';
   static const String select = "Select";
