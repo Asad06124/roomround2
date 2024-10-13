@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
-import 'package:roomrounds/core/constants/controllers.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
@@ -153,10 +152,12 @@ class APIFunction {
 
   static Map<String, String> _apiHeaders() {
     String? token = profileController.userToken;
-    return {
+    Map<String, String> headers = {
       "Authorization": "Bearer ${token ?? ''}",
       "Content-Type": "application/json",
     };
+    // customLogger("Headers: $headers");
+    return headers;
   }
 }
 

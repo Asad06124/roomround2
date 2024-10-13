@@ -13,6 +13,7 @@ class CustomAppbar {
       Color? iconsClor,
       TextStyle? titleStyle,
       Widget? decriptionWidget,
+      Widget? actionWidget,
       String? title}) {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
@@ -104,8 +105,9 @@ class CustomAppbar {
                         ),
                       )
                     },
+                    if (actionWidget != null) actionWidget,
                   ],
-                )
+                ),
               ],
             ),
             if (decriptionWidget != null) ...{SB.h(10), decriptionWidget},

@@ -120,6 +120,8 @@ class AppStrings {
   static const String passwordResetSuccessful = "Password reset\nsuccessful";
   static const String personalInformation = "Personal Information";
   static const String phoneNumber = "Phone number";
+  static const String pleaseSelectEmployee ="Please Select Employee";
+  static const String pleaseSelectFromMap ="Please Select Area From Map";
   static const String privacyPolicy = "privacy policy";
   static const String profile = "Profile";
   static const String queries = "Queries";
@@ -132,11 +134,12 @@ class AppStrings {
   static const String save = 'Save';
   static const String search = 'Search';
   static const String searchEmployee = "Search employee";
-  static const String selectAssignee = "Select assignee";
   static const String searchRoom = "Search Room";
   static const String seeAll = 'See all';
   static const String select = "Select";
+  static const String selectAssignee = "Select assignee";
   static const String selectDepartment = "Select Department";
+  static const String selectFromMap = "Select From Map";
   static const String selectType = "Select Type";
   static const String send = "Send";
   static const String sendEmail = "Send email";
