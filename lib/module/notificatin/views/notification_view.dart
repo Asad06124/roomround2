@@ -23,7 +23,7 @@ class NotificationView extends StatelessWidget {
               showNotificationIcon: false,
               showMailIcon: false,
               isHome: false,
-              decriptionWidget: AssignedTaskComponents.appBatTile(
+              decriptionWidget: CustomAppbar.appBatTile(
                 context,
                 name: user?.username,
                 desc: user?.role,

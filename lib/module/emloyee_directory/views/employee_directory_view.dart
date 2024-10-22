@@ -21,7 +21,7 @@ class EmployeeDirectoryView extends StatelessWidget {
         isHome: false,
         showMailIcon: true,
         showNotificationIcon: true,
-        decriptionWidget: AssignedTaskComponents.appBatTile(
+        decriptionWidget: CustomAppbar.appBatTile(
           context,
           name: user?.username,
           desc: user?.role,

@@ -27,6 +27,7 @@ class AppStrings {
   static const String changePassword = "Change Password";
   static const String clearAll = "Clear All";
   static const String clickHere = "Click here";
+  static const String close = "Close";
   static const String closeTicket = "Closed Tickets";
   static const String closed = "Closed";
   static const String codeSendTo = "Code send to";
@@ -116,6 +117,7 @@ class AppStrings {
   static const String notification = 'Notifications';
   static const String notificationSettings = "Notification Settings";
   static const String oldPassword = "Old password";
+  static const String openThread = "Open Thread";
   static const String password = "Password";
   static const String passwordResetSuccessful = "Password reset\nsuccessful";
   static const String personalInformation = "Personal Information";

@@ -21,7 +21,7 @@ class MainFeaturesView extends StatelessWidget {
               title: AppConstants.appNameSpace,
               isBackButtun: false,
               isHome: true,
-              decriptionWidget: AssignedTaskComponents.appBatTile(
+              decriptionWidget: CustomAppbar.appBatTile(
                 context,
                 name: user?.username,
                 desc: user?.role,

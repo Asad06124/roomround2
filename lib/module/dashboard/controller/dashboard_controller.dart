@@ -1,5 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
+import 'package:roomrounds/module/emloyee_directory/controller/departments_controller.dart';
 import 'package:roomrounds/module/profile/views/profile_view.dart';
 
 class DashBoardController extends GetxController {

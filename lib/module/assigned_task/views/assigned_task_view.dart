@@ -10,7 +10,6 @@ class AssignedTasksView extends StatelessWidget {
     return GetBuilder<AssignedTaskController>(
         init: AssignedTaskController(),
         builder: (controller) {
-          User? user = profileController.user;
           bool isManager = profileController.isManager;
 
           return Scaffold(
@@ -71,18 +70,32 @@ class AssignedTasksView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  controller.hasData
-                      ? _buildOpenTicketsList(
-                          controller.openTicketsList,
-                          controller.ticketsType,
-                        )
-                      : _loader(),
-                  SB.h(10),
-                  _buildClosedTicketsList(
-                    controller.closedTicketsList,
-                    controller.ticketsType,
+                  Expanded(
+                    child: controller.hasOpenTickets
+                        ? _buildOpenClosedTicketsList(
+                            context,
+                            controller.openTicketsList,
+                            controller.ticketsType,
+                          )
+                        : CustomLoader(),
                   ),
-                  AnimatedContainer(
+                  SB.h(10),
+                  if (controller.ticketsType == TicketsType.assignedMe) ...[
+                    // Show Closed Tickets List Container
+                    Expanded(
+                      child: controller.hasClosedTickets
+                          ? _buildOpenClosedTicketsList(
+                              context,
+                              controller.openTicketsList,
+                              controller.ticketsType,
+                              isClosedTickets: true,
+                            )
+                          : CustomLoader(),
+                    ),
+                    SB.h(20),
+                  ],
+
+                  /*  AnimatedContainer(
                     duration: const Duration(milliseconds: 400),
                     height: userData.type == UserType.employee
                         ? controller.ticketsType == TicketsType.assignedMe
@@ -99,7 +112,7 @@ class AssignedTasksView extends StatelessWidget {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         return userData.type == UserType.employee
-                            ? EmployeeDirectoryComponents.tile(
+                            ? AssignedTaskComponents.tile(
                                 context,
                                 showIsActiveDot: controller.ticketsType ==
                                         TicketsType.assignedMe
@@ -112,7 +125,7 @@ class AssignedTasksView extends StatelessWidget {
                                 onStatusPressed: () {
                                   if (controller.ticketsType ==
                                       TicketsType.sendTo) {
-                                    EmployeeDirectoryComponents
+                                    AssignedTaskComponents
                                         .openDialogEmployee(3, index);
                                     return;
                                   }
@@ -124,15 +137,15 @@ class AssignedTasksView extends StatelessWidget {
                                   // Open thread Send to dialoue = 3
                                   if (controller.ticketsType ==
                                       TicketsType.sendTo) {
-                                    EmployeeDirectoryComponents
+                                    AssignedTaskComponents
                                         .openDialogEmployee(2, index);
                                     return;
                                   }
-                                  EmployeeDirectoryComponents
+                                  AssignedTaskComponents
                                       .openDialogEmployee(0, index);
                                 },
                               )
-                            : EmployeeDirectoryComponents.tile(
+                            : AssignedTaskComponents.tile(
                                 context,
                                 showIsActiveDot: controller.ticketsType ==
                                     TicketsType.assignedMe,
@@ -150,17 +163,17 @@ class AssignedTasksView extends StatelessWidget {
                                 onStatusPressed: () {
                                   if (controller.ticketsType ==
                                       TicketsType.assignedMe) {
-                                    EmployeeDirectoryComponents
+                                    AssignedTaskComponents
                                         .openDialogManager(1, index);
                                   }
                                 },
                                 onTap: () {
                                   if (controller.ticketsType ==
                                       TicketsType.assignedMe) {
-                                    EmployeeDirectoryComponents
+                                    AssignedTaskComponents
                                         .openDialogManager(0, index);
                                   } else {
-                                    EmployeeDirectoryComponents
+                                    AssignedTaskComponents
                                         .openDialogManager(2, index);
                                   }
                                 },
@@ -194,14 +207,14 @@ class AssignedTasksView extends StatelessWidget {
                               itemCount: 5,
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
-                                return EmployeeDirectoryComponents.tile(
+                                return AssignedTaskComponents.tile(
                                   context,
                                   titleActive: false,
                                   title: 'B${index + 1}',
                                   status: 'Closed',
                                   isUnderline: false,
                                   onTap: () {
-                                    EmployeeDirectoryComponents
+                                    AssignedTaskComponents
                                         .openDialogEmployee(1, index);
                                   },
                                 );
@@ -211,7 +224,7 @@ class AssignedTasksView extends StatelessWidget {
                         ],
                       ),
                     ),
-                  },
+                  }, */
                 ],
               ),
             ),
@@ -219,23 +232,63 @@ class AssignedTasksView extends StatelessWidget {
         });
   }
 
-  Widget _buildOpenTicketsList(List<Ticket> list, TicketsType type) {
-    return Expanded(
+  Widget _buildOpenClosedTicketsList(
+      BuildContext context, List<Ticket> list, TicketsType type,
+      {bool isClosedTickets = false}) {
+    return Container(
+      padding: EdgeInsets.all(isClosedTickets ? 15 : 0),
+      decoration: BoxDecoration(
+        color: isClosedTickets ? AppColors.lightWhite : null,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isClosedTickets)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                AppStrings.closed,
+                style: context.titleSmall!.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          _buildList(list: list, type: type, isClosedTickets: isClosedTickets),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList(
+      {required List<Ticket> list,
+      required TicketsType type,
+      bool isClosedTickets = false}) {
+    return Flexible(
       child: list.isNotEmpty
           ? ListView.builder(
-              itemCount: 8,
               shrinkWrap: true,
+              itemCount: list.length,
               // physics: const AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                return EmployeeDirectoryComponents.tile(
+                Ticket ticket = list[index];
+
+                return AssignedTaskComponents.tile(
                   context,
-                  showIsActiveDot:
-                      type == TicketsType.assignedMe ? index % 2 == 0 : false,
-                  status:
-                      type == TicketsType.assignedMe ? "Close" : "Open Thread",
+                  title: ticket.roomName,
+                  // showIsActiveDot:
+                  //     type == TicketsType.assignedMe ? index % 2 == 0 : false,
+                  status: isClosedTickets
+                      ? AppStrings.closed
+                      : type == TicketsType.assignedMe
+                          ? AppStrings.close
+                          : AppStrings.openThread,
+                  isUnderline: !isClosedTickets,
                   onStatusPressed: () {
-                    if (type == TicketsType.sendTo) {
-                      EmployeeDirectoryComponents.openDialogEmployee(3, index);
+                    if (type == TicketsType.sendTo ||
+                        type == TicketsType.assignedTo) {
+                      AssignedTaskComponents.openDialogEmployee(3, index);
                       return;
                     }
                   },
@@ -248,7 +301,7 @@ class AssignedTasksView extends StatelessWidget {
                     //   EmployeeDirectoryComponents.openDialogEmployee(2, index);
                     //   return;
                     // }
-                    EmployeeDirectoryComponents.openDialogEmployee(0, index);
+                    AssignedTaskComponents.openDialogEmployee(0, index);
                   },
                 );
               },
@@ -256,16 +309,6 @@ class AssignedTasksView extends StatelessWidget {
           : _noResultsFound(),
     );
   }
-
-  Widget _buildClosedTicketsList(List<Ticket> list, TicketsType type) {
-    if (type == TicketsType.assignedMe) {
-      return Expanded(child: SizedBox());
-    } else {
-      return SizedBox();
-    }
-  }
-
-  Widget _loader() => Center(child: CustomLoader());
 
   Widget _noResultsFound() {
     return Center(

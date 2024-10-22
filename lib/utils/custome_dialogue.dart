@@ -42,7 +42,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
       ),
       // height: context.height * 0.75,
       width: context.width,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(12),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

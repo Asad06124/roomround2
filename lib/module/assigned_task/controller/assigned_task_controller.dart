@@ -3,7 +3,8 @@ import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class AssignedTaskController extends GetxController {
-  bool hasData = false;
+  bool hasOpenTickets = false;
+  bool hasClosedTickets = false;
 
   bool isAssignedToMe = true;
 
@@ -26,6 +27,7 @@ class AssignedTaskController extends GetxController {
     super.onInit();
     _addTicketsTypes();
     _fetchAssignedTickets();
+    _fetchAssignedTickets(isClosed: true);
   }
 
   void _addTicketsTypes() {
@@ -39,10 +41,17 @@ class AssignedTaskController extends GetxController {
   }
 
   void _fetchAssignedTickets({bool isClosed = false}) async {
-    _updateHasData(false);
+    if (isClosed) {
+      _closedTicketsList.clear();
+      _updateHasClosedTickets(false);
+    } else {
+      _openTicketsList.clear();
+      _updateHasOpenTickets(false);
+    }
 
     Map<String, dynamic> data = {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
+      "isClosed": isClosed,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
@@ -52,16 +61,35 @@ class AssignedTaskController extends GetxController {
       APIMethods.post,
       Urls.getAllTickets,
       dataMap: data,
-      fromJson: Ticket.fromJson,
+      // fromJson: Ticket.fromJson,
       showLoader: false,
       showErrorMessage: false,
     );
 
     if (resp != null && resp is List && resp.isNotEmpty) {
-      _openTicketsList = List.from(resp);
+      if (isClosed) {
+        _closedTicketsList = List.from(resp);
+      } else {
+        _openTicketsList = List.from(resp);
+      }
     }
 
-    _updateHasData(true);
+    if (resp != null) {
+      List result = resp['result'];
+      if (isClosed) {
+        _closedTicketsList =
+            List.from(result.map((json) => Ticket.fromJson(json)));
+      } else {
+        _openTicketsList =
+            List.from(result.map((json) => Ticket.fromJson(json)));
+      }
+    }
+
+    if (isClosed) {
+      _updateHasClosedTickets(true);
+    } else {
+      _updateHasOpenTickets(true);
+    }
   }
 
   void changeTicketsType(String? value) {
@@ -77,11 +105,17 @@ class AssignedTaskController extends GetxController {
       }
       // update();
       _fetchAssignedTickets();
+      _fetchAssignedTickets(isClosed: true);
     }
   }
 
-  void _updateHasData(bool value) {
-    hasData = value;
+  void _updateHasOpenTickets(bool value) {
+    hasOpenTickets = value;
+    update();
+  }
+
+  void _updateHasClosedTickets(bool value) {
+    hasClosedTickets = value;
     update();
   }
 }

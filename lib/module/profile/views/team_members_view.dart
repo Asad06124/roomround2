@@ -11,7 +11,7 @@ class TeamMembersView extends StatelessWidget {
       body: SizedBox(
         height: context.height,
         child: GetBuilder<EmployeeDirectoryController>(
-            init: EmployeeDirectoryController(),
+            init: EmployeeDirectoryController(fetchDepartments: false),
             builder: (controller) {
               return Column(
                 children: [

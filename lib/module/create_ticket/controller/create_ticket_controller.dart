@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
@@ -8,8 +9,6 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/module/room_map/views/floor_plan_view.dart';
-import 'dart:ui' as ui;
-
 import 'package:roomrounds/utils/custom_overlays.dart';
 
 class CreateTicketController extends GetxController with EmployeeMixin {
@@ -24,17 +23,17 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   Employee? _selectedEmployee;
   Employee? get selectedEmployee => _selectedEmployee;
 
-  GlobalKey<FormState> formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController roomController = TextEditingController();
   final TextEditingController floorController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
   List<String> get employeesNamesList => getEmployeesNamesList(_employeeList);
 
-  Rxn<Offset> _markerPosition = Rxn<Offset>();
-  GlobalKey _boundaryKey = GlobalKey();
+  final Rxn<Offset> _markerPosition = Rxn<Offset>();
+  final GlobalKey _boundaryKey = GlobalKey();
   Uint8List? screenshotImageBytes; // Store the screenshot image in memory
-  double _captureSize =
+  final double _captureSize =
       200.0; // Size of the square to capture around the marker
 
   @override

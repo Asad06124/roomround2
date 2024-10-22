@@ -18,7 +18,7 @@ class TasksList extends StatelessWidget {
         titleStyle: context.titleLarge,
         title: AppStrings.roomStatusList,
         isHome: false,
-        decriptionWidget: AssignedTaskComponents.appBatTile(
+        decriptionWidget: CustomAppbar.appBatTile(
           context,
           name: AppStrings.managingStaff,
           desc: profileController.user?.username,

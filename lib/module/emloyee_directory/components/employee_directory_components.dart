@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class EmployeeDirectoryComponents {
   static Widget tile(BuildContext context,
@@ -93,64 +90,5 @@ class EmployeeDirectoryComponents {
         ),
       ),
     );
-  }
-
-  static _showFullWidthDialog(
-    Widget child,
-  ) {
-    log("===============> Opening");
-    return showDialog(
-      barrierDismissible: false,
-      context: Get.context!,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 14),
-        child: child,
-      ),
-    );
-  }
-
-  static void openDialogEmployee(int type, int index) {
-    if (type == 0) {
-      _showFullWidthDialog(
-        CloseTicketDialouge(
-          isUrgent: index % 2 == 0,
-        ),
-      );
-    } else if (type == 1) {
-      _showFullWidthDialog(
-        ClosedTicketDialouge(),
-      );
-    } else if (type == 2) {
-      _showFullWidthDialog(
-        OpenThreadDialogue(
-          isUrgent: true,
-          urgentText: 'Urgent',
-        ),
-      );
-    } else if (type == 3) {
-      _showFullWidthDialog(
-        OpenThreadDialogueArgue(),
-      );
-    }
-  }
-
-  static void openDialogManager(int type, int index) {
-    if (type == 0) {
-      _showFullWidthDialog(
-        ThreadTicketDialouge(),
-      );
-    }
-    if (type == 1) {
-      _showFullWidthDialog(
-        SeeThreadDialouge(),
-      );
-    }
-    if (type == 2) {
-      _showFullWidthDialog(
-        AssignedThreadDialouge(),
-      );
-    }
   }
 }

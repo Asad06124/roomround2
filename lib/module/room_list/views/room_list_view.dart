@@ -23,7 +23,7 @@ class RoomListView extends StatelessWidget {
               titleStyle: context.titleLarge,
               title: AppStrings.roomStatusList,
               isHome: false,
-              decriptionWidget: AssignedTaskComponents.appBatTile(
+              decriptionWidget: CustomAppbar.appBatTile(
                 context,
                 name: AppStrings.managingStaff,
                 desc: user?.username,
