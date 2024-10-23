@@ -24,3 +24,13 @@ enum TicketsType { assignedMe, assignedTo, sendTo }
 enum TicketStatus { open, inProgress, closed }
 
 enum LoggerType { debug, info, warning, error }
+
+enum TicketDialogs {
+  closeTicket,
+  closedTicket,
+  openThread,
+  openThreadArgue,
+  threadTicket,
+  seeThread,
+  assignedThread
+}

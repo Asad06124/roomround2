@@ -16,6 +16,7 @@ class AppStrings {
 
   static const String assign = "Assign";
   static const String assignRoom = "Assign Room";
+  static const String assigned = "Assigned";
   static const String assignedMe = "Assigned Me";
   static const String assignedTasks = "Assigned Tasks";
   static const String assignedTo = "Assigned to";
@@ -138,6 +139,7 @@ class AppStrings {
   static const String searchEmployee = "Search employee";
   static const String searchRoom = "Search Room";
   static const String seeAll = 'See all';
+  static const String seeThread = 'See Thread';
   static const String select = "Select";
   static const String selectAssignee = "Select assignee";
   static const String selectDepartment = "Select Department";

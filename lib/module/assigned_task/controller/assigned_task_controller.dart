@@ -127,6 +127,49 @@ class AssignedTaskController extends GetxController {
     }
   }
 
+  void onTicketTap(
+      {Ticket? ticket,
+      TicketsType? type,
+      bool isClosed = false,
+      bool isManager = false}) {
+    if (isManager) {
+      if (type == TicketsType.assignedMe) {
+        if (isClosed) {
+          AssignedTaskComponents.openDialogEmployee(TicketDialogs.closedTicket);
+        } else {
+          AssignedTaskComponents.openDialogEmployee(TicketDialogs.threadTicket);
+        }
+      } else if (type == TicketsType.assignedTo) {
+        AssignedTaskComponents.openDialogEmployee(TicketDialogs.assignedThread);
+      }
+    } else {
+      if (type == TicketsType.assignedMe) {
+        if (isClosed) {
+          AssignedTaskComponents.openDialogEmployee(TicketDialogs.closedTicket);
+        } else {
+          AssignedTaskComponents.openDialogEmployee(TicketDialogs.closeTicket);
+        }
+      } else if (type == TicketsType.sendTo) {
+        AssignedTaskComponents.openDialogEmployee(TicketDialogs.openThread);
+
+        // AssignedTaskComponents.openDialogEmployee(
+        //     TicketDialogs.openThreadArgue);
+      }
+    }
+  }
+
+  void onTicketStatusTap({TicketsType? type, bool isManager = false}) {
+    if (type == TicketsType.assignedMe) {
+      if (isManager) {
+        AssignedTaskComponents.openDialogEmployee(TicketDialogs.seeThread);
+      } else {
+        AssignedTaskComponents.openDialogEmployee(TicketDialogs.closeTicket);
+      }
+    } else if (type == TicketsType.sendTo) {
+      AssignedTaskComponents.openDialogEmployee(TicketDialogs.openThreadArgue);
+    }
+  }
+
   void _updateHasOpenTickets(bool value) {
     hasOpenTickets = value;
     update();

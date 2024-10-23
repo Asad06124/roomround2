@@ -93,7 +93,47 @@ class AssignedTaskComponents {
     );
   }
 
-  static void openDialogEmployee(int type, int index) {
+  static void openDialogEmployee(TicketDialogs type) {
+    // Employee Dialogs
+    if (type == TicketDialogs.closeTicket) {
+      _showFullWidthDialog(
+        CloseTicketDialouge(isUrgent: true),
+      );
+    } else if (type == TicketDialogs.closedTicket) {
+      _showFullWidthDialog(
+        ClosedTicketDialouge(),
+      );
+    } else if (type == TicketDialogs.openThread) {
+      _showFullWidthDialog(
+        OpenThreadDialogue(
+          isUrgent: true,
+          urgentText: 'Urgent',
+        ),
+      );
+    } else if (type == TicketDialogs.openThreadArgue) {
+      _showFullWidthDialog(
+        OpenThreadDialogueArgue(),
+      );
+    }
+    // Manager Dialogs
+    else if (type == TicketDialogs.threadTicket) {
+      _showFullWidthDialog(
+        ThreadTicketDialouge(),
+      );
+    }
+    if (type == TicketDialogs.seeThread) {
+      _showFullWidthDialog(
+        SeeThreadDialouge(),
+      );
+    }
+    if (type == TicketDialogs.assignedThread) {
+      _showFullWidthDialog(
+        AssignedThreadDialouge(),
+      );
+    }
+  }
+
+  /*  static void openDialogEmployee(int type, int index) {
     if (type == 0) {
       _showFullWidthDialog(
         CloseTicketDialouge(
@@ -134,7 +174,7 @@ class AssignedTaskComponents {
         AssignedThreadDialouge(),
       );
     }
-  }
+  }  */
 
   static void _showFullWidthDialog(Widget child) {
     Get.dialog(
