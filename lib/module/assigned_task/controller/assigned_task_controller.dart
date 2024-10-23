@@ -1,5 +1,6 @@
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
+import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class AssignedTaskController extends GetxController {
@@ -7,6 +8,8 @@ class AssignedTaskController extends GetxController {
   bool hasClosedTickets = false;
 
   bool isAssignedToMe = true;
+  int? totalTicketsCount;
+  int? urgentTicketsCount;
 
   List<Ticket> _openTicketsList = [];
   List<Ticket> _closedTicketsList = [];
@@ -14,7 +17,7 @@ class AssignedTaskController extends GetxController {
   List<Ticket> get openTicketsList => _openTicketsList;
   List<Ticket> get closedTicketsList => _closedTicketsList;
 
-  List<String> _ticketsTypesList = [AppStrings.assignedMe];
+  final List<String> _ticketsTypesList = [AppStrings.assignedMe];
 
   List<String> get ticketsTypesList => _ticketsTypesList;
 
@@ -41,6 +44,8 @@ class AssignedTaskController extends GetxController {
   }
 
   void _fetchAssignedTickets({bool isClosed = false}) async {
+    totalTicketsCount = 0;
+    urgentTicketsCount = 0;
     if (isClosed) {
       _closedTicketsList.clear();
       _updateHasClosedTickets(false);
@@ -49,9 +54,14 @@ class AssignedTaskController extends GetxController {
       _updateHasOpenTickets(false);
     }
 
+    String? status;
+    // status = isClosed
+    //     ? TicketStatus.closed.name.capitalize
+    //     : TicketStatus.open.name.capitalize;
+
     Map<String, dynamic> data = {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
-      "isClosed": isClosed,
+      "ticketStatus": status,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
@@ -61,29 +71,35 @@ class AssignedTaskController extends GetxController {
       APIMethods.post,
       Urls.getAllTickets,
       dataMap: data,
-      // fromJson: Ticket.fromJson,
+      fromJson: TicketsListModel.fromJson,
       showLoader: false,
       showErrorMessage: false,
     );
 
-    if (resp != null && resp is List && resp.isNotEmpty) {
-      if (isClosed) {
-        _closedTicketsList = List.from(resp);
-      } else {
-        _openTicketsList = List.from(resp);
+    if (resp != null && resp is TicketsListModel) {
+      List<Ticket>? tickets = resp.tickets;
+      totalTicketsCount = resp.totalTicketCount;
+      urgentTicketsCount = resp.urgentTicketCount;
+
+      if (tickets != null && tickets.isNotEmpty) {
+        if (isClosed) {
+          _closedTicketsList = List.from(tickets);
+        } else {
+          _openTicketsList = List.from(tickets);
+        }
       }
     }
 
-    if (resp != null) {
-      List result = resp['result'];
-      if (isClosed) {
-        _closedTicketsList =
-            List.from(result.map((json) => Ticket.fromJson(json)));
-      } else {
-        _openTicketsList =
-            List.from(result.map((json) => Ticket.fromJson(json)));
-      }
-    }
+    // if (resp != null) {
+    //   List result = resp['result'];
+    //   if (isClosed) {
+    //     _closedTicketsList =
+    //         List.from(result.map((json) => Ticket.fromJson(json)));
+    //   } else {
+    //     _openTicketsList =
+    //         List.from(result.map((json) => Ticket.fromJson(json)));
+    //   }
+    // }
 
     if (isClosed) {
       _updateHasClosedTickets(true);
@@ -105,7 +121,9 @@ class AssignedTaskController extends GetxController {
       }
       // update();
       _fetchAssignedTickets();
-      _fetchAssignedTickets(isClosed: true);
+      if (_ticketsType == TicketsType.assignedMe) {
+        _fetchAssignedTickets(isClosed: true);
+      }
     }
   }
 

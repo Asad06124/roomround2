@@ -11,6 +11,8 @@ class AssignedTasksView extends StatelessWidget {
         init: AssignedTaskController(),
         builder: (controller) {
           bool isManager = profileController.isManager;
+          int? totalTickets = controller.totalTicketsCount;
+          int? urgentTickets = controller.urgentTicketsCount;
 
           return Scaffold(
             backgroundColor: AppColors.white,
@@ -35,13 +37,14 @@ class AssignedTasksView extends StatelessWidget {
                 // physics: const NeverScrollableScrollPhysics(),
                 children: [
                   Text(
-                    userData.type == UserType.employee
-                        ? controller.ticketsType == TicketsType.assignedMe
-                            ? "30 Tickets / 20 Urgent / 5 Urgent"
-                            : "30 Tickets / 20 Replied"
-                        : controller.ticketsType == TicketsType.assignedMe
-                            ? "30 Tickets / 20 Urgent"
-                            : "30 Tickets",
+                    '${totalTickets ?? 0} ${AppStrings.tickets} / ${urgentTickets ?? 0} ${AppStrings.urgent}',
+                    // userData.type == UserType.employee
+                    //     ? controller.ticketsType == TicketsType.assignedMe
+                    //         ? "30 Tickets / 20 Urgent / 5 Urgent"
+                    //         : "30 Tickets / 20 Replied"
+                    //     : controller.ticketsType == TicketsType.assignedMe
+                    //         ? "30 Tickets / 20 Urgent"
+                    //         : "30 Tickets",
                     style: context.bodyLarge!.copyWith(
                       color: AppColors.gry,
                       fontWeight: FontWeight.w500,

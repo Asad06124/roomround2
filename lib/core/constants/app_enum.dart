@@ -21,4 +21,6 @@ enum RoomType { allRooms, complete, inProgress }
 
 enum TicketsType { assignedMe, assignedTo, sendTo }
 
+enum TicketStatus { open, inProgress, closed }
+
 enum LoggerType { debug, info, warning, error }
