@@ -20,6 +20,11 @@ extension DateTimeExtension on DateTime {
     return DateFormat(format).format(this);
   }
 
+  String formatTime({String format = 'hh:mm a'}) {
+    return DateFormat(format).format(this);
+    // return DateFormat.jm().format(this);
+  }
+
   String get dateOnly {
     return toString().substring(0, 10);
   }

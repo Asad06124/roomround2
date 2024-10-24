@@ -304,6 +304,7 @@ class AssignedTasksView extends StatelessWidget {
                       ? () {
                           controller.onTicketStatusTap(
                             isManager: isManager,
+                            ticket: ticket,
                             type: type,
                           );
                         }

@@ -1,5 +1,4 @@
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class AssignedTaskComponents {
   static Widget tile(BuildContext context,
@@ -93,46 +92,6 @@ class AssignedTaskComponents {
     );
   }
 
-  static void openDialogEmployee(TicketDialogs type) {
-    // Employee Dialogs
-    if (type == TicketDialogs.closeTicket) {
-      _showFullWidthDialog(
-        CloseTicketDialouge(isUrgent: true),
-      );
-    } else if (type == TicketDialogs.closedTicket) {
-      _showFullWidthDialog(
-        ClosedTicketDialouge(),
-      );
-    } else if (type == TicketDialogs.openThread) {
-      _showFullWidthDialog(
-        OpenThreadDialogue(
-          isUrgent: true,
-          urgentText: 'Urgent',
-        ),
-      );
-    } else if (type == TicketDialogs.openThreadArgue) {
-      _showFullWidthDialog(
-        OpenThreadDialogueArgue(),
-      );
-    }
-    // Manager Dialogs
-    else if (type == TicketDialogs.threadTicket) {
-      _showFullWidthDialog(
-        ThreadTicketDialouge(),
-      );
-    }
-    if (type == TicketDialogs.seeThread) {
-      _showFullWidthDialog(
-        SeeThreadDialouge(),
-      );
-    }
-    if (type == TicketDialogs.assignedThread) {
-      _showFullWidthDialog(
-        AssignedThreadDialouge(),
-      );
-    }
-  }
-
   /*  static void openDialogEmployee(int type, int index) {
     if (type == 0) {
       _showFullWidthDialog(
@@ -175,27 +134,4 @@ class AssignedTaskComponents {
       );
     }
   }  */
-
-  static void _showFullWidthDialog(Widget child) {
-    Get.dialog(
-      Dialog(
-        // elevation: 0,
-        // backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 14),
-        child: child,
-      ),
-      // barrierDismissible: false,
-    );
-
-    // showDialog(
-    //   barrierDismissible: false,
-    //   context: Get.context!,
-    //   builder: (context) => Dialog(
-    //     backgroundColor: Colors.transparent,
-    //     elevation: 0,
-    //     insetPadding: const EdgeInsets.symmetric(horizontal: 14),
-    //     child: child,
-    //   ),
-    // );
-  }
 }

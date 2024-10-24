@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 extension StringExtension on String {
@@ -14,12 +13,14 @@ extension Pluralize on String {
 }
 
 extension StringToDateTime on String {
-  DateTime toDateTime() {
+  DateTime? toDateTime() {
     try {
-      return DateFormat('yyyy-MM-dd').parseStrict(this);
+      // return DateFormat('yyyy-MM-dd').parseStrict(this);
+      return DateTime.tryParse(this);
     } catch (e) {
       //throw FormatException("Error parsing date: $this. $e");
-      return DateTime.now();
+      // return DateTime.now();
+      return null;
     }
   }
 }

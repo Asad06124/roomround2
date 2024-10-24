@@ -17,6 +17,8 @@ class Urls {
   static const String getAllTasks = "$_ticket/getAllTasks";
   static const String updateTaskStatus = "$_ticket/updateTaskStatus";
   static const String saveTicketByEmployee = "$_ticket/saveByEmployee";
+  static const String updateTicketStatus = "$_ticket/updateTicketStatus";
+  static const String updateIsCompletedTickets = "$_ticket/updateIsCompletedTickets";
 
   // Departments
   static const String _departments = "/departments";

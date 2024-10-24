@@ -2,6 +2,8 @@ import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/constants/utilities.dart';
+import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class AssignedTaskController extends GetxController {
   bool hasOpenTickets = false;
@@ -54,14 +56,22 @@ class AssignedTaskController extends GetxController {
       _updateHasOpenTickets(false);
     }
 
-    String? status;
-    // status = isClosed
-    //     ? TicketStatus.closed.name.capitalize
-    //     : TicketStatus.open.name.capitalize;
+    List<String> statuses = [];
+    if (isClosed) {
+      String? closed = TicketStatus.closed.name.capitalize;
+      if (closed != null) statuses.add(closed);
+    } else {
+      String? open = TicketStatus.open.name.capitalize;
+      String? inProgress = TicketStatus.inProgress.name.capitalize;
+
+      if (open != null) statuses.add(open);
+      if (inProgress != null) statuses.add(inProgress);
+    }
 
     Map<String, dynamic> data = {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
-      "ticketStatus": status,
+      "ticketStatus": statuses,
+      // "assignBy": 29,// Manager Id
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
@@ -108,6 +118,40 @@ class AssignedTaskController extends GetxController {
     }
   }
 
+  void _closeTicketApi({int? ticketId, String? status}) async {
+    String params = '?ticketId=${ticketId ?? ''}&status=$status';
+
+    var resp = await APIFunction.call(
+      APIMethods.post,
+      Urls.updateTicketStatus + params,
+      showLoader: true,
+      showErrorMessage: true,
+      showSuccessMessage: true,
+    );
+
+    if (resp != null && resp is bool && resp == true) {
+      _fetchAssignedTickets();
+      _fetchAssignedTickets(isClosed: true);
+    }
+  }
+
+  void _completeTicket({int? ticketId, bool isCompleted = false}) async {
+    String params = '?ticketId=${ticketId ?? ''}&isCompleted=$isCompleted';
+
+    var resp = await APIFunction.call(
+      APIMethods.post,
+      Urls.updateIsCompletedTickets + params,
+      showLoader: true,
+      showErrorMessage: true,
+      showSuccessMessage: true,
+    );
+
+    if (resp != null && resp is bool && resp == true) {
+      _fetchAssignedTickets();
+      _fetchAssignedTickets(isClosed: true);
+    }
+  }
+
   void changeTicketsType(String? value) {
     if (value != null && value.trim().isNotEmpty) {
       if (value == AppStrings.assignedMe) {
@@ -135,38 +179,66 @@ class AssignedTaskController extends GetxController {
     if (isManager) {
       if (type == TicketsType.assignedMe) {
         if (isClosed) {
-          AssignedTaskComponents.openDialogEmployee(TicketDialogs.closedTicket);
+          _openTicketsDialog(
+            type: TicketDialogs.closedTicket,
+            ticket: ticket,
+          );
         } else {
-          AssignedTaskComponents.openDialogEmployee(TicketDialogs.threadTicket);
+          _openTicketsDialog(
+            type: TicketDialogs.threadTicket,
+            ticket: ticket,
+          );
         }
       } else if (type == TicketsType.assignedTo) {
-        AssignedTaskComponents.openDialogEmployee(TicketDialogs.assignedThread);
+        _openTicketsDialog(
+          type: TicketDialogs.assignedThread,
+          ticket: ticket,
+        );
       }
     } else {
       if (type == TicketsType.assignedMe) {
         if (isClosed) {
-          AssignedTaskComponents.openDialogEmployee(TicketDialogs.closedTicket);
+          _openTicketsDialog(
+            type: TicketDialogs.closedTicket,
+            ticket: ticket,
+          );
         } else {
-          AssignedTaskComponents.openDialogEmployee(TicketDialogs.closeTicket);
+          _openTicketsDialog(
+            type: TicketDialogs.closeTicket,
+            ticket: ticket,
+          );
         }
       } else if (type == TicketsType.sendTo) {
-        AssignedTaskComponents.openDialogEmployee(TicketDialogs.openThread);
+        _openTicketsDialog(
+          type: TicketDialogs.openThread,
+          ticket: ticket,
+        );
 
-        // AssignedTaskComponents.openDialogEmployee(
+        // _openTicketsDialog(
         //     TicketDialogs.openThreadArgue);
       }
     }
   }
 
-  void onTicketStatusTap({TicketsType? type, bool isManager = false}) {
+  void onTicketStatusTap(
+      {TicketsType? type, Ticket? ticket, bool isManager = false}) {
     if (type == TicketsType.assignedMe) {
       if (isManager) {
-        AssignedTaskComponents.openDialogEmployee(TicketDialogs.seeThread);
+        _openTicketsDialog(
+          type: TicketDialogs.seeThread,
+          ticket: ticket,
+        );
       } else {
-        AssignedTaskComponents.openDialogEmployee(TicketDialogs.closeTicket);
+        _openTicketsDialog(
+          type: TicketDialogs.closeTicket,
+          ticket: ticket,
+        );
       }
     } else if (type == TicketsType.sendTo) {
-      AssignedTaskComponents.openDialogEmployee(TicketDialogs.openThreadArgue);
+      _openTicketsDialog(
+        type: TicketDialogs.openThreadArgue,
+        ticket: ticket,
+      );
     }
   }
 
@@ -178,5 +250,76 @@ class AssignedTaskController extends GetxController {
   void _updateHasClosedTickets(bool value) {
     hasClosedTickets = value;
     update();
+  }
+
+  void _openTicketsDialog({TicketDialogs? type, Ticket? ticket}) {
+    customLogger("Ticket: ${ticket?.toJson()}");
+    // Employee Dialogs
+    if (type == TicketDialogs.closeTicket) {
+      _showFullWidthDialog(
+        CloseTicketDialouge(
+          ticket: ticket,
+          onCloseTap: () {
+            Get.back(); // Close Dialog
+            _closeTicketApi(
+              ticketId: ticket?.ticketId,
+              status: TicketStatus.closed.name.capitalize,
+            );
+          },
+          onReplyButtonTap: () {
+            Get.back();
+          },
+        ),
+      );
+    } else if (type == TicketDialogs.closedTicket) {
+      _showFullWidthDialog(
+        ClosedTicketDialouge(ticket: ticket),
+      );
+    } else if (type == TicketDialogs.openThread) {
+      _showFullWidthDialog(
+        OpenThreadDialogue(ticket: ticket),
+      );
+    } else if (type == TicketDialogs.openThreadArgue) {
+      _showFullWidthDialog(
+        OpenThreadDialogueArgue(ticket: ticket),
+      );
+    }
+    // Manager Dialogs
+    else if (type == TicketDialogs.threadTicket) {
+      _showFullWidthDialog(
+        ThreadTicketDialouge(),
+      );
+    } else if (type == TicketDialogs.seeThread) {
+      _showFullWidthDialog(
+        SeeThreadDialouge(ticket: ticket),
+      );
+    } else if (type == TicketDialogs.assignedThread) {
+      _showFullWidthDialog(
+        AssignedThreadDialouge(),
+      );
+    }
+  }
+
+  void _showFullWidthDialog(Widget child) {
+    Get.dialog(
+      Dialog(
+        // elevation: 0,
+        // backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 14),
+        child: child,
+      ),
+      // barrierDismissible: false,
+    );
+
+    // showDialog(
+    //   barrierDismissible: false,
+    //   context: Get.context!,
+    //   builder: (context) => Dialog(
+    //     backgroundColor: Colors.transparent,
+    //     elevation: 0,
+    //     insetPadding: const EdgeInsets.symmetric(horizontal: 14),
+    //     child: child,
+    //   ),
+    // );
   }
 }

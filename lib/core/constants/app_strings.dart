@@ -17,6 +17,8 @@ class AppStrings {
   static const String assign = "Assign";
   static const String assignRoom = "Assign Room";
   static const String assigned = "Assigned";
+  static const String assignedBy = 'Assigned by:';
+  static const String assignedDate = 'Assigned Date:';
   static const String assignedMe = "Assigned Me";
   static const String assignedTasks = "Assigned Tasks";
   static const String assignedTo = "Assigned to";
@@ -37,6 +39,7 @@ class AppStrings {
   static const String complete = "Complete";
   static const String completeTask = 'Complete Task';
   static const String completed = "Completed";
+  static const String completionDate = 'Completion Date:';
   static const String confirmPassword = "Confirm password";
   static const String connect = "Connect";
   static const String connecting = "Connecting.....";
@@ -123,8 +126,8 @@ class AppStrings {
   static const String passwordResetSuccessful = "Password reset\nsuccessful";
   static const String personalInformation = "Personal Information";
   static const String phoneNumber = "Phone number";
-  static const String pleaseSelectEmployee ="Please Select Employee";
-  static const String pleaseSelectFromMap ="Please Select Area From Map";
+  static const String pleaseSelectEmployee = "Please Select Employee";
+  static const String pleaseSelectFromMap = "Please Select Area From Map";
   static const String privacyPolicy = "privacy policy";
   static const String profile = "Profile";
   static const String queries = "Queries";
