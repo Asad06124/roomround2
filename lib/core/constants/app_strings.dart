@@ -160,6 +160,7 @@ class AppStrings {
   static const String skip = 'Skip';
   static const String skipForNow = 'Skip for now';
   static const String somethingWentWrong = "Something went wrong!";
+  static const String status = "Status";
   static const String step = 'step';
   static const String success = 'Success!';
   static const String successDescription = 'Your device is connected';

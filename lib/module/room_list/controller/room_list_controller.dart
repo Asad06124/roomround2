@@ -1,8 +1,6 @@
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/room/room_model.dart';
-import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/constants/utilities.dart';
 
 class RoomListController extends GetxController {
   RoomType _roomType = RoomType.allRooms;
@@ -26,7 +24,7 @@ class RoomListController extends GetxController {
     _updateHasData(false);
 
     Map<String, dynamic> data = {
-      // "managerId": managerId,
+      "managerId": managerId,
       // "managerId": 3, // Testing
       "roomStatus": roomStatus,
       "pageNo": 1,

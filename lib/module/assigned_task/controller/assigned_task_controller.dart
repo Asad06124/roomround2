@@ -2,8 +2,6 @@ import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/constants/utilities.dart';
-import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class AssignedTaskController extends GetxController {
   bool hasOpenTickets = false;
@@ -45,6 +43,11 @@ class AssignedTaskController extends GetxController {
     }
   }
 
+  void _refreshOpenAndClosedTickets() {
+    _fetchAssignedTickets();
+    _fetchAssignedTickets(isClosed: true);
+  }
+
   void _fetchAssignedTickets({bool isClosed = false}) async {
     totalTicketsCount = 0;
     urgentTicketsCount = 0;
@@ -64,14 +67,21 @@ class AssignedTaskController extends GetxController {
       String? open = TicketStatus.open.name.capitalize;
       String? inProgress = TicketStatus.inProgress.name.capitalize;
 
+      statuses.add(''); // Empty Status
       if (open != null) statuses.add(open);
       if (inProgress != null) statuses.add(inProgress);
+    }
+
+    bool isManager = profileController.isManager;
+    int? managerId;
+    if (isClosed && isManager) {
+      managerId = profileController.userId;
     }
 
     Map<String, dynamic> data = {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
       "ticketStatus": statuses,
-      // "assignBy": 29,// Manager Id
+      "assignBy": managerId,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
@@ -119,36 +129,55 @@ class AssignedTaskController extends GetxController {
   }
 
   void _closeTicketApi({int? ticketId, String? status}) async {
-    String params = '?ticketId=${ticketId ?? ''}&status=$status';
+    if (ticketId != null) {
+      String params = '?ticketId=$ticketId&status=$status';
 
-    var resp = await APIFunction.call(
-      APIMethods.post,
-      Urls.updateTicketStatus + params,
-      showLoader: true,
-      showErrorMessage: true,
-      showSuccessMessage: true,
-    );
+      var resp = await APIFunction.call(
+        APIMethods.post,
+        Urls.updateTicketStatus + params,
+        showLoader: true,
+        showErrorMessage: true,
+        showSuccessMessage: true,
+      );
 
-    if (resp != null && resp is bool && resp == true) {
-      _fetchAssignedTickets();
-      _fetchAssignedTickets(isClosed: true);
+      if (resp != null && resp is bool && resp == true) {
+        _refreshOpenAndClosedTickets();
+      }
     }
   }
 
   void _completeTicket({int? ticketId, bool isCompleted = false}) async {
-    String params = '?ticketId=${ticketId ?? ''}&isCompleted=$isCompleted';
+    if (ticketId != null) {
+      String params = '?ticketId=$ticketId&isCompleted=$isCompleted';
 
-    var resp = await APIFunction.call(
-      APIMethods.post,
-      Urls.updateIsCompletedTickets + params,
-      showLoader: true,
-      showErrorMessage: true,
-      showSuccessMessage: true,
-    );
+      var resp = await APIFunction.call(
+        APIMethods.post,
+        Urls.updateIsCompletedTickets + params,
+        showLoader: true,
+        showErrorMessage: true,
+        showSuccessMessage: true,
+      );
 
-    if (resp != null && resp is bool && resp == true) {
-      _fetchAssignedTickets();
-      _fetchAssignedTickets(isClosed: true);
+      if (resp != null && resp is bool && resp == true) {
+        _refreshOpenAndClosedTickets();
+      }
+    }
+  }
+
+  void _deleteTicket({int? ticketId, bool isDeleted = false}) async {
+    if (ticketId != null) {
+      var resp = await APIFunction.call(
+        APIMethods.delete,
+        Urls.deleteTicket,
+        dataMap: {"id": ticketId, "isDeleted": isDeleted},
+        showLoader: true,
+        showErrorMessage: true,
+        showSuccessMessage: true,
+      );
+
+      if (resp != null && resp is bool && resp == true) {
+        _refreshOpenAndClosedTickets();
+      }
     }
   }
 
@@ -180,12 +209,12 @@ class AssignedTaskController extends GetxController {
       if (type == TicketsType.assignedMe) {
         if (isClosed) {
           _openTicketsDialog(
-            type: TicketDialogs.closedTicket,
+            type: TicketDialogs.threadTicket,
             ticket: ticket,
           );
         } else {
           _openTicketsDialog(
-            type: TicketDialogs.threadTicket,
+            type: TicketDialogs.closeTicket,
             ticket: ticket,
           );
         }
@@ -213,9 +242,6 @@ class AssignedTaskController extends GetxController {
           type: TicketDialogs.openThread,
           ticket: ticket,
         );
-
-        // _openTicketsDialog(
-        //     TicketDialogs.openThreadArgue);
       }
     }
   }
@@ -281,21 +307,43 @@ class AssignedTaskController extends GetxController {
       );
     } else if (type == TicketDialogs.openThreadArgue) {
       _showFullWidthDialog(
-        OpenThreadDialogueArgue(ticket: ticket),
+        OpenThreadDialogueArgue(
+          ticket: ticket,
+          onSendTap: () {
+            Get.back(); // Close the dialog
+          },
+        ),
       );
     }
     // Manager Dialogs
     else if (type == TicketDialogs.threadTicket) {
       _showFullWidthDialog(
-        ThreadTicketDialouge(),
+        ThreadTicketDialouge(
+          ticket: ticket,
+          onCompleteTap: () {
+            Get.back(); // Close the dialog
+            _completeTicket(ticketId: ticket?.ticketId, isCompleted: true);
+          },
+        ),
       );
     } else if (type == TicketDialogs.seeThread) {
       _showFullWidthDialog(
-        SeeThreadDialouge(ticket: ticket),
+        SeeThreadDialouge(
+          ticket: ticket,
+          onCloseTap: () {
+            Get.back(); // Close the dialog
+          },
+        ),
       );
     } else if (type == TicketDialogs.assignedThread) {
       _showFullWidthDialog(
-        AssignedThreadDialouge(),
+        AssignedThreadDialouge(
+          ticket: ticket,
+          onDeleteTap: () {
+            Get.back(); // Close the dialog
+            _deleteTicket(ticketId: ticket?.ticketId, isDeleted: true);
+          },
+        ),
       );
     }
   }

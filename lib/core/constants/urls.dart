@@ -7,18 +7,20 @@ class Urls {
 
   // Rooms
   static const String _room = "/room";
-  // static const String getAllRooms = "$_room/getAll";
+  static const String getAllRooms = "$_room/getAll";
 
   // Tasks
   static const String _ticket = "/ticket";
   static const String saveTicket = "$_ticket/save";
   static const String getAllTickets = "$_ticket/getAll";
-  static const String getAllRooms = "$_ticket/getAllRooms";
+  // static const String getAllRooms = "$_ticket/getAllRooms";
   static const String getAllTasks = "$_ticket/getAllTasks";
   static const String updateTaskStatus = "$_ticket/updateTaskStatus";
   static const String saveTicketByEmployee = "$_ticket/saveByEmployee";
   static const String updateTicketStatus = "$_ticket/updateTicketStatus";
-  static const String updateIsCompletedTickets = "$_ticket/updateIsCompletedTickets";
+  static const String deleteTicket = "$_ticket/delete";
+  static const String updateIsCompletedTickets =
+      "$_ticket/updateIsCompletedTickets";
 
   // Departments
   static const String _departments = "/departments";

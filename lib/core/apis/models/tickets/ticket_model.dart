@@ -9,6 +9,10 @@ class Ticket {
   bool? isUrgent;
   int? assignTo;
   int? assignTemplateRoomId;
+  String? assignTemplateName;
+  String? completionDate;
+  int? assignBy;
+  String? assignByName;
   String? assignToName;
   String? status;
 
@@ -23,6 +27,10 @@ class Ticket {
       this.isUrgent,
       this.assignTo,
       this.assignTemplateRoomId,
+      this.assignTemplateName,
+      this.completionDate,
+      this.assignBy,
+      this.assignByName,
       this.assignToName,
       this.status});
 
@@ -37,6 +45,10 @@ class Ticket {
     isUrgent = json['isUrgent'];
     assignTo = json['assignTo'];
     assignTemplateRoomId = json['assignTemplateRoomId'];
+    assignTemplateName = json['assignTemplateName'];
+    completionDate = json['completionDate'];
+    assignBy = json['assignBy'];
+    assignByName = json['assignByName'];
     assignToName = json['assignToName'];
     status = json['status'];
   }
@@ -53,6 +65,10 @@ class Ticket {
     data['isUrgent'] = isUrgent;
     data['assignTo'] = assignTo;
     data['assignTemplateRoomId'] = assignTemplateRoomId;
+    data['assignTemplateName'] = assignTemplateName;
+    data['completionDate'] = completionDate;
+    data['assignBy'] = assignBy;
+    data['assignByName'] = assignByName;
     data['assignToName'] = assignToName;
     data['status'] = status;
     return data;

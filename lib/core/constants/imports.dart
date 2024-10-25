@@ -39,6 +39,8 @@ export 'package:roomrounds/core/extensions/form_extension.dart';
 export 'package:roomrounds/core/mixins/validators.dart';
 export 'package:roomrounds/core/constants/controllers.dart';
 export 'package:roomrounds/core/apis/models/user_data/user_model.dart';
+export  'package:roomrounds/core/constants/utilities.dart';
+export 'package:roomrounds/utils/custome_dialogue.dart';
 ///////////////   Pages     //////////////////////
 export 'package:roomrounds/module/splash/views/splash_view.dart';
 export 'package:roomrounds/module/authentications/views/login_view.dart';
