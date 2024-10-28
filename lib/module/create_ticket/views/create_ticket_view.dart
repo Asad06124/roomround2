@@ -62,7 +62,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                             title: AppStrings.department,
                             hintText: AppStrings.selectDepartment,
                             selectedItem: departmentsController
-                                .selectedDepartment?.departmentName,
+                                .selectedDepartment?.departmentName?.trim(),
                             list: departmentsController.getDepartmentsNames(),
                             onSelect: controller.onChangeDepartment,
                           ),
@@ -73,6 +73,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                                 : AppStrings.manager,
                             list: controller.employeesNamesList,
                             hintText: AppStrings.selectAssignee,
+                            controller: controller.employeeSelectController,
                             selectedItem:
                                 controller.selectedEmployee?.employeeName?.trim(),
                             onSelect: controller.onChangeEmployee,

@@ -7,6 +7,7 @@ class CustomeDropDown {
     T? initialItem,
     required Function(T value) onSelect,
     String hintText = AppStrings.select,
+    SingleSelectController<T?>? controller,
     Widget Function(BuildContext, T, bool, void Function())? listItemBuilder,
     Widget Function(BuildContext, T, bool)? headerBuilder,
     double borderRadius = 5,
@@ -25,6 +26,7 @@ class CustomeDropDown {
       child: CustomDropdown<T>(
         items: list,
         hintText: hintText,
+        controller: controller,
         initialItem: initialItem,
         onChanged: (value) {
           if (value != null) {

@@ -7,6 +7,7 @@ import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
+import 'package:roomrounds/core/extensions/string_extension.dart';
 import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/module/room_map/views/floor_plan_view.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
@@ -27,6 +28,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   final TextEditingController roomController = TextEditingController();
   final TextEditingController floorController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final employeeSelectController = SingleSelectController<String>(null);
 
   List<String> get employeesNamesList => getEmployeesNamesList(_employeeList);
 
@@ -112,6 +114,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   void onChangeDepartment(String? name) {
     if (name != null) {
       departmentsController.onDepartmentSelect(name);
+      _clearEmployees();
       _fetchEmployeesFromDepartment();
     }
   }
@@ -130,14 +133,21 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     }
   }
 
+  void _clearEmployees() {
+    employeeSelectController.clear();
+    _selectedEmployee = null;
+    _employeeList.clear();
+    update();
+  }
+
   void goToMapView() {
     String? mapImage;
 
     String? map = profileController.user?.map;
     if (map != null && map.trim().isNotEmpty) {
-      if (map.isURL) {
-        mapImage = map;
-      }
+      // if (map.isURL) {
+      mapImage = map.completeUrl;
+      // }
     }
     Get.to(() => Obx(() => FloorPlanView(
           image: mapImage,

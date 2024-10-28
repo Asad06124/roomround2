@@ -485,12 +485,7 @@ class CreateTicketDialog extends StatelessWidget {
           children: [
             DialougeComponents.closeBtn(),
             SB.h(10),
-            DialougeComponents.labelTile(
-              context,
-              // status: '',
-              // isBorder: true,
-              title: title,
-            ),
+            DialougeComponents.labelTile(context, title: title),
             SB.h(10),
             DialougeComponents.labelTile(
               context,
@@ -1042,16 +1037,18 @@ class DialougeComponents {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (title != null)
-          Text(
-            title,
-            style: titleStyle ??
-                context.bodyLarge!.copyWith(
-                  color: isUnderline ? AppColors.textGrey : AppColors.gry,
-                  fontWeight: FontWeight.w600,
-                ),
+          Expanded(
+            child: Text(
+              title,
+              style: titleStyle ??
+                  context.bodyLarge!.copyWith(
+                    color: isUnderline ? AppColors.textGrey : AppColors.gry,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
           ),
         if (status != null) ...[
-          const Spacer(),
+          // const Spacer(),
           GestureDetector(
             onTap: onStatusTap,
             child: Text(
@@ -1220,12 +1217,17 @@ class DialougeComponents {
           // if (image != null && image.trim().isNotEmpty)
           AppImage.network(
             imageUrl: image != null && image.trim().isNotEmpty
-                ? image
+                ? image.trim().completeUrl
                 : AppImages.personPlaceholder,
             borderRadius: BorderRadius.circular(20),
             fit: BoxFit.cover,
             height: 30,
             width: 30,
+            errorWidget: (p0, p1, p2) {
+              return AppImage.network(
+                imageUrl: AppImages.personPlaceholder,
+              );
+            },
           ),
           // CircleAvatar(
           //   child: Assets.images.person.image(height: 35, width: 35),

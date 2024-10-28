@@ -24,7 +24,7 @@ class APIFunction {
     Function(Map<String, dynamic>)? fromJson,
   }) async {
     try {
-      final String url = Urls.baseUrl + endPoint;
+      final String url = Urls.apiBaseUrl + endPoint;
       final Uri uri = Uri.parse(url);
       final String apiMethod = method.name.toUpperCase();
 
@@ -43,6 +43,7 @@ class APIFunction {
       if (showLoader) CustomOverlays.showLoader();
 
       Map<String, String> headers = _apiHeaders();
+      // customLogger("Headers: $headers");
 
       http.BaseRequest request;
       String encodedData = jsonEncode(dataMap);

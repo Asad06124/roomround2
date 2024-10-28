@@ -57,18 +57,15 @@ class FloorPlanView extends StatelessWidget {
               children: [
                 InteractiveViewer(
                   constrained: false,
-                  child: image != null
+                  child: image != null && image?.trim().isNotEmpty == true
                       ? AppImage.network(
                           imageUrl: image!,
                           width: context.width,
                           height: context.height,
                           fit: BoxFit.cover,
+                          errorWidget: (p0, p1, p2) => _mapPlaceHolderImage(p0),
                         )
-                      : Assets.images.mapImage.svg(
-                          width: context.width,
-                          height: context.height,
-                          fit: BoxFit.cover,
-                        ),
+                      : _mapPlaceHolderImage(context),
                 ),
                 if (markerPosition != null)
                   Positioned(
@@ -88,6 +85,14 @@ class FloorPlanView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _mapPlaceHolderImage(BuildContext context) {
+    return Assets.images.mapImage.svg(
+      width: context.width,
+      height: context.height,
+      fit: BoxFit.cover,
     );
   }
 }

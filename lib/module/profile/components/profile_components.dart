@@ -1,5 +1,6 @@
 import 'package:roomrounds/core/components/app_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/extensions/string_extension.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
 class ProfileComponents {
@@ -13,7 +14,10 @@ class ProfileComponents {
       User? user = controller.user;
       String? userName = user?.username;
       String? userRole = user?.role;
-      String? image = user?.image?.isNotEmpty == true ? user?.image : null;
+      String? image = user?.image;
+      if (image != null && image.trim().isNotEmpty) {
+        image = image.completeUrl;
+      }
 
       return Container(
         height: context.height * 0.32,
@@ -67,6 +71,11 @@ class ProfileComponents {
                   AppImage.network(
                     imageUrl: image ?? AppImages.personPlaceholder,
                     borderRadius: BorderRadius.circular(50),
+                    errorWidget: (p0, p1, p2) {
+                      return AppImage.network(
+                        imageUrl: AppImages.personPlaceholder,
+                      );
+                    },
                   ),
                   // Positioned(
                   //   top: 0,
