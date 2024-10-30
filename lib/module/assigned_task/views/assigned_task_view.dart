@@ -295,7 +295,9 @@ class AssignedTasksView extends StatelessWidget {
 
                 return AssignedTaskComponents.tile(
                   context,
-                  title: ticket.roomName,
+                  title: ticket.roomName ??
+                      ticket.floorName ??
+                      ticket.assignToName,
                   // showIsActiveDot:
                   //     type == TicketsType.assignedMe ? index % 2 == 0 : false,
                   status: status,

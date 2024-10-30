@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
 
 class APIFunction {
@@ -28,19 +27,20 @@ class APIFunction {
       final Uri uri = Uri.parse(url);
       final String apiMethod = method.name.toUpperCase();
 
+      if (showLoader) CustomOverlays.showLoader();
+
       // log(userData.token);
       bool isConnected = await Utilities.hasConnection();
 
       if (isConnected == false) {
         // No Internet connection
+        if (showLoader) CustomOverlays.dismissLoader();
         // CustomOverlays.showSnackBar(AppStrings.noInternetConnection);
         CustomOverlays.showToastMessage(
             message: AppStrings.noInternetConnection);
 
         return null;
       }
-
-      if (showLoader) CustomOverlays.showLoader();
 
       Map<String, String> headers = _apiHeaders();
       // customLogger("Headers: $headers");
@@ -67,7 +67,7 @@ class APIFunction {
 
       customLogger(
         "Url: $url"
-        "\nInput Data: $encodedData",
+        "\nPayload: $encodedData",
       );
 
       http.StreamedResponse response = await request.send();

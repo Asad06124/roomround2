@@ -6,7 +6,6 @@ import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/core/extensions/string_extension.dart';
 import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/module/room_map/views/floor_plan_view.dart';
@@ -76,7 +75,13 @@ class CreateTicketController extends GetxController with EmployeeMixin {
           departmentId: myDepartment.departmentId,
           departmentName: myDepartment.departmentName,
         ));
-        _selectedEmployee = _employeeList.firstOrNull;
+
+        Future.delayed(Duration(milliseconds: 1000), () {
+          _selectedEmployee = _employeeList.firstOrNull;
+          employeeSelectController.value =
+              _selectedEmployee?.employeeName?.trim();
+          update();
+        });
       }
     } else if (isManager) {
       // For Manager Fetch his employees from his department
@@ -256,7 +261,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
           );
 
           if (resp != null && resp is bool && resp == true) {
-            Get.back();
+            // Get.back();
           }
         } else {
           CustomOverlays.showToastMessage(

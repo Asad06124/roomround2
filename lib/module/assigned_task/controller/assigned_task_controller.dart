@@ -67,7 +67,7 @@ class AssignedTaskController extends GetxController {
       String? open = TicketStatus.open.name.capitalize;
       String? inProgress = TicketStatus.inProgress.name.capitalize;
 
-      statuses.add(''); // Empty Status
+      // statuses.add(''); // Empty Status
       if (open != null) statuses.add(open);
       if (inProgress != null) statuses.add(inProgress);
     }
@@ -130,7 +130,7 @@ class AssignedTaskController extends GetxController {
 
   void _closeTicketApi({int? ticketId, String? status}) async {
     if (ticketId != null) {
-      String params = '?ticketId=$ticketId&status=$status';
+      String params = '?ticketId=$ticketId&statusName=$status';
 
       var resp = await APIFunction.call(
         APIMethods.post,

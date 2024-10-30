@@ -74,8 +74,8 @@ class CreateTicketView extends StatelessWidget with Validators {
                             list: controller.employeesNamesList,
                             hintText: AppStrings.selectAssignee,
                             controller: controller.employeeSelectController,
-                            selectedItem:
-                                controller.selectedEmployee?.employeeName?.trim(),
+                            // selectedItem:
+                            //     controller.selectedEmployee?.employeeName?.trim(),
                             onSelect: controller.onChangeEmployee,
                           ),
                         ],

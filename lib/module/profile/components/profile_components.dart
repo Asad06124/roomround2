@@ -10,6 +10,7 @@ class ProfileComponents {
     bool showBackButton = false,
     bool showEditImage = false,
   }) {
+    double imageSize = 100;
     return GetBuilder<ProfileController>(builder: (controller) {
       User? user = controller.user;
       String? userName = user?.username;
@@ -64,18 +65,29 @@ class ProfileComponents {
               ],
             ),
             SizedBox(
-              height: 100,
-              width: 105,
+              height: imageSize,
+              width: imageSize + 5,
               child: Stack(
                 children: [
-                  AppImage.network(
-                    imageUrl: image ?? AppImages.personPlaceholder,
-                    borderRadius: BorderRadius.circular(50),
-                    errorWidget: (p0, p1, p2) {
-                      return AppImage.network(
-                        imageUrl: AppImages.personPlaceholder,
-                      );
-                    },
+                  Container(
+                    height: imageSize,
+                    width: imageSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(width: 2, color: AppColors.white),
+                    ),
+                    child: AppImage.network(
+                      imageUrl: image ?? AppImages.personPlaceholder,
+                      height: imageSize,
+                      width: imageSize,
+                      fit: BoxFit.cover,
+                      borderRadius: BorderRadius.circular(50),
+                      errorWidget: (p0, p1, p2) {
+                        return AppImage.network(
+                          imageUrl: AppImages.personPlaceholder,
+                        );
+                      },
+                    ),
                   ),
                   // Positioned(
                   //   top: 0,

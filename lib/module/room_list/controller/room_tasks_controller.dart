@@ -156,17 +156,17 @@ class RoomTasksController extends GetxController {
     int? taskId = task?.assignTemplateTaskId;
     int? roomId = getRoomIdByTask(task);
 
-    Map<String, dynamic> data = {
-      "assignTemplateTaskId": taskId,
-      "roomId": roomId,
-      "status": value,
-    };
-    // String? params = "?roomId=$roomId&taskId=$taskId&status=$value";
+    // Map<String, dynamic> data = {
+    //   "assignTemplateTaskId": taskId,
+    //   "roomId": roomId,
+    //   "status": value,
+    // };
+    String? params = "?roomId=$roomId&assignTemplateTaskId=$taskId&status=true";
 
     var resp = await APIFunction.call(
-      APIMethods.post,
-      Urls.updateTaskStatus,
-      dataMap: data,
+      APIMethods.get,
+      Urls.updateTaskStatus + params,
+      // dataMap: data,
       showLoader: true,
       showErrorMessage: true,
       showSuccessMessage: true,
@@ -222,6 +222,7 @@ class RoomTasksController extends GetxController {
 
     Map<String, dynamic> data = {
       // "assignDate": "2024-09-29T12:54:33.858Z",
+      "statusId": 301,
       "comment": comments,
       "isUrgent": isUrgent,
       "assignTo": assignedToId,
@@ -241,7 +242,7 @@ class RoomTasksController extends GetxController {
     if (resp != null && resp is bool) {
       if (resp == true) {
         // Close Dialog
-        Get.back();
+        // Get.back();
       }
       // update();
     }

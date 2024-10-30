@@ -34,7 +34,7 @@ class ChangePasswordController extends GetxController {
           oldPasswordController.clear();
           newPasswordController.clear();
           confirmPasswordController.clear();
-          Get.back();
+          // Get.back();
         }
       } else {
         CustomOverlays.showToastMessage(
