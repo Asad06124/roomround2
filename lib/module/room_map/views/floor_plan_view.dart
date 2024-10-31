@@ -39,48 +39,51 @@ class FloorPlanView extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: GestureDetector(
-          onTapDown: (TapDownDetails details) {
-            if (onMarkerChange != null) {
-              onMarkerChange!(details.localPosition);
-              // Call the function with the new marker position when clicked.
-              // You can then update your state and save the new marker position.
-              // Example:
-              // setState(() {
-              //   _markerPosition = details.localPosition;
-              // });
-            }
-          },
-          child: RepaintBoundary(
-            key: boundaryKey,
-            child: Stack(
-              children: [
-                InteractiveViewer(
-                  constrained: false,
-                  child: image != null && image?.trim().isNotEmpty == true
-                      ? AppImage.network(
-                          imageUrl: image!,
-                          width: context.width,
-                          height: context.height,
-                          fit: BoxFit.cover,
-                          errorWidget: (p0, p1, p2) => _mapPlaceHolderImage(p0),
-                        )
-                      : _mapPlaceHolderImage(context),
-                ),
-                if (markerPosition != null)
-                  Positioned(
-                    left: markerPosition!.dx - 20, // Center the marker
-                    top: markerPosition!.dy - 60, // Center the marker
-                    child: Assets.icons.marker.svg(
-                      height: 70,
-                    ),
-                    // Icon(
-                    //   Icons.location_on,
-                    //   size: 30,
-                    //   color: Colors.red,
-                    // ),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: GestureDetector(
+            onTapDown: (TapDownDetails details) {
+              if (onMarkerChange != null) {
+                onMarkerChange!(details.localPosition);
+                // Call the function with the new marker position when clicked.
+                // You can then update your state and save the new marker position.
+                // Example:
+                // setState(() {
+                //   _markerPosition = details.localPosition;
+                // });
+              }
+            },
+            child: RepaintBoundary(
+              key: boundaryKey,
+              child: Stack(
+                children: [
+                  InteractiveViewer(
+                    constrained: false,
+                    child: image != null && image?.trim().isNotEmpty == true
+                        ? AppImage.network(
+                            imageUrl: image!,
+                            width: context.width,
+                            height: context.height,
+                            fit: BoxFit.cover,
+                            errorWidget: (p0, p1, p2) => _mapPlaceHolderImage(p0),
+                          )
+                        : _mapPlaceHolderImage(context),
                   ),
-              ],
+                  if (markerPosition != null)
+                    Positioned(
+                      left: markerPosition!.dx - 20, // Center the marker
+                      top: markerPosition!.dy - 60, // Center the marker
+                      child: Assets.icons.marker.svg(
+                        height: 70,
+                      ),
+                      // Icon(
+                      //   Icons.location_on,
+                      //   size: 30,
+                      //   color: Colors.red,
+                      // ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),

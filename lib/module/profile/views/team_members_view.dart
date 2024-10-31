@@ -11,7 +11,10 @@ class TeamMembersView extends StatelessWidget {
       body: SizedBox(
         height: context.height,
         child: GetBuilder<EmployeeDirectoryController>(
-            init: EmployeeDirectoryController(fetchDepartments: false),
+            init: EmployeeDirectoryController(
+              fetchEmployees: true,
+              fetchDepartments: false,
+            ),
             builder: (controller) {
               return Column(
                 children: [
@@ -71,6 +74,7 @@ class TeamMembersView extends StatelessWidget {
             image: employee.employeeImage,
             title: employee.employeeName,
             subHeading: employee.roleName,
+            subtile: employee.departmentName,
             onRemoveTap: () {
               controller.showRemoveConfirmationDialog(employee);
             },

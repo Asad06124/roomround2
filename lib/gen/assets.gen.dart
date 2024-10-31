@@ -48,6 +48,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/close.svg
   SvgGenImage get close => const SvgGenImage('assets/icons/close.svg');
 
+  /// File path: assets/icons/email.svg
+  SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
+
   /// File path: assets/icons/emplyee_directory.svg
   SvgGenImage get emplyeeDirectory =>
       const SvgGenImage('assets/icons/emplyee_directory.svg');
@@ -129,6 +132,7 @@ class $AssetsIconsGen {
         cameraAlt,
         cameraCircle,
         close,
+        email,
         emplyeeDirectory,
         filter,
         gridIcon,
@@ -231,7 +235,7 @@ class AssetGenImage {
     ImageRepeat repeat = ImageRepeat.noRepeat,
     Rect? centerSlice,
     bool matchTextDirection = false,
-    bool gaplessPlayback = false,
+    bool gaplessPlayback = true,
     bool isAntiAlias = false,
     String? package,
     FilterQuality filterQuality = FilterQuality.low,

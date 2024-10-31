@@ -63,6 +63,16 @@ class DepartmentsController extends GetxController {
     return names;
   }
 
+  Department? selectMyDepartment() {
+    if (_departments.isNotEmpty) {
+      int? departmentId = profileController.departmentId;
+
+      _selectedDepartment = _departments
+          .firstWhereOrNull((dep) => dep.departmentId == departmentId);
+    }
+    return _selectedDepartment;
+  }
+
   void onDepartmentSelect(String? name) {
     if (name != null && name.trim().isNotEmpty) {
       if (_departments.isNotEmpty) {

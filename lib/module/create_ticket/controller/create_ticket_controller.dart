@@ -53,20 +53,22 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     bool isManager = profileController.isManager;
 
     int? departmentId = profileController.departmentId;
-    // For Employee Get only My Department
-    // For Manager Get All Departments
-    List<Department> departments = await departmentsController.getDepartments(
+
+    // List<Department> departments =
+    await departmentsController.getDepartments(
+      // For Employee Get only My Department
+      // For Manager Get All Departments
       departmentId: isEmployee ? departmentId : null,
     );
-    Department? myDepartment;
-    if (departments.isNotEmpty) {
-      myDepartment = departments
-          .firstWhereOrNull((item) => item.departmentId == departmentId);
-      departmentsController.onDepartmentSelect(myDepartment?.departmentName);
-    }
+    Department? myDepartment = departmentsController.selectMyDepartment();
+    // if (departments.isNotEmpty) {
+    //   myDepartment = departments
+    //       .firstWhereOrNull((item) => item.departmentId == departmentId);
+    //   departmentsController.onDepartmentSelect(myDepartment?.departmentName);
+    // }
 
     if (isEmployee) {
-      // For Employee Select his manager from his department
+      // For Employee Select his manager from his own department
       if (myDepartment != null && myDepartment.managerId != null) {
         _employeeList.add(Employee(
           userId: myDepartment.managerId,
@@ -85,7 +87,8 @@ class CreateTicketController extends GetxController with EmployeeMixin {
       }
     } else if (isManager) {
       // For Manager Fetch his employees from his department
-      _fetchEmployeesFromDepartment();
+      // _fetchEmployeesFromDepartment();
+      //// Auto Fetch above as Department Selected
     }
 
     update();

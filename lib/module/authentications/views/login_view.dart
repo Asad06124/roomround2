@@ -34,8 +34,8 @@ class LoginView extends StatelessWidget with Validators {
                     ),
                     SB.h(25),
                     CustomTextField(
-                      hintText: AppStrings.userName,
-                      prefixIcon: Assets.icons.person.svg(),
+                      hintText: AppStrings.emailAddress,
+                      prefixIcon: Assets.icons.email.svg(),
                       controller: controller.usernameController,
                       keyboardType: TextInputType.emailAddress,
                       validator: validateEmail,

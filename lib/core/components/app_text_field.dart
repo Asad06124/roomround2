@@ -203,7 +203,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onPressed: _toggleHidePassword,
       icon: Icon(
         _hidePassword ? Icons.visibility_off : Icons.visibility,
-        color: context.onPrimary,
+        color: widget.textColor.withOpacity(0.8),
       ),
     );
   }

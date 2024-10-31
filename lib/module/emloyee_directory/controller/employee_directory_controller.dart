@@ -1,14 +1,14 @@
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/departments_controller.dart';
-import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class EmployeeDirectoryController extends GetxController with EmployeeMixin {
-  EmployeeDirectoryController({this.fetchDepartments = true});
+  EmployeeDirectoryController(
+      {this.fetchDepartments = true, this.fetchEmployees = false});
   final bool fetchDepartments;
+  final bool fetchEmployees;
 
   final TextEditingController searchTextField = TextEditingController();
 
@@ -22,6 +22,7 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
   ];
 
   List<String> get employeeTypes => _employeeTypes;
+  String? selectedEmployeeType;
 
   bool hasData = false;
 
@@ -36,14 +37,16 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
     super.onInit();
     _addMyEmployeesType();
     _resetSelectedDepartment();
-    onSearch('');
+    if (fetchEmployees) onSearch('');
   }
 
-  void _resetSelectedDepartment() {
+  void _resetSelectedDepartment() async {
     if (Get.isRegistered<DepartmentsController>()) {
       departmentsController.onDepartmentSelect(null);
       if (fetchDepartments) {
-        departmentsController.getDepartments();
+        await departmentsController.getDepartments();
+        departmentsController.selectMyDepartment();
+        update();
       }
     }
   }
@@ -53,7 +56,10 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
       bool isManager = profileController.isManager;
 
       if (isManager) {
-        _employeeTypes.add(AppStrings.myEmployees);
+        String myEmployeesText = AppStrings.myEmployees;
+        _employeeTypes.add(myEmployeesText);
+        selectedEmployeeType = myEmployeesText;
+        myEmployees = true;
       }
 
       if (Get.arguments != null) {

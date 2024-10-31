@@ -63,12 +63,16 @@ class EmployeeDirectoryView extends StatelessWidget {
                               context,
                               hintText: AppStrings.selectType,
                               list: controller.employeeTypes,
+                              initialItem: controller.selectedEmployeeType,
                               onSelect: controller.onChangeEmployeeType,
                             ),
                             CustomeDropDown.simple(
                               context,
                               hintText: AppStrings.selectDepartment,
                               list: departmentsController.getDepartmentsNames(),
+                              initialItem: departmentsController
+                                  .selectedDepartment?.departmentName
+                                  ?.trim(),
                               onSelect: controller.onChangeDepartment,
                             ),
                           ],

@@ -608,7 +608,10 @@ class CreateTicketDialog extends StatelessWidget {
 
   Widget _buildEmployeeDropDown(BuildContext context) {
     return GetBuilder<EmployeeDirectoryController>(
-        init: EmployeeDirectoryController(),
+        init: EmployeeDirectoryController(
+          fetchEmployees: true,
+          fetchDepartments: false,
+        ),
         builder: (controller) {
           List<Employee> employees = List.from(controller.searchResults);
           if (employees.isEmpty) {
