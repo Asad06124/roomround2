@@ -55,7 +55,7 @@ class ChangePasswordView extends StatelessWidget with Validators {
                             SB.h(20),
                             CustomTextField(
                               isPasswordField: true,
-                              hintText: AppStrings.confirmPassword,
+                              hintText: AppStrings.confirmNewPassword,
                               borderColor: AppColors.darkGrey,
                               prefixIcon: Assets.icons.lock.svg(),
                               controller: controller.confirmPasswordController,

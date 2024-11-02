@@ -40,7 +40,7 @@ class AppStrings {
   static const String completeTask = 'Complete Task';
   static const String completed = "Completed";
   static const String completionDate = 'Completion Date:';
-  static const String confirmPassword = "Confirm password";
+  static const String confirmNewPassword = "Confirm new password";
   static const String connect = "Connect";
   static const String connecting = "Connecting.....";
   static const String connectingDescription =
