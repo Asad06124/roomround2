@@ -35,6 +35,9 @@ class $AssetsIconsGen {
   SvgGenImage get bellActive =>
       const SvgGenImage('assets/icons/bell_active.svg');
 
+  /// File path: assets/icons/bell_dot.svg
+  SvgGenImage get bellDot => const SvgGenImage('assets/icons/bell_dot.svg');
+
   /// File path: assets/icons/camera.svg
   SvgGenImage get camera => const SvgGenImage('assets/icons/camera.svg');
 
@@ -128,6 +131,7 @@ class $AssetsIconsGen {
         bascket,
         bell,
         bellActive,
+        bellDot,
         camera,
         cameraAlt,
         cameraCircle,

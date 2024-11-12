@@ -1,8 +1,26 @@
 import 'package:roomrounds/core/constants/controllers.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  @override
+  void initState() {
+    super.initState();
+    notificationsController = Get.put(NotificationController());
+    _navigateToDashboard();
+  }
+
+  void _navigateToDashboard() async {
+    await Future.delayed(Duration(seconds: 2));
+    Get.offAllNamed(AppRoutes.DASHBOARD);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +29,7 @@ class HomeView extends StatelessWidget {
         context,
         height: 120,
         showWlcomeMessage: true,
+        notificationActive: false,
         isHome: true,
         // title: userData.name,
         title: profileController.user?.username,

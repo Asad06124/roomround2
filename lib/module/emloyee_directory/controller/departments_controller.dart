@@ -14,11 +14,11 @@ class DepartmentsController extends GetxController {
 
   bool hasData = false;
 
-  @override
-  void onInit() {
-    super.onInit();
-    getDepartments();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   getDepartments();
+  // }
 
   Future<List<Department>> getDepartments({int? departmentId}) async {
     _updateHasData(false);

@@ -1,5 +1,6 @@
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/extensions/datetime_extension.dart';
+import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 
 class CustomAppbar {
   static PreferredSize simpleAppBar(BuildContext context,
@@ -70,31 +71,39 @@ class CustomAppbar {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (showNotificationIcon)
-                      Stack(
-                        children: [
-                          GestureDetector(
-                              onTap: () => Get.toNamed(AppRoutes.NOTIFICATION),
-                              child: Assets.icons.bellActive.svg(
-                                colorFilter: iconsClor != null
-                                    ? ColorFilter.mode(
-                                        iconsClor, BlendMode.srcIn)
-                                    : null,
-                                height: iconHeight + 8,
-                                width: iconWeight + 8,
-                              )),
-                          if (notificationActive)
-                            Positioned(
-                              right: 3,
-                              top: 2,
-                              child: CircleAvatar(
-                                radius: iconWeight * 0.24,
-                                backgroundColor: AppColors.orange,
-                              ),
-                            ),
-                        ],
+                      GetBuilder<NotificationController>(
+                        init: notificationsController,
+                        builder: (controller) {
+                          bool hasNotifications =
+                              controller.hasUnreadNotifications;
+                          return Stack(
+                            children: [
+                              GestureDetector(
+                                  onTap: () =>
+                                      Get.toNamed(AppRoutes.NOTIFICATION),
+                                  child: Assets.icons.bell.svg(
+                                    colorFilter: iconsClor != null
+                                        ? ColorFilter.mode(
+                                            iconsClor, BlendMode.srcIn)
+                                        : null,
+                                    height: iconHeight + 4,
+                                    width: iconWeight + 4,
+                                  )),
+                              if (hasNotifications)
+                                Positioned(
+                                  right: 3,
+                                  top: 2,
+                                  child: CircleAvatar(
+                                    radius: iconWeight * 0.24,
+                                    backgroundColor: AppColors.orange,
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
                       ),
                     if (showMailIcon) ...{
-                      SB.w(15),
+                      SB.w(10),
                       GestureDetector(
                         onTap: () => Get.toNamed(AppRoutes.MESSAGE),
                         child: Assets.icons.mail.svg(

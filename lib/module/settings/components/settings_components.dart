@@ -7,7 +7,25 @@ class SettingsComponents {
       GestureTapCallback? onPressed,
       bool isDisabled = false}) {
     if (title != null && title.isNotEmpty) {
-      return GestureDetector(
+      return Container(
+        decoration: BoxDecoration(
+          // show Divider at bottom
+          border: Border(
+            bottom: BorderSide(color: AppColors.divider),
+          ),
+        ),
+        child: ListTile(
+          onTap: onPressed,
+          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+          title: Text(title),
+          titleTextStyle: style ??
+              context.bodyLarge!.copyWith(
+                color: isDisabled ? AppColors.gry : AppColors.textGrey,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+      );
+      /*  return GestureDetector(
           onTap: onPressed,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -31,7 +49,7 @@ class SettingsComponents {
               ),
               SB.h(20),
             ],
-          ));
+          )); */
     }
     return SizedBox();
   }

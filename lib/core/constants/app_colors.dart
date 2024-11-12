@@ -24,6 +24,7 @@ class AppColors {
   static const Color green = Color(0xffB9FFAD);
   static const Color greenDark = Color(0xff3E8633);
   static const Color deepSkyBlue = Color(0xff326FEA);
+  static const Color divider = Color(0xFFD3D3D3);
 
   static const Gradient profileGradient = LinearGradient(
       begin: Alignment.topCenter,

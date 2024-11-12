@@ -20,6 +20,7 @@ class APIFunction {
     bool showSuccessMessage = false,
     bool getOnlyStatusCode = false,
     bool getStatusOnly = false,
+    Map<String, String>? customHeaders,
     Function(Map<String, dynamic>)? fromJson,
   }) async {
     try {
@@ -42,7 +43,7 @@ class APIFunction {
         return null;
       }
 
-      Map<String, String> headers = _apiHeaders();
+      Map<String, String> headers = _apiHeaders(customHeaders: customHeaders);
       // customLogger("Headers: $headers");
 
       http.BaseRequest request;
@@ -151,12 +152,15 @@ class APIFunction {
     }
   }
 
-  static Map<String, String> _apiHeaders() {
+  static Map<String, String> _apiHeaders({Map<String, String>? customHeaders}) {
     String? token = profileController.userToken;
     Map<String, String> headers = {
       "Authorization": "Bearer ${token ?? ''}",
       "Content-Type": "application/json",
     };
+    if (customHeaders != null && customHeaders.isNotEmpty) {
+      headers.addAll(customHeaders);
+    }
     // customLogger("Headers: $headers");
     return headers;
   }

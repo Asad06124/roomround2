@@ -23,6 +23,7 @@ class LoginController extends GetxController {
           "usernameOrEmail": username,
           "password": password,
         },
+        customHeaders: {"platform": "mobile"},
         fromJson: User.fromJson,
       );
 

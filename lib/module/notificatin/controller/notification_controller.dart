@@ -15,6 +15,7 @@ class NotificationController extends GetxController {
   // ];
 
   bool hasData = false;
+  bool hasUnreadNotifications = false;
 
   /* List<NotificationModel> _notificationsList = [
     NotificationModel(
@@ -68,6 +69,7 @@ class NotificationController extends GetxController {
 
     if (resp != null && resp is List && resp.isNotEmpty) {
       _notificationsList = List.from(resp);
+      hasUnreadNotifications = _notificationsList.isNotEmpty;
     }
 
     _updateHasData(true);
