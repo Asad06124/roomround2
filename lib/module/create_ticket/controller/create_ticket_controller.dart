@@ -19,9 +19,11 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   // Department? get selectedDepartment => _selectedDepartment;
 
   List<Employee> _employeeList = [];
-  List<Employee> get employeeList => _employeeList;
+  // List<Employee> get employeeList => _employeeList;
   Employee? _selectedEmployee;
   Employee? get selectedEmployee => _selectedEmployee;
+  Employee? _initialEmployee;
+  int? _initialDepartmentId;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController roomController = TextEditingController();
@@ -40,8 +42,24 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   @override
   void onInit() {
     super.onInit();
+    _initialEmployeeDepartment();
     _resetSelectedDepartment();
     _fetchDepartments();
+  }
+
+  void _initialEmployeeDepartment() {
+    try {
+      if (Get.arguments != null) {
+        _initialEmployee = Get.arguments?["initialEmployee"] as Employee?;
+        _initialDepartmentId = Get.arguments?["initialDepartmentId"] as int?;
+      }
+    } catch (e) {
+      customLogger(
+        "$e",
+        error: '_initialEmployeeDepartment',
+        type: LoggerType.error,
+      );
+    }
   }
 
   void _resetSelectedDepartment() {
@@ -58,7 +76,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     await departmentsController.getDepartments(
       // For Employee Get only My Department
       // For Manager Get All Departments
-      departmentId: isEmployee ? departmentId : null,
+      departmentId: isEmployee ? departmentId : _initialDepartmentId,
     );
     Department? myDepartment = departmentsController.selectMyDepartment();
     // if (departments.isNotEmpty) {
@@ -78,7 +96,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
           departmentName: myDepartment.departmentName,
         ));
 
-        Future.delayed(Duration(milliseconds: 1000), () {
+        Future.delayed(Duration(seconds: 1), () {
           _selectedEmployee = _employeeList.firstOrNull;
           employeeSelectController.value =
               _selectedEmployee?.employeeName?.trim();
@@ -88,7 +106,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     } else if (isManager) {
       // For Manager Fetch his employees from his department
       // _fetchEmployeesFromDepartment();
-      //// Auto Fetch above as Department Selected
+      // // Auto Fetch above as Department Selected
     }
 
     update();
@@ -115,6 +133,20 @@ class CreateTicketController extends GetxController with EmployeeMixin {
 
     if (resp.isNotEmpty) {
       _employeeList = List.from(resp);
+      // Select Employee from EmployeeDirectory
+      if (_initialEmployee != null && _initialEmployee?.userId != null) {
+        int empIndex = _employeeList
+            .indexWhere((e) => e.userId == _initialEmployee?.userId);
+        if (empIndex != -1) {
+          // Future.delayed(Duration(seconds: 1), () {
+          // Set Selected Employee if Found in Employee List
+          _selectedEmployee = _initialEmployee;
+          employeeSelectController.value =
+              _selectedEmployee?.employeeName?.trim();
+          // update();
+          // });
+        }
+      }
       update();
     }
   }
@@ -240,41 +272,39 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   }
 
   void onSendTicketTap() async {
-    if (formKey.validateFields) {
-      if (_selectedEmployee != null) {
-        if (screenshotImageBytes != null &&
-            screenshotImageBytes?.isNotEmpty == true) {
-          String? base64String = base64.encode(screenshotImageBytes!);
-          Map<String, dynamic> data = {
-            "roomName": roomController.text.trim(),
-            "floorName": floorController.text.trim(),
-            "assignTo": _selectedEmployee?.userId,
-            "description": descriptionController.text.trim(),
-            "imageKey": base64String,
-            "isUrgent": _urgent == YesNo.yes,
-          };
+    // if (formKey.validateFields) {
+    // if (_selectedEmployee != null) {
+    if (screenshotImageBytes != null &&
+        screenshotImageBytes?.isNotEmpty == true) {
+      String? base64String = base64.encode(screenshotImageBytes!);
+      Map<String, dynamic> data = {
+        "roomName": roomController.text.trim(),
+        "floorName": floorController.text.trim(),
+        "assignTo": _selectedEmployee?.userId,
+        "description": descriptionController.text.trim(),
+        "imageKey": base64String,
+        "isUrgent": _urgent == YesNo.yes,
+      };
 
-          var resp = await APIFunction.call(
-            APIMethods.post,
-            Urls.saveTicketByEmployee,
-            dataMap: data,
-            showLoader: true,
-            showErrorMessage: true,
-            showSuccessMessage: true,
-          );
+      var resp = await APIFunction.call(
+        APIMethods.post,
+        Urls.saveTicketByEmployee,
+        dataMap: data,
+        showLoader: true,
+        showErrorMessage: true,
+        showSuccessMessage: true,
+      );
 
-          if (resp != null && resp is bool && resp == true) {
-            // Get.back();
-          }
-        } else {
-          CustomOverlays.showToastMessage(
-              message: AppStrings.pleaseSelectFromMap);
-        }
-      } else {
-        CustomOverlays.showToastMessage(
-            message: AppStrings.pleaseSelectEmployee);
+      if (resp != null && resp is bool && resp == true) {
+        // Get.back();
       }
+    } else {
+      CustomOverlays.showToastMessage(message: AppStrings.pleaseSelectFromMap);
     }
+    // } else {
+    //   CustomOverlays.showToastMessage(message: AppStrings.pleaseSelectEmployee);
+    // }
+    // }
   }
 
   void onUrgentChanged(YesNo value) {

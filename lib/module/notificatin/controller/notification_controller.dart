@@ -79,7 +79,7 @@ class NotificationController extends GetxController {
     if (id != null) {
       String params = "?id=$id";
       var resp = await APIFunction.call(
-        APIMethods.get,
+        APIMethods.post,
         Urls.readNotification + params,
         showLoader: true,
         showErrorMessage: true,
@@ -102,7 +102,7 @@ class NotificationController extends GetxController {
 
   void clearAllNotifications() async {
     var resp = await APIFunction.call(
-      APIMethods.get,
+      APIMethods.post,
       Urls.readAllNotifications,
       showLoader: true,
       showErrorMessage: true,

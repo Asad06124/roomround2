@@ -138,6 +138,15 @@ class EmployeeDirectoryView extends StatelessWidget {
             title: employee.employeeName,
             subHeading: employee.roleName,
             subtile: employee.departmentName,
+            onPressed: () {
+              Get.toNamed(
+                AppRoutes.CREATE_TICKET,
+                arguments: {
+                  "initialEmployee": employee,
+                  "initialDepartmentId": employee.departmentId,
+                },
+              );
+            },
           );
         },
       );

@@ -70,6 +70,7 @@ class AppStrings {
       "Enter your email for the verification process.\nWe will send 4 digits code to your email.";
 
   static const String enterFloor = "Enter Floor";
+  static const String enterRoomLocation = "Enter Room / Location";
   static const String enterRoomNo = "Enter Room No.";
   static const String error = "Error";
   static const String facilitiesView = "Facilities View";
@@ -162,6 +163,7 @@ class AppStrings {
   static const String somethingWentWrong = "Something went wrong!";
   static const String status = "Status";
   static const String step = 'step';
+  static const String submit = "Submit";
   static const String success = 'Success!';
   static const String successDescription = 'Your device is connected';
   static const String takePhoto = "Take Photo";

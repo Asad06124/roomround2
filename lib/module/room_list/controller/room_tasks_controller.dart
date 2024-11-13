@@ -190,25 +190,25 @@ class RoomTasksController extends GetxController {
     _onAssignedToChange(null);
 
     Get.dialog(
-        Dialog(
-          child: Obx(
-            () => CreateTicketDialog(
-              title: task?.taskName,
-              selectedUrgent: urgent.value,
-              textFieldController: _commentsController,
-              onUrgentChanged: _onUrgentValueChanged,
-              onSelectItem: _onAssignedToChange,
-              onDoneTap: () => _createNewTicket(task),
-            ),
+      Dialog(
+        child: Obx(
+          () => CreateTicketDialog(
+            title: task?.taskName,
+            selectedUrgent: urgent.value,
+            textFieldController: _commentsController,
+            onUrgentChanged: _onUrgentValueChanged,
+            onSelectItem: _onAssignedToChange,
+            onDoneTap: () => _createNewTicket(task),
           ),
         ),
-        arguments: {
-          "myManager": showMyManager,
-          "myTeam": showMyTeamMembers,
-          "departmentId": departmentId,
-        }
-        // barrierDismissible: false,
-        );
+      ),
+      arguments: {
+        "myManager": showMyManager,
+        "myTeam": showMyTeamMembers,
+        "departmentId": departmentId,
+      },
+      // barrierDismissible: false,
+    );
   }
 
   void _createNewTicket(RoomTask? task) async {

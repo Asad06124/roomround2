@@ -13,7 +13,8 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    notificationsController = Get.put(NotificationController());
+    notificationsController =
+        Get.put(NotificationController(), permanent: true);
     _navigateToDashboard();
   }
 

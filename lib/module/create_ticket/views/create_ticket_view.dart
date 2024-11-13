@@ -46,12 +46,12 @@ class CreateTicketView extends StatelessWidget with Validators {
                           CustomTextField(
                             validator: validateName,
                             borderColor: AppColors.gry,
-                            hintText: AppStrings.enterRoomNo,
+                            hintText: AppStrings.enterRoomLocation,
                             controller: controller.roomController,
                           ),
                           SB.h(15),
                           CustomTextField(
-                            validator: validateName,
+                            validator: (v) => null,
                             borderColor: AppColors.gry,
                             hintText: AppStrings.enterFloor,
                             controller: controller.floorController,
@@ -62,7 +62,8 @@ class CreateTicketView extends StatelessWidget with Validators {
                             title: AppStrings.department,
                             hintText: AppStrings.selectDepartment,
                             selectedItem: departmentsController
-                                .selectedDepartment?.departmentName?.trim(),
+                                .selectedDepartment?.departmentName
+                                ?.trim(),
                             list: departmentsController.getDepartmentsNames(),
                             onSelect: controller.onChangeDepartment,
                           ),
@@ -99,7 +100,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                           CustomTextField(
                             maxLines: 8,
                             borderRadius: 16,
-                            validator: (value) => null,
+                            validator: (v) => null,
                             borderColor: AppColors.gry,
                             hintText: AppStrings.writeDescription,
                             controller: controller.descriptionController,
@@ -108,7 +109,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                           GestureDetector(
                             onTap: controller.goToMapView,
                             child: Container(
-                              height: 170,
+                              height: context.height * 0.2,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 color: AppColors.white,
@@ -126,7 +127,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                                         child: Image.memory(
                                           controller.screenshotImageBytes!,
                                           width: context.width,
-                                          height: 170,
+                                          // height: 180,
                                           fit: BoxFit.fill,
                                         ),
                                       )
@@ -134,7 +135,8 @@ class CreateTicketView extends StatelessWidget with Validators {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Assets.icons.camera.svg(height: 28),
+                                          Assets.icons.locationPinDrop
+                                              .svg(height: 28),
                                           SB.w(10),
                                           Text(AppStrings.selectFromMap,
                                               style: headingTextStyle),
