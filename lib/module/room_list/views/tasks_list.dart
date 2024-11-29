@@ -1,10 +1,11 @@
+import 'package:roomrounds/core/apis/models/room/room_model.dart';
+import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_list/components/room_list_components.dart';
-import 'package:roomrounds/module/room_list/controller/room_list_controller.dart';
-import 'package:roomrounds/utils/custome_dialogue.dart';
+import 'package:roomrounds/module/room_list/controller/room_tasks_controller.dart';
 
 class TasksList extends StatelessWidget {
-  const TasksList({Key? key}) : super(key: key);
+  const TasksList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +18,22 @@ class TasksList extends StatelessWidget {
         titleStyle: context.titleLarge,
         title: AppStrings.roomStatusList,
         isHome: false,
-        decriptionWidget: AssignedTaskComponents.appBatTile(context,
-            name: AppStrings.managinfStaff, desc: 'Philo Dairin '),
+        decriptionWidget: CustomAppbar.appBatTile(
+          context,
+          name: AppStrings.managingStaff,
+          desc: profileController.user?.username,
+        ),
       ),
-      child: GetBuilder<TaskListController>(
-          init: TaskListController(),
+      child: GetBuilder<RoomTasksController>(
+          init: RoomTasksController(),
           builder: (controller) {
+            String? roomName, templateName;
+            Room? room = controller.room;
+            if (room != null) {
+              roomName = room.roomName?.trim();
+              templateName = room.templateName?.trim();
+            }
+
             return Column(
               children: [
                 Expanded(
@@ -46,13 +57,13 @@ class TasksList extends StatelessWidget {
                           children: [
                             const SizedBox(),
                             Text(
-                              AppStrings.auditTempleteTasks,
+                              templateName ?? AppStrings.template,
                               style: context.titleMedium!.copyWith(
                                 color: AppColors.textPrimary,
                               ),
                             ),
                             Text(
-                              '(Room A1)',
+                              roomName?.isNotEmpty == true ? '($roomName)' : '',
                               style: context.bodyLarge!.copyWith(
                                 color: AppColors.gry,
                               ),
@@ -61,24 +72,11 @@ class TasksList extends StatelessWidget {
                         ),
                         SB.h(10),
                         Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: controller.tasks.length,
-                            itemBuilder: (context, index) {
-                              return EmployeeDirectoryComponents.tile(context,
-                                  prefixWidget: const Icon(
-                                    Icons.keyboard_arrow_down_outlined,
-                                    color: AppColors.gry,
-                                    size: 20,
-                                  ), onTap: () {
-                                _showYesNoDialog();
-                              },
-                                  title: controller.tasksTitle[index],
-                                  statusWidget: RoomListComponents.yesNoWidget(
-                                      context, controller, index));
-                            },
-                          ),
-                        )
+                          child: controller.hasData
+                              ? _buildTasksList(
+                                  context, controller, controller.tasks)
+                              : CustomLoader(),
+                        ),
                       ],
                     ),
                   ),
@@ -89,10 +87,49 @@ class TasksList extends StatelessWidget {
     );
   }
 
-  void _showYesNoDialog() {
+  Widget _buildTasksList(BuildContext context, RoomTasksController controller,
+      List<RoomTask> list) {
+    if (list.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          RoomTask task = list[index];
+          bool isTaskCompleted = task.taskStatus ?? false;
+
+          return EmployeeDirectoryComponents.tile(
+            context,
+            title: task.taskName,
+            showPrefixDropdown: true,
+            trailingWidget: RoomListComponents.statusWidget(
+              context,
+              isComplete: isTaskCompleted,
+            ),
+            subtitleWidget: IgnorePointer(
+              ignoring: isTaskCompleted,
+              child: RoomListComponents.yesNoWidget(
+                context,
+                task.userSelection,
+                (newVal) => controller.changeTaskStatus(index, newVal),
+              ),
+            ),
+            // onTap: () {
+            //   _showYesNoDialog();
+            // },
+          );
+        },
+      );
+    } else {
+      // No Tasks found
+      return SettingsComponents.noResultsFound(
+          context, AppStrings.noTasksFound);
+    }
+  }
+
+  /*  void _showYesNoDialog() {
     Get.dialog(
       Dialog(
-        child: YesNoDialouge(
+        child: YesNoDialog(
           title: 'Is audit findings needs to be arranged?',
           onYesPressed: () {
             Get.back();
@@ -109,5 +146,5 @@ class TasksList extends StatelessWidget {
       const Dialog(child: ArrangeAuditFunding()),
       barrierDismissible: false,
     );
-  }
+  } */
 }

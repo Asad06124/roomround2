@@ -132,21 +132,21 @@ class RoomMapComponents {
     );
   }
 
-  static Widget radioButtton<T>(BuildContext context, T assignedVal,
-      T selectedVal, String title, Function(T value) onSelect,
+  static Widget radioButton<T>(BuildContext context, T assignedVal,
+      T? selectedVal, String title, Function(T value)? onSelect,
       {double? width}) {
     width ?? context.width * 0.5 - 30;
     return InkWell(
-      onTap: () => onSelect(assignedVal),
+      onTap: onSelect != null ? () => onSelect(assignedVal) : null,
       child: SizedBox(
         width: width == 0 ? null : width,
         child: Row(
           children: [
             CircleAvatar(
-              radius: 6.5,
+              radius: 7,
               backgroundColor: assignedVal == selectedVal
                   ? AppColors.primary
-                  : AppColors.gry,
+                  : AppColors.gry.withOpacity(0.6),
             ),
             SB.w(5),
             Text(

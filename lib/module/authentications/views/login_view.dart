@@ -34,17 +34,17 @@ class LoginView extends StatelessWidget with Validators {
                     ),
                     SB.h(25),
                     CustomTextField(
-                      hintText: AppStrings.userName,
-                      prefixIcon: Assets.icons.person.svg(),
-                      controller: controller.username,
+                      hintText: AppStrings.emailAddress,
+                      prefixIcon: Assets.icons.email.svg(),
+                      controller: controller.usernameController,
                       keyboardType: TextInputType.emailAddress,
                       validator: validateEmail,
                     ),
-                    SB.h(5),
+                    SB.h(20),
                     CustomTextField(
                       hintText: AppStrings.password,
                       prefixIcon: Assets.icons.lock.svg(),
-                      controller: controller.passsword,
+                      controller: controller.passwordController,
                       keyboardType: TextInputType.visiblePassword,
                       isPasswordField: true,
                       validator: validatePassword,
@@ -75,7 +75,9 @@ class LoginView extends StatelessWidget with Validators {
                             decorationColor: AppColors.white,
                             shadows: [
                               const Shadow(
-                                  color: Colors.white, offset: Offset(0, -2))
+                                color: Colors.white,
+                                offset: Offset(0, -2),
+                              ),
                             ],
                           ),
                         ),

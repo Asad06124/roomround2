@@ -1,4 +1,6 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/extensions/datetime_extension.dart';
+import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 
 class CustomAppbar {
   static PreferredSize simpleAppBar(BuildContext context,
@@ -13,7 +15,8 @@ class CustomAppbar {
       Color? iconsClor,
       TextStyle? titleStyle,
       Widget? decriptionWidget,
-      String title = "Robert Brown"}) {
+      Widget? actionWidget,
+      String? title}) {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
@@ -54,44 +57,53 @@ class CustomAppbar {
                   // ),
                   SB.w(0),
                 },
-                Text(
-                  title,
-                  style: isHome
-                      ? context.displaySmall!.copyWith(
-                          color: AppColors.white,
-                        )
-                      : txtStyle,
-                ),
+                if (title?.isNotEmpty == true)
+                  Text(
+                    title ?? '',
+                    style: isHome
+                        ? context.displaySmall!.copyWith(
+                            color: AppColors.white,
+                          )
+                        : txtStyle,
+                  ),
                 const Spacer(),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (showNotificationIcon)
-                      Stack(
-                        children: [
-                          GestureDetector(
-                              onTap: () => Get.toNamed(AppRoutes.NOTIFICATION),
-                              child: Assets.icons.bellActive.svg(
-                                colorFilter: iconsClor != null
-                                    ? ColorFilter.mode(
-                                        iconsClor, BlendMode.srcIn)
-                                    : null,
-                                height: iconHeight + 8,
-                                width: iconWeight + 8,
-                              )),
-                          if (notificationActive)
-                            Positioned(
-                              right: 3,
-                              top: 2,
-                              child: CircleAvatar(
-                                radius: iconWeight * 0.24,
-                                backgroundColor: AppColors.orange,
-                              ),
-                            ),
-                        ],
+                      GetBuilder<NotificationController>(
+                        init: notificationsController,
+                        builder: (controller) {
+                          bool hasNotifications =
+                              controller.hasUnreadNotifications;
+                          return Stack(
+                            children: [
+                              GestureDetector(
+                                  onTap: () =>
+                                      Get.toNamed(AppRoutes.NOTIFICATION),
+                                  child: Assets.icons.bell.svg(
+                                    colorFilter: iconsClor != null
+                                        ? ColorFilter.mode(
+                                            iconsClor, BlendMode.srcIn)
+                                        : null,
+                                    height: iconHeight + 4,
+                                    width: iconWeight + 4,
+                                  )),
+                              if (hasNotifications)
+                                Positioned(
+                                  right: 3,
+                                  top: 2,
+                                  child: CircleAvatar(
+                                    radius: iconWeight * 0.24,
+                                    backgroundColor: AppColors.orange,
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
                       ),
                     if (showMailIcon) ...{
-                      SB.w(15),
+                      SB.w(10),
                       GestureDetector(
                         onTap: () => Get.toNamed(AppRoutes.MESSAGE),
                         child: Assets.icons.mail.svg(
@@ -103,8 +115,9 @@ class CustomAppbar {
                         ),
                       )
                     },
+                    if (actionWidget != null) actionWidget,
                   ],
-                )
+                ),
               ],
             ),
             if (decriptionWidget != null) ...{SB.h(10), decriptionWidget},
@@ -120,6 +133,51 @@ class CustomAppbar {
             }
           ],
         ),
+      ),
+    );
+  }
+
+  static Widget appBatTile(BuildContext context,
+      {String? name, String? desc, double padding = 15}) {
+    String? date = DateTime.now().format();
+    return Padding(
+      padding: EdgeInsets.only(left: padding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SB.h(10),
+              Text(
+                name ?? '',
+                style: context.titleMedium,
+              ),
+              Text(
+                desc ?? '',
+                style: context.bodyLarge!
+                    .copyWith(color: AppColors.lightWhite.withOpacity(0.7)),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.white.withOpacity(0.35),
+              borderRadius: BorderRadius.circular(35),
+            ),
+            child: Center(
+              child: Text(
+                date,
+                style: context.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w500, color: AppColors.white),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

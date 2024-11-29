@@ -1,11 +1,14 @@
+import 'package:roomrounds/core/components/app_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomeTiles {
   static Widget employeeTile(BuildContext context,
-      {Widget? image,
-      String name = "Anthony Roy",
-      String desc = "4:30 PM",
+      {String? title,
+      String? subtile,
+      String? subHeading,
+      String? image,
       GestureTapCallback? onPressed,
+      GestureTapCallback? onRemoveTap,
       int? notificationCount}) {
     return Column(
       children: [
@@ -19,67 +22,110 @@ class CustomeTiles {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  child: Assets.images.person.image(
-                    height: 40,
-                    width: 40,
-                    fit: BoxFit.cover,
+                AppImage.network(
+                  imageUrl: image ?? AppImages.personPlaceholder,
+                  borderRadius: BorderRadius.circular(20),
+                  fit: BoxFit.cover,
+                  height: 40,
+                  width: 40,
+                ),
+                // CircleAvatar(
+                //   radius: 20,
+                //   child: Assets.images.person.image(
+                //     height: 40,
+                //     width: 40,
+                //     fit: BoxFit.cover,
+                //   ),
+                // ),
+                SB.w(16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              title ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.titleSmall!.copyWith(
+                                color: AppColors.darkGrey,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          if (subHeading != null &&
+                              subHeading.trim().isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5),
+                              child: Text(
+                                '($subHeading)',
+                                style: context.bodyMedium!.copyWith(
+                                  color: AppColors.darkGrey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      Text(
+                        subtile ?? '',
+                        style: context.bodySmall!.copyWith(
+                          color: AppColors.darkGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SB.w(20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: context.width * 0.65,
-                      child: Text(
-                        name,
-                        maxLines: 1,
-                        style: context.titleSmall!.copyWith(
-                          color: AppColors.darkGrey,
-                          fontWeight: FontWeight.w600,
+                if (notificationCount != null && notificationCount != 0)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: CircleAvatar(
+                      radius: 12,
+                      backgroundColor: AppColors.primary,
+                      child: Center(
+                        child: Text(
+                          notificationCount.toString(),
+                          style: context.bodyExtraSmall,
                         ),
                       ),
                     ),
-                    Text(
-                      desc,
-                      style: context.bodySmall!.copyWith(
-                        color: AppColors.darkGrey,
-                        fontWeight: FontWeight.w500,
+                  ),
+                if (onRemoveTap != null)
+                  InkWell(
+                    onTap: onRemoveTap,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(35),
+                        border: Border.all(color: AppColors.gry),
+                      ),
+                      child: const Icon(
+                        Icons.remove,
+                        color: AppColors.gry,
+                        size: 16,
                       ),
                     ),
-                  ],
-                ),
-                if (notificationCount != null && notificationCount != 0) ...{
-                  const Spacer(),
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: AppColors.primary,
-                    child: Center(
-                      child: Text(
-                        notificationCount.toString(),
-                        style: context.bodyExtraSmall,
-                      ),
-                    ),
-                  )
-                }
+                  ),
               ],
             ),
           ),
         ),
-        Divider(
-          indent: 0,
-          endIndent: 0,
-          color: AppColors.gry.withOpacity(0.3),
-          thickness: 0.8,
-        ),
+        divider(),
+        // Divider(
+        //   indent: 0,
+        //   endIndent: 0,
+        //   color: AppColors.gry.withOpacity(0.3),
+        //   thickness: 0.8,
+        // ),
       ],
     );
   }
 
   static Widget notificationTileSimple(BuildContext context,
-      {String name = "New task added in template",
+      {String? title,
+      String? description,
       GestureTapCallback? onCloseTap,
       GestureTapCallback? onPressed,
       int? notificationCount}) {
@@ -104,18 +150,34 @@ class CustomeTiles {
                   ),
                 ),
                 SB.w(20),
-                SizedBox(
-                  width: context.width * 0.65,
-                  child: Text(
-                    name,
-                    maxLines: 2,
-                    style: context.bodyLarge!.copyWith(
-                      color: AppColors.darkGrey,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Expanded(
+                  // width: context.width * 0.65,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title ?? '',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.bodyLarge!.copyWith(
+                          color: AppColors.darkGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (description != null && description.isNotEmpty)
+                        Text(
+                          description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.bodyMedium!.copyWith(
+                            color: AppColors.darkGrey,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                const Spacer(),
+                SB.w(8),
+                // const Spacer(),
                 GestureDetector(
                   onTap: onCloseTap,
                   child: CircleAvatar(
@@ -133,14 +195,24 @@ class CustomeTiles {
             ),
           ),
           SB.h(3),
-          Divider(
-            indent: 0,
-            endIndent: 0,
-            color: AppColors.gry.withOpacity(0.3),
-            thickness: 0.8,
-          ),
+          divider(),
+          // Divider(
+          //   indent: 0,
+          //   endIndent: 0,
+          //   color: AppColors.gry.withOpacity(0.3),
+          //   thickness: 0.8,
+          // ),
         ],
       ),
+    );
+  }
+
+  static Widget divider() {
+    return Divider(
+      indent: 0,
+      endIndent: 0,
+      color: AppColors.gry.withOpacity(0.3),
+      thickness: 0.8,
     );
   }
 }

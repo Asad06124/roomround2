@@ -1,33 +1,34 @@
+import 'package:roomrounds/core/constants/controllers.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-
 import 'package:roomrounds/module/main_features/components/main_features_components.dart';
 import 'package:roomrounds/module/main_features/controller/main_feature_controller.dart';
 
 // ignore: must_be_immutable
 class MainFeaturesView extends StatelessWidget {
-  const MainFeaturesView({Key? key}) : super(key: key);
+  const MainFeaturesView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return CustomContainer(
-      padding: const EdgeInsets.all(0),
-      appBar: CustomAppbar.simpleAppBar(
-        context,
-        height: userData.type == UserType.manager ? context.height * 0.18 : 110,
-        title: AppStrings.appNameSpace,
-        isBackButtun: false,
-        isHome: true,
-        decriptionWidget: userData.type == UserType.manager
-            ? AssignedTaskComponents.appBatTile(context,
-                name: "Managing Staff",
-                desc: userData.name,
-                pading: const EdgeInsets.all(0))
-            : null,
-      ),
-      child: GetBuilder<MainFeatureController>(
-          init: MainFeatureController(userData.type),
-          builder: (controller) {
-            return Column(
+    return GetBuilder<MainFeatureController>(
+        init: MainFeatureController(),
+        builder: (controller) {
+          User? user = profileController.user;
+          return CustomContainer(
+            padding: const EdgeInsets.all(0),
+            appBar: CustomAppbar.simpleAppBar(
+              context,
+              height: context.height * 0.18,
+              title: AppConstants.appNameSpace,
+              isBackButtun: false,
+              isHome: true,
+              decriptionWidget: CustomAppbar.appBatTile(
+                context,
+                name: user?.username,
+                desc: user?.role,
+                padding: 0,
+              ),
+            ),
+            child: Column(
               children: [
                 Expanded(
                   child: Container(
@@ -35,11 +36,10 @@ class MainFeaturesView extends StatelessWidget {
                     padding:
                         const EdgeInsets.only(left: 20, right: 20, top: 40),
                     decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(55),
-                        topRight: Radius.circular(55),
-                      ),
                       color: AppColors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(55),
+                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -56,23 +56,27 @@ class MainFeaturesView extends StatelessWidget {
                             Row(
                               children: [
                                 InkWell(
-                                  onTap: () => controller.chnageLayout(true),
+                                  onTap: () => controller.changeLayout(true),
                                   child: Assets.icons.gridIcon.svg(
-                                      colorFilter: ColorFilter.mode(
-                                          controller.isGridView
-                                              ? AppColors.primary
-                                              : AppColors.gry,
-                                          BlendMode.srcIn)),
+                                    colorFilter: ColorFilter.mode(
+                                      controller.isGridView
+                                          ? AppColors.primary
+                                          : AppColors.gry,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
                                 ),
                                 SB.w(10),
                                 InkWell(
-                                  onTap: () => controller.chnageLayout(false),
+                                  onTap: () => controller.changeLayout(false),
                                   child: Assets.icons.listIcon.svg(
-                                      colorFilter: ColorFilter.mode(
-                                          controller.isGridView
-                                              ? AppColors.gry
-                                              : AppColors.primary,
-                                          BlendMode.srcIn)),
+                                    colorFilter: ColorFilter.mode(
+                                      controller.isGridView
+                                          ? AppColors.gry
+                                          : AppColors.primary,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
                                 ),
                               ],
                             )
@@ -85,13 +89,15 @@ class MainFeaturesView extends StatelessWidget {
                             color: Colors.transparent,
                             width: context.width,
                             // height: context.height * 0.55,
-                            child: MainFeaturesCompinents.mainCards(
+                            child: MainFeaturesComponents.mainCards(
                               context,
-                              controller.titles,
-                              controller.isGridView,
-                              controller.images,
-                              onPressed: (index) =>
-                                  Get.toNamed(controller.pages[index]),
+                              isGridView: controller.isGridView,
+                              features: controller.features,
+                              onPressed: (page) {
+                                if (page != null) {
+                                  Get.toNamed(page);
+                                }
+                              },
                             ),
                           ),
                         ),
@@ -100,8 +106,8 @@ class MainFeaturesView extends StatelessWidget {
                   ),
                 ),
               ],
-            );
-          }),
-    );
+            ),
+          );
+        });
   }
 }

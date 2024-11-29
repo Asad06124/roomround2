@@ -16,8 +16,13 @@ extension DateTimeExtension on DateTime {
     }
   }
 
-  String format({String format = 'yyyy-MM-dd'}) {
+  String format({String format = 'MM/dd/yyyy'}) {
     return DateFormat(format).format(this);
+  }
+
+  String formatTime({String format = 'hh:mm a'}) {
+    return DateFormat(format).format(this);
+    // return DateFormat.jm().format(this);
   }
 
   String get dateOnly {

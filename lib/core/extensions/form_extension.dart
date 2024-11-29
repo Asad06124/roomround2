@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
-extension LoginFormExtension on GlobalKey<FormState> {
+extension FormExtension on GlobalKey<FormState> {
   bool get validateFields => currentState!.validate();
 }

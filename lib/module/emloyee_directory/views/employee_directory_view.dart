@@ -1,209 +1,165 @@
+import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
 class EmployeeDirectoryView extends StatelessWidget {
-  const EmployeeDirectoryView({Key? key}) : super(key: key);
+  EmployeeDirectoryView({super.key});
+
+  final Debouncer _debouncer = Debouncer();
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<EmployeeDirectoryController>(
-        init: EmployeeDirectoryController(),
-        builder: (controller) {
-          return Scaffold(
-            backgroundColor: AppColors.white,
-            appBar: CustomAppbar.simpleAppBar(
-              context,
-              height: 70,
-              backButtunColor: AppColors.primary,
-              title: userData.type == UserType.manager
-                  ? AppStrings.queries
-                  : AppStrings.assignedTasks,
-              showMailIcon: true,
-              showNotificationIcon: true,
-              notificationActive: true,
-              titleStyle:
-                  context.titleLarge!.copyWith(color: AppColors.primary),
-              iconsClor: AppColors.primary,
-              isHome: false,
-              isBackButtun: true,
-            ),
-            body: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ListView(
-                // crossAxisAlignment: CrossAxisAlignment.start,\
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  Text(
-                    userData.type == UserType.employee
-                        ? controller.ticketsType == TicketsType.assignedMe
-                            ? "30 Tickets / 20 Urgent / 5 Urgent"
-                            : "30 Tickets / 20 Replied"
-                        : controller.ticketsType == TicketsType.assignedMe
-                            ? "30 Tickets / 20 Urgent"
-                            : "30 Tickets",
-                    style: context.bodyLarge!.copyWith(
-                      color: AppColors.gry,
-                      fontWeight: FontWeight.w500,
+    User? user = profileController.user;
+    return CustomContainer(
+      padding: const EdgeInsets.all(0),
+      appBar: CustomAppbar.simpleAppBar(
+        context,
+        height: 140,
+        isBackButtun: true,
+        titleStyle: context.titleLarge,
+        title: AppStrings.roomStatusList,
+        isHome: false,
+        showMailIcon: true,
+        showNotificationIcon: true,
+        decriptionWidget: CustomAppbar.appBatTile(
+          context,
+          name: user?.username,
+          desc: user?.role,
+          // userData.type == UserType.employee
+          //     ? "Employee Staff"
+          //     : "Managing Staff",
+        ),
+      ),
+      child: GetBuilder<EmployeeDirectoryController>(
+          init: EmployeeDirectoryController(),
+          builder: (controller) {
+            return Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    // width: context.width,
+                    padding:
+                        const EdgeInsets.only(left: 20, right: 20, top: 20),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(55),
+                        topRight: Radius.circular(55),
+                      ),
+                      color: AppColors.white,
                     ),
-                  ),
-                  SB.h(10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        AppStrings.tickets,
-                        style: context.titleSmall!.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
+                    child: Column(
+                      children: [
+                        SB.w(context.width),
+                        Text(
+                          AppStrings.employeeDirectory,
+                          style: context.titleLarge!
+                              .copyWith(color: AppColors.black),
                         ),
-                      ),
-                      CustomeDropDown.simple<String>(
-                        context,
-                        list: userData.type == UserType.manager
-                            ? ["Assigned Me", "Assigned To"]
-                            : ["Assigned Me", 'Send To'],
-                        onSelect: controller.changeTicketsType,
-                        borderRadius: 20,
-                        closedFillColor: AppColors.lightWhite,
-                        showShadow: true,
-                        closedShaddow: false,
-                      ),
-                    ],
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    height: userData.type == UserType.employee
-                        ? controller.ticketsType == TicketsType.assignedMe
-                            ? context.height * 0.3800
-                            : context.height * 0.80 -
-                                context.paddingTop -
-                                context.paddingBottom
-                        : context.height * 0.80 -
-                            context.paddingTop -
-                            context.paddingBottom,
-                    child: ListView.builder(
-                      itemCount: 8,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return userData.type == UserType.employee
-                            ? EmployeeDirectoryComponents.tile(
-                                context,
-                                isAcvtive: controller.ticketsType ==
-                                        TicketsType.assignedMe
-                                    ? index % 2 == 0
-                                    : false,
-                                status: controller.ticketsType ==
-                                        TicketsType.assignedMe
-                                    ? "Close"
-                                    : "Open Thread",
-                                onStatusPressed: () {
-                                  if (controller.ticketsType ==
-                                      TicketsType.sendTo) {
-                                    EmployeeDirectoryComponents
-                                        .openDialogEmployee(3, index);
-                                    return;
-                                  }
-                                },
-                                onTap: () {
-                                  // close ticket dialoue = 0 //
-                                  // closed ticket dialoue = 1
-                                  // Open thread dialoue = 2 // send to
-                                  // Open thread Send to dialoue = 3
-                                  if (controller.ticketsType ==
-                                      TicketsType.sendTo) {
-                                    EmployeeDirectoryComponents
-                                        .openDialogEmployee(2, index);
-                                    return;
-                                  }
-                                  EmployeeDirectoryComponents
-                                      .openDialogEmployee(0, index);
-                                },
-                              )
-                            : EmployeeDirectoryComponents.tile(
-                                context,
-                                isAcvtive: controller.ticketsType ==
-                                    TicketsType.assignedMe,
-                                status: controller.ticketsType ==
-                                        TicketsType.assignedMe
-                                    ? "See Thread"
-                                    : 'Assigned',
-                                title: 'Room A${index + 1}',
-                                statusTextColor: controller.ticketsType ==
-                                        TicketsType.assignedMe
-                                    ? AppColors.black
-                                    : AppColors.gry,
-                                isUnderline: controller.ticketsType ==
-                                    TicketsType.assignedMe,
-                                onStatusPressed: () {
-                                  if (controller.ticketsType ==
-                                      TicketsType.assignedMe) {
-                                    EmployeeDirectoryComponents
-                                        .openDialogManager(1, index);
-                                  }
-                                },
-                                onTap: () {
-                                  if (controller.ticketsType ==
-                                      TicketsType.assignedMe) {
-                                    EmployeeDirectoryComponents
-                                        .openDialogManager(0, index);
-                                  } else {
-                                    EmployeeDirectoryComponents
-                                        .openDialogManager(2, index);
-                                  }
-                                },
-                              );
-                      },
+                        SB.h(10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomeDropDown.simple(
+                              context,
+                              hintText: AppStrings.selectType,
+                              list: controller.employeeTypes,
+                              initialItem: controller.selectedEmployeeType,
+                              onSelect: controller.onChangeEmployeeType,
+                            ),
+                            CustomeDropDown.simple(
+                              context,
+                              hintText: AppStrings.selectDepartment,
+                              list: departmentsController.getDepartmentsNames(),
+                              initialItem: departmentsController
+                                  .selectedDepartment?.departmentName
+                                  ?.trim(),
+                              onSelect: controller.onChangeDepartment,
+                            ),
+                          ],
+                        ),
+                        SB.h(15),
+                        CustomTextField(
+                          borderRadius: 35,
+                          fillColor: AppColors.white,
+                          hintText: AppStrings.searchEmployee,
+                          controller: controller.searchTextField,
+                          textInputAction: TextInputAction.search,
+                          isShadow: true,
+                          validator: (value) {
+                            return null;
+                          },
+                          suffixIcon: AppImages.search,
+                          onSuffixTap: () {
+                            // Search
+                            controller.onSearch(
+                              controller.searchTextField.text,
+                            );
+                          },
+                          onFieldSubmitted: controller.onSearch,
+                          onChange: (text) {
+                            _debouncer.run(() {
+                              controller.onSearch(text);
+                            });
+                          },
+                        ),
+                        SB.h(10),
+                        Expanded(
+                          child: controller.hasData
+                              ? _buildEmployeeList(
+                                  context, controller.searchResults)
+                              : const CustomLoader(),
+                        ),
+                      ],
                     ),
                   ),
-                  if (controller.ticketsType == TicketsType.assignedMe &&
-                      userData.type == UserType.employee) ...{
-                    SB.h(10),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: AppColors.gry.withOpacity(0.2),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppStrings.closed,
-                            style: context.titleSmall!.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SB.h(10),
-                          SizedBox(
-                            height: context.height * 0.30,
-                            child: ListView.builder(
-                              itemCount: 5,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return EmployeeDirectoryComponents.tile(
-                                  context,
-                                  titleActive: false,
-                                  title: 'B${index + 1}',
-                                  status: 'Closed',
-                                  isUnderline: false,
-                                  onTap: () {
-                                    EmployeeDirectoryComponents
-                                        .openDialogEmployee(1, index);
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  },
-                ],
-              ),
-            ),
+                ),
+              ],
+            );
+          }),
+    );
+  }
+
+  Widget _buildEmployeeList(BuildContext context, List<Employee> list) {
+    if (list.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          Employee employee = list[index];
+
+          String? image;
+          if (employee.imageKey?.isURL == true) {
+            image = employee.imageKey;
+          }
+
+          return CustomeTiles.employeeTile(
+            context,
+            image: image,
+            title: employee.employeeName,
+            subHeading: employee.roleName,
+            subtile: employee.departmentName,
+            onPressed: () {
+              Get.toNamed(
+                AppRoutes.CREATE_TICKET,
+                arguments: {
+                  "initialEmployee": employee,
+                  "initialDepartmentId": employee.departmentId,
+                },
+              );
+            },
           );
-        });
+        },
+      );
+    } else {
+      // No Employees found
+      return Center(
+        child: Text(
+          AppStrings.noEmployeesFound,
+          style: context.bodyLarge!.copyWith(
+            color: AppColors.black,
+          ),
+        ),
+      );
+    }
   }
 }

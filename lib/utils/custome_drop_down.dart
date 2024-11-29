@@ -4,72 +4,87 @@ class CustomeDropDown {
   static Widget simple<T>(
     BuildContext context, {
     required List<T> list,
+    T? initialItem,
     required Function(T value) onSelect,
-    String hintText = "All Emplyees",
+    String hintText = AppStrings.select,
+    SingleSelectController<T?>? controller,
+    Widget Function(BuildContext, T, bool, void Function())? listItemBuilder,
+    Widget Function(BuildContext, T, bool)? headerBuilder,
     double borderRadius = 5,
     List<String>? labels,
     bool borderRadiusBoth = true,
-    Color closedFillColor = AppColors.white,
-    Color expandFillColor = AppColors.white,
+    Color? closedFillColor,
+    Color? expandFillColor,
     Color textColor = AppColors.black,
     bool showShadow = true,
-    bool closedShaddow = true,
+    bool closedShadow = true,
     double? width,
   }) {
-    width = width ?? context.width * 0.40;
+    width = width ?? context.width * 0.41;
     return SizedBox(
       width: width,
       child: CustomDropdown<T>(
-        hintText: hintText,
         items: list,
-        initialItem: list[0],
+        hintText: hintText,
+        controller: controller,
+        initialItem: initialItem,
         onChanged: (value) {
-          onSelect(value);
+          if (value != null) {
+            onSelect(value);
+          }
         },
+        excludeSelected: false,
+        // hideSelectedFieldWhenExpanded: true,
+        listItemBuilder: listItemBuilder,
+        headerBuilder: headerBuilder,
         closedHeaderPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: CustomDropdownDecoration(
-            listItemStyle: context.bodySmall!.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w500,
-            ),
-            headerStyle: context.bodyLarge!.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w600,
-            ),
-            closedSuffixIcon: Icon(
-              Icons.arrow_drop_down,
-              color: textColor,
-            ),
-            closedFillColor: closedFillColor,
-            expandedFillColor: expandFillColor,
-            closedBorderRadius: BorderRadius.circular(borderRadius),
-            expandedBorderRadius:
-                BorderRadius.circular(borderRadiusBoth ? borderRadius : 5),
-            expandedSuffixIcon: Icon(
-              Icons.arrow_drop_up_outlined,
-              color: textColor,
-            ),
-            expandedShadow: showShadow
-                ? [
-                    BoxShadow(
-                      color: AppColors.gry.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    )
-                  ]
-                : [],
-            closedShadow: closedShaddow
-                ? [
-                    BoxShadow(
-                      color: AppColors.gry.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: const Offset(0, 2),
-                    )
-                  ]
-                : []),
+          listItemStyle: context.bodyMedium!.copyWith(
+            color: textColor,
+            fontWeight: FontWeight.w500,
+          ),
+          headerStyle: context.bodyLarge!.copyWith(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+          ),
+          listItemDecoration: ListItemDecoration(
+            selectedColor: expandFillColor,
+          ),
+          closedFillColor: closedFillColor,
+          expandedFillColor: expandFillColor,
+          closedBorderRadius: BorderRadius.circular(borderRadius),
+          expandedBorderRadius:
+              BorderRadius.circular(borderRadiusBoth ? borderRadius : 5),
+          closedSuffixIcon: Icon(
+            Icons.keyboard_arrow_down,
+            color: textColor,
+          ),
+          expandedSuffixIcon: Icon(
+            Icons.keyboard_arrow_up,
+            color: textColor,
+          ),
+          expandedShadow: showShadow
+              ? [
+                  BoxShadow(
+                    color: AppColors.gry.withOpacity(0.4),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  )
+                ]
+              : [],
+          closedShadow: closedShadow
+              ? [
+                  BoxShadow(
+                    color: AppColors.gry.withOpacity(0.3),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: const Offset(0, 2),
+                  )
+                ]
+              : [],
+        ),
       ),
     );
   }

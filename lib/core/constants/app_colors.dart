@@ -12,16 +12,19 @@ class AppColors {
   static const Color yellowLight = Color(0xffFFC700);
 
   static const Color white = Color(0xFFffffff);
-  static const Color lightWhite = Color.fromARGB(255, 238, 238, 238);
+  static const Color lightWhite =
+      Color(0xFFF1F1F1); // Color.fromARGB(255, 238, 238, 238);
   static const Color black = Color(0xFF000000);
   static const Color red = Color(0xFFFF0000);
   static const Color gry = Color(0xFF8C93A3);
+  // static const Color lightGrey = Color(0xFFF1F1F1);
   static const Color darkGrey = Color(0xFF605E5E);
   static const Color lightBlack = Color(0xff161616);
   static const Color aqua = Color(0xff26DBDC);
   static const Color green = Color(0xffB9FFAD);
   static const Color greenDark = Color(0xff3E8633);
   static const Color deepSkyBlue = Color(0xff326FEA);
+  static const Color divider = Color(0xFFD3D3D3);
 
   static const Gradient profileGradient = LinearGradient(
       begin: Alignment.topCenter,

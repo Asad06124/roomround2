@@ -1,11 +1,10 @@
-import 'package:intl/intl.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 extension StringExtension on String {
   /// funds raising donation id
   String get referenceId => substring(0, length ~/ 3).toUpperCase();
 
-  String get completeUrl => isNotEmpty ? "${Urls.baseUrl}$this" : '';
+  String get completeUrl => isNotEmpty ? "${Urls.domain}$this" : '';
 }
 
 extension Pluralize on String {
@@ -14,12 +13,14 @@ extension Pluralize on String {
 }
 
 extension StringToDateTime on String {
-  DateTime toDateTime() {
+  DateTime? toDateTime() {
     try {
-      return DateFormat('yyyy-MM-dd').parseStrict(this);
+      // return DateFormat('yyyy-MM-dd').parseStrict(this);
+      return DateTime.tryParse(this);
     } catch (e) {
       //throw FormatException("Error parsing date: $this. $e");
-      return DateTime.now();
+      // return DateTime.now();
+      return null;
     }
   }
 }

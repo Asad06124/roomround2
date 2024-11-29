@@ -1,15 +1,19 @@
+import 'package:roomrounds/core/apis/models/room/room_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_list/components/room_list_components.dart';
 import 'package:roomrounds/module/room_list/controller/room_list_controller.dart';
 
 class RoomListView extends StatelessWidget {
-  const RoomListView({Key? key}) : super(key: key);
+  const RoomListView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<RoomListController>(
         init: RoomListController(),
         builder: (controller) {
+          User? user = profileController.user;
+          List<Room> roomsList = controller.roomsList;
+
           return CustomContainer(
             padding: const EdgeInsets.all(0),
             appBar: CustomAppbar.simpleAppBar(
@@ -19,8 +23,11 @@ class RoomListView extends StatelessWidget {
               titleStyle: context.titleLarge,
               title: AppStrings.roomStatusList,
               isHome: false,
-              decriptionWidget: AssignedTaskComponents.appBatTile(context,
-                  name: AppStrings.managinfStaff, desc: userData.name),
+              decriptionWidget: CustomAppbar.appBatTile(
+                context,
+                name: AppStrings.managingStaff,
+                desc: user?.username,
+              ),
             ),
             child: Column(
               children: [
@@ -45,7 +52,10 @@ class RoomListView extends StatelessWidget {
                           children: [
                             const SizedBox(),
                             Text(
-                              AppStrings.auditTemplete,
+                              controller.hasData
+                                  ? roomsList.firstOrNull?.templateName ??
+                                      AppStrings.template
+                                  : AppStrings.template,
                               style: context.titleMedium!.copyWith(
                                 color: AppColors.textPrimary,
                               ),
@@ -54,58 +64,14 @@ class RoomListView extends StatelessWidget {
                         ),
                         SB.h(10),
                         RoomListComponents.filter(
-                            context, controller.chnageRoomType),
+                          context,
+                          controller.changeRoomType,
+                        ),
                         SB.h(10),
                         Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: 20,
-                            itemBuilder: (context, index) {
-                              if (controller.roomType == RoomType.complete) {
-                                return index % 2 != 0
-                                    ? EmployeeDirectoryComponents.tile(
-                                        context,
-                                        title: 'Room A${index + 1}',
-                                        onTap: index % 2 != 0
-                                            ? () => Get.toNamed(
-                                                AppRoutes.TASKSLISTS)
-                                            : null,
-                                        statusWidget:
-                                            RoomListComponents.statusWidget(
-                                                context,
-                                                isComplete: index % 2 != 0),
-                                      )
-                                    : const SizedBox();
-                              } else if (controller.roomType ==
-                                  RoomType.incomplete) {
-                                return index % 2 == 0
-                                    ? EmployeeDirectoryComponents.tile(
-                                        context,
-                                        title: 'Room A${index + 1}',
-                                        onTap: index % 2 != 0
-                                            ? () => Get.toNamed(
-                                                AppRoutes.TASKSLISTS)
-                                            : null,
-                                        statusWidget:
-                                            RoomListComponents.statusWidget(
-                                                context,
-                                                isComplete: index % 2 != 0),
-                                      )
-                                    : const SizedBox();
-                              } else {
-                                return EmployeeDirectoryComponents.tile(
-                                  context,
-                                  title: 'Room A${index + 1}',
-                                  onTap: index % 2 != 0
-                                      ? () => Get.toNamed(AppRoutes.TASKSLISTS)
-                                      : null,
-                                  statusWidget: RoomListComponents.statusWidget(
-                                      context,
-                                      isComplete: index % 2 != 0),
-                                );
-                              }
-                            },
-                          ),
+                          child: controller.hasData
+                              ? _buildRoomsList(context, roomsList)
+                              : const CustomLoader(),
                         )
                       ],
                     ),
@@ -115,5 +81,61 @@ class RoomListView extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Widget _buildRoomsList(BuildContext context, List<Room> list) {
+    if (list.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          Room room = list[index];
+
+          /* if (controller.roomType == RoomType.complete) {
+            return index % 2 != 0
+                ? EmployeeDirectoryComponents.tile(
+                    context,
+                    title: 'Room A${index + 1}',
+                    onTap: index % 2 != 0
+                        ? () => Get.toNamed(AppRoutes.TASKSLISTS)
+                        : null,
+                    statusWidget: RoomListComponents.statusWidget(context,
+                        isComplete: index % 2 != 0),
+                  )
+                : const SizedBox();
+          } else if (controller.roomType == RoomType.inProgress) {
+            return index % 2 == 0
+                ? EmployeeDirectoryComponents.tile(
+                    context,
+                    title: 'Room A${index + 1}',
+                    onTap: index % 2 != 0
+                        ? () => Get.toNamed(AppRoutes.TASKSLISTS)
+                        : null,
+                    statusWidget: RoomListComponents.statusWidget(context,
+                        isComplete: index % 2 != 0),
+                  )
+                : const SizedBox();
+          } else { */
+          bool isCompleted = room.roomStatus == true;
+
+          return EmployeeDirectoryComponents.tile(
+            context,
+            title: room.roomName,
+            onTap: () {
+              Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
+            },
+            trailingWidget: RoomListComponents.statusWidget(
+              context,
+              isComplete: isCompleted,
+            ),
+          );
+          // }
+        },
+      );
+    } else {
+      // No Rooms found
+      return SettingsComponents.noResultsFound(
+          context, AppStrings.noRoomsFound);
+    }
   }
 }

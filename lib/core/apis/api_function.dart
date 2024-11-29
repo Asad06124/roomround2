@@ -1,3 +1,185 @@
+import 'dart:convert';
+// import 'package:logger/logger.dart';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
+import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/utils/custom_overlays.dart';
+
+class APIFunction {
+  static Future<dynamic> call(
+    APIMethods method,
+    String endPoint, {
+    var dataMap,
+    // var model,
+    File? file,
+    String? fileKey,
+    bool showLoader = true,
+    bool showErrorMessage = true,
+    bool showSuccessMessage = false,
+    bool getOnlyStatusCode = false,
+    bool getStatusOnly = false,
+    Map<String, String>? customHeaders,
+    Function(Map<String, dynamic>)? fromJson,
+  }) async {
+    try {
+      final String url = Urls.apiBaseUrl + endPoint;
+      final Uri uri = Uri.parse(url);
+      final String apiMethod = method.name.toUpperCase();
+
+      if (showLoader) CustomOverlays.showLoader();
+
+      // log(userData.token);
+      bool isConnected = await Utilities.hasConnection();
+
+      if (isConnected == false) {
+        // No Internet connection
+        if (showLoader) CustomOverlays.dismissLoader();
+        // CustomOverlays.showSnackBar(AppStrings.noInternetConnection);
+        CustomOverlays.showToastMessage(
+            message: AppStrings.noInternetConnection);
+
+        return null;
+      }
+
+      Map<String, String> headers = _apiHeaders(customHeaders: customHeaders);
+      // customLogger("Headers: $headers");
+
+      http.BaseRequest request;
+      String encodedData = jsonEncode(dataMap);
+
+      if (file != null) {
+        // Multipart request for file upload
+        var multipartRequest = http.MultipartRequest(apiMethod, uri);
+        multipartRequest.fields.addAll(dataMap);
+        multipartRequest.files.add(
+          await http.MultipartFile.fromPath(fileKey ?? "", file.path),
+        );
+        request = multipartRequest;
+      } else {
+        // Standard request for non-file data
+        var normalRequest = http.Request(apiMethod, uri);
+        normalRequest.body = encodedData;
+        request = normalRequest;
+      }
+
+      request.headers.addAll(headers);
+
+      customLogger(
+        "Url: $url"
+        "\nPayload: $encodedData",
+      );
+
+      http.StreamedResponse response = await request.send();
+
+      if (getOnlyStatusCode) {
+        return response.statusCode;
+      }
+
+      String? data = await response.stream.bytesToString();
+      // log("Response Data $data");
+
+      customLogger(
+        "Url: $url \nResponse (${response.statusCode}): $data",
+        type: LoggerType.info,
+      );
+
+      if (showLoader) CustomOverlays.dismissLoader();
+
+      String? errorMessage;
+
+      if (data.isNotEmpty) {
+        final decodedResponse = json.decode(data);
+        final BaseModel baseModel = BaseModel.fromJson(decodedResponse);
+
+        var result;
+        if (response.statusCode == 200 && (baseModel.succeeded ?? false)) {
+          // log(baseModel.result.toString());
+
+          var respData = baseModel.data;
+          if (respData != null && fromJson != null) {
+            if (respData is List) {
+              result = [];
+              for (final data in respData) {
+                result.add(fromJson(data));
+              }
+              customLogger("$endPoint Results: ${result.length}");
+            } else {
+              // if (respData is Map) {
+              // Logger().e(baseModel.data);
+              result = fromJson(respData);
+              // customLogger("Result: $result");
+              // }
+            }
+          }
+
+          if (showSuccessMessage) {
+            CustomOverlays.showToastMessage(
+                message: baseModel.message, isSuccess: true);
+          }
+          return result ?? respData ?? baseModel.succeeded ?? false;
+        } else if (response.statusCode == 401 &&
+            profileController.userToken?.isNotEmpty == true) {
+          // Logout
+          profileController.logout();
+          // In case ShowError = false
+          CustomOverlays.showToastMessage(message: baseModel.message);
+          return null;
+        }
+        errorMessage = baseModel.message;
+      }
+
+      if (showErrorMessage) {
+        CustomOverlays.showToastMessage(message: errorMessage);
+      }
+      // Utilities.showErrorMessage(error: baseModel.message);
+
+      return null; // Change return false to null for handle error
+    } catch (e) {
+      if (showLoader) CustomOverlays.dismissLoader();
+      if (showErrorMessage) {
+        CustomOverlays.showToastMessage(message: e.toString());
+      }
+
+      customLogger(
+        e.toString(),
+        error: 'APIFunction Call',
+        type: LoggerType.error,
+      );
+
+      return null;
+    }
+  }
+
+  static Map<String, String> _apiHeaders({Map<String, String>? customHeaders}) {
+    String? token = profileController.userToken;
+    Map<String, String> headers = {
+      "Authorization": "Bearer ${token ?? ''}",
+      "Content-Type": "application/json",
+    };
+    if (customHeaders != null && customHeaders.isNotEmpty) {
+      headers.addAll(customHeaders);
+    }
+    // customLogger("Headers: $headers");
+    return headers;
+  }
+}
+
+
+
+
+// Future<bool> _checkInternetConnectivity() async {
+//   bool hasInternet = false;
+//   final connectivityResult = await Connectivity().checkConnectivity();
+//   if (connectivityResult == ConnectivityResult.none) {
+//     return hasInternet;
+//   }
+//   // return await InternetConnectionChecker().hasConnection;
+//   return Future.value(true);
+// }
+
+
 // // ignore_for_file: constant_identifier_names
 
 // import 'dart:convert';
@@ -124,22 +306,6 @@
 //       "Content-Type": "application/json"
 //     };
 
-import 'package:roomrounds/core/constants/imports.dart';
-
-void showSnackBar(String? message,
-    {Color backgroundColor = AppColors.primary}) {
-  ScaffoldMessenger.of(Get.context!).removeCurrentSnackBar();
-  final snackBar = SnackBar(
-    content: Text(
-      message ?? "",
-      style: const TextStyle(color: AppColors.white),
-    ),
-    backgroundColor: backgroundColor,
-    // showCloseIcon: true,
-    // closeIconColor: AppColors.white,
-  );
-  ScaffoldMessenger.of(Get.context!).showSnackBar(snackBar);
-}
 
 // Future<bool> _checkInternetConnectivity() async {
 //   bool hasInternet = false;

@@ -12,7 +12,7 @@ mixin Validators {
 
   String? validateConfirmPassword(String? value, String? password) {
     if (value == null || value.isEmpty) {
-      return 'Confirm password is required';
+      return 'Confirm new password is required';
     } else if (value != password) {
       return 'Password does not match';
     }

@@ -46,8 +46,8 @@ class MessageView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return CustomeTiles.employeeTile(
                       context,
-                      name: AppGlobals.dummyData[index].name,
-                      desc: AppGlobals.dummyData[index].time,
+                      title: AppGlobals.dummyData[index].name,
+                      subtile: AppGlobals.dummyData[index].time,
                       notificationCount: index,
                       onPressed: () => Get.toNamed(AppRoutes.CHAT),
                     );

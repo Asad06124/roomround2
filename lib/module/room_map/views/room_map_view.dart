@@ -1,7 +1,7 @@
 import 'package:roomrounds/core/constants/imports.dart';
 
 class RoomMapView extends StatelessWidget {
-  const RoomMapView({Key? key}) : super(key: key);
+  const RoomMapView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +88,13 @@ class RoomMapView extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       bottomSheet: RoomMapComponents.bottomSheet(
         context,
-        onTab: () => Get.toNamed(userData.type == UserType.manager
-            ? AppRoutes.ROOMMAPMANAGER
-            : AppRoutes.ROOMAMPDETAILS),
+        onTab: () {
+          bool isManager = profileController.isManager;
+          Get.toNamed(
+            isManager ? AppRoutes.ROOM_MAP_MANAGER : AppRoutes.ROOM_MAP_DETAILS,
+            // AppRoutes.CREATE_TICKET,
+          );
+        },
       ),
     );
   }
