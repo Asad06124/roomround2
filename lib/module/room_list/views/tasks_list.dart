@@ -100,10 +100,13 @@ class TasksList extends StatelessWidget {
           return EmployeeDirectoryComponents.tile(
             context,
             title: task.taskName,
-            showPrefixDropdown: true,
-            trailingWidget: RoomListComponents.statusWidget(
-              context,
-              isComplete: isTaskCompleted,
+            showPrefixDropdown: false,
+            trailingWidget: Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: RoomListComponents.statusWidget(
+                context,
+                isComplete: isTaskCompleted,
+              ),
             ),
             subtitleWidget: IgnorePointer(
               ignoring: isTaskCompleted,

@@ -135,8 +135,8 @@ class CreateTicketView extends StatelessWidget with Validators {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Assets.icons.locationPinDrop
-                                              .svg(height: 28),
+                                          Assets.icons.cameraAlt
+                                              .svg(height: 23),
                                           SB.w(10),
                                           Text(AppStrings.selectFromMap,
                                               style: headingTextStyle),

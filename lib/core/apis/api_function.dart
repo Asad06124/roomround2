@@ -1,7 +1,6 @@
 import 'dart:convert';
-// import 'package:logger/logger.dart';
+import 'dart:developer';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
@@ -27,9 +26,7 @@ class APIFunction {
       final String url = Urls.apiBaseUrl + endPoint;
       final Uri uri = Uri.parse(url);
       final String apiMethod = method.name.toUpperCase();
-
       if (showLoader) CustomOverlays.showLoader();
-
       // log(userData.token);
       bool isConnected = await Utilities.hasConnection();
 
@@ -48,6 +45,7 @@ class APIFunction {
 
       http.BaseRequest request;
       String encodedData = jsonEncode(dataMap);
+      log("datamap Data $encodedData");
 
       if (file != null) {
         // Multipart request for file upload
@@ -78,7 +76,6 @@ class APIFunction {
       }
 
       String? data = await response.stream.bytesToString();
-      // log("Response Data $data");
 
       customLogger(
         "Url: $url \nResponse (${response.statusCode}): $data",

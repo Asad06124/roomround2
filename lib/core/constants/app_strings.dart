@@ -108,6 +108,7 @@ class AppStrings {
   static const String newPassword = 'New password';
   static const String next = 'Next';
   static const String no = "No";
+  static const String na = "N/A";
   static const String noEmployeesFound = "No employees found";
   static const String noInternetConnection = "No Internet Connection!";
   static const String noMembersFound = "No members found";

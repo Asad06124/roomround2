@@ -45,4 +45,5 @@ class Urls {
   static const String _settings = "/settings";
   static const String updateUser = "$_settings/updateUser";
   static const String updatePassword = "$_settings/updatePassword";
+  static const String getUserProfile = "$_settings/getUserProfile";
 }

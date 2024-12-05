@@ -3,13 +3,11 @@ import 'package:roomrounds/core/routes/app_pages.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
-import 'core/constants/controllers.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
   _initControllers();
-  
+
   runApp(const MyApp());
 }
 
