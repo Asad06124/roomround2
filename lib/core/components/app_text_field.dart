@@ -28,6 +28,7 @@ class CustomTextField extends StatefulWidget {
     this.showBorder = false,
     this.maxLines = 1,
     this.prefixIcon,
+    this.border,
     this.onTap,
     this.isShadow = false,
     this.isRequiredField = true,
@@ -45,6 +46,7 @@ class CustomTextField extends StatefulWidget {
   final bool isShadow;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final Color? border;
   final Color textColor, fillColor, borderColor;
   final Color hintTextColor, sufficIconBackgroundColor;
   final Widget? prefixIcon;
@@ -185,7 +187,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   InputBorder _inputBorder() {
     return OutlineInputBorder(
-      borderSide: BorderSide(color: widget.borderColor),
+      borderSide: BorderSide(color: widget.border ?? widget.borderColor),
       borderRadius: BorderRadius.all(
         Radius.circular(widget.borderRadius),
       ),

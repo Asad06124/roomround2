@@ -124,10 +124,10 @@ class RoomListView extends StatelessWidget {
             onTap: () {
               Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
             },
-            trailingWidget: RoomListComponents.statusWidget(
-              context,
-              isComplete: isCompleted,
-            ),
+            // trailingWidget: RoomListComponents.statusWidget(
+            //   context,
+            //   isComplete: isCompleted,
+            // ),
           );
           // }
         },

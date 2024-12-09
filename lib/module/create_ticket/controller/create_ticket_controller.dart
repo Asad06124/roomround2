@@ -1,7 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
@@ -36,15 +43,119 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   final Rxn<Offset> _markerPosition = Rxn<Offset>();
   final GlobalKey _boundaryKey = GlobalKey();
   Uint8List? screenshotImageBytes; // Store the screenshot image in memory
-  final double _captureSize =
-      200.0; // Size of the square to capture around the marker
-
+  final double _captureSize = 200.0;
+  final ImagePicker _picker = ImagePicker();
+  RxList<File> selectedImages = <File>[].obs;
+  RxList<File> selectedAudio = <File>[].obs;
+  final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
+  final FlutterSoundPlayer _player = FlutterSoundPlayer();
+  String? _recordedAudioPath;
+  bool isRecording = false;
+  bool isPlaying = false;
+  String? recordedAudioPath;
+  int? _currentlyPlayingIndex;
+  int? get currentlyPlayingIndex => _currentlyPlayingIndex;
+  final RecorderController playerController = RecorderController();
   @override
   void onInit() {
     super.onInit();
     _initialEmployeeDepartment();
     _resetSelectedDepartment();
     _fetchDepartments();
+    _initRecorder();
+    _initPlayer();
+  }
+
+  Future<void> playAudio(int index) async {
+    if (_currentlyPlayingIndex == index && isPlaying) {
+      return;
+    }
+
+    if (_currentlyPlayingIndex != null) {
+      await stopAudio();
+    }
+
+    _currentlyPlayingIndex = index;
+    File audioFile = selectedAudio[index];
+
+    await _player.startPlayer(
+      fromURI: audioFile.path,
+      whenFinished: () {
+        isPlaying = false;
+        _currentlyPlayingIndex = null;
+        playerController.stop();
+        update();
+      },
+    );
+
+    isPlaying = true;
+    playerController.record();
+    update();
+  }
+
+  Future<void> stopAudio() async {
+    await _player.stopPlayer();
+    playerController.stop();
+    isPlaying = false;
+    update();
+  }
+
+  Future<void> startRecording() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path =
+        '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+    await _recorder.startRecorder(toFile: path);
+    _recordedAudioPath = path;
+    isRecording = true;
+    update();
+  }
+
+  Future<void> stopRecording() async {
+    await _recorder.stopRecorder();
+    isRecording = false;
+
+    if (_recordedAudioPath != null) {
+      selectedAudio.add(File(_recordedAudioPath!));
+    }
+    update();
+  }
+
+  void removeAudio(int index) {
+    selectedAudio.removeAt(index);
+    update();
+  }
+
+  Future<void> _initRecorder() async {
+    await _recorder.openRecorder();
+    await Permission.microphone.request();
+  }
+
+  Future<void> _initPlayer() async {
+    await _player.openPlayer();
+  }
+
+  void multiImagePic() async {
+    final List<XFile> images = await _picker.pickMultiImage(
+      imageQuality: 80,
+      limit: 3,
+      requestFullMetadata: false,
+    );
+
+    if (images.length > 3) {
+      CustomOverlays.showToastMessage(
+          message: 'You can only select up to 3 images.');
+      selectedImages.value =
+          images.take(3).map((image) => File(image.path)).toList();
+    } else {
+      selectedImages.value = images.map((image) => File(image.path)).toList();
+    }
+    update();
+  }
+
+  void removeImage(int index) {
+    selectedImages.removeAt(index);
+    update();
   }
 
   void _initialEmployeeDepartment() {

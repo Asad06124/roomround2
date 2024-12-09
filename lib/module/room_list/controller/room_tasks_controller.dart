@@ -3,8 +3,6 @@ import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/room/room_model.dart';
 import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/constants/utilities.dart';
-import 'package:roomrounds/utils/custome_dialogue.dart';
 
 class RoomTasksController extends GetxController {
   // TaskListController({this.roomId});
@@ -107,7 +105,6 @@ class RoomTasksController extends GetxController {
 
     if (resp != null && resp is List && resp.isNotEmpty) {
       _tasks = List.from(resp);
-      // update();
     }
 
     _updateHasData(true);
