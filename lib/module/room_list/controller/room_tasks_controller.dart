@@ -125,6 +125,18 @@ class RoomTasksController extends GetxController {
     }
   }
 
+  void updateTaskStatus(int index, YesNo value) {
+    if (index < _tasks.length) {
+      _tasks[index].userSelection = value;
+      update();
+
+      RoomTask? task = _tasks[index];
+      bool userSelection = value == YesNo.yes;
+
+      _updateTask(index, userSelection, task);
+    }
+  }
+
   void _completeTask(int index, bool userSelection, RoomTask? task) {
     if (task != null) {
       bool? completeAt = task.isCompleted;
@@ -135,6 +147,28 @@ class RoomTasksController extends GetxController {
         if (completeAt == userSelection) {
           // Update Task
           _updateTaskStatus(
+            index,
+            task,
+            userSelection,
+          );
+        } else {
+          // create ticket
+          _showCreateTicketDialog(task);
+        }
+      }
+    }
+  }
+
+  void _updateTask(int index, bool userSelection, RoomTask? task) {
+    if (task != null) {
+      bool? completeAt = task.isCompleted;
+      // int? taskId = task.assignTemplateTaskId;
+      // String? taskName = task.taskName;
+
+      if (completeAt != null) {
+        if (completeAt == userSelection) {
+          // Update Task
+          _updateStatusAfterComplete(
             index,
             task,
             userSelection,
@@ -162,6 +196,38 @@ class RoomTasksController extends GetxController {
     //   "status": value,
     // };
     String? params = "?roomId=$roomId&assignTemplateTaskId=$taskId&status=true";
+
+    var resp = await APIFunction.call(
+      APIMethods.get,
+      Urls.updateTaskStatus + params,
+      // dataMap: data,
+      showLoader: true,
+      showErrorMessage: true,
+      showSuccessMessage: true,
+    );
+
+    if (resp != null && resp is bool && resp == true) {
+      if (resp && index < _tasks.length) {
+        _tasks[index].taskStatus = resp;
+        // update();
+      }
+    }
+
+    _updateHasData(true);
+  }
+
+  Future<void> _updateStatusAfterComplete(
+      int index, RoomTask? task, bool value) async {
+    int? taskId = task?.assignTemplateTaskId;
+    int? roomId = getRoomIdByTask(task);
+
+    // Map<String, dynamic> data = {
+    //   "assignTemplateTaskId": taskId,
+    //   "roomId": roomId,
+    //   "status": value,
+    // };
+    String? params =
+        "?roomId=$roomId&assignTemplateTaskId=$taskId&status=false";
 
     var resp = await APIFunction.call(
       APIMethods.get,

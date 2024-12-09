@@ -39,20 +39,27 @@ class RoomListComponents {
     );
   }
 
-  static Widget statusWidget(BuildContext context, {bool isComplete = false}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: isComplete
-            ? AppColors.green.withOpacity(0.5)
-            : AppColors.yellowLight.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        isComplete ? "Completed" : "Incomplete",
-        style: context.bodyLarge!.copyWith(
-          color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
-          fontWeight: FontWeight.w600,
+  static Widget statusWidget(
+    BuildContext context, {
+    bool isComplete = false,
+    VoidCallback? onToggle,
+  }) {
+    return InkWell(
+      onTap: isComplete == true ? onToggle : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isComplete
+              ? AppColors.green.withOpacity(0.5)
+              : AppColors.yellowLight.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Text(
+          isComplete ? "Completed" : "Incomplete",
+          style: context.bodyLarge!.copyWith(
+            color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
