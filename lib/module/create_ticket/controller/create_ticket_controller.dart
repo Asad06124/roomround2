@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
-
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
@@ -17,36 +16,29 @@ import 'package:roomrounds/core/extensions/string_extension.dart';
 import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/module/room_map/views/floor_plan_view.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
+import 'package:http/http.dart' as http;
 
 class CreateTicketController extends GetxController with EmployeeMixin {
   YesNo? _urgent;
   YesNo? get isUrgent => _urgent;
-
-  // Department? _selectedDepartment;
-  // Department? get selectedDepartment => _selectedDepartment;
-
   List<Employee> _employeeList = [];
-  // List<Employee> get employeeList => _employeeList;
   Employee? _selectedEmployee;
   Employee? get selectedEmployee => _selectedEmployee;
   Employee? _initialEmployee;
   int? _initialDepartmentId;
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController roomController = TextEditingController();
   final TextEditingController floorController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final employeeSelectController = SingleSelectController<String>(null);
-
   List<String> get employeesNamesList => getEmployeesNamesList(_employeeList);
-
   final Rxn<Offset> _markerPosition = Rxn<Offset>();
   final GlobalKey _boundaryKey = GlobalKey();
-  Uint8List? screenshotImageBytes; // Store the screenshot image in memory
+  Uint8List? screenshotImageBytes;
   final double _captureSize = 200.0;
   final ImagePicker _picker = ImagePicker();
-  RxList<File> selectedImages = <File>[].obs;
-  RxList<File> selectedAudio = <File>[].obs;
+  List<File> selectedImages = <File>[];
+  List<File> selectedAudio = <File>[];
   final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
   final FlutterSoundPlayer _player = FlutterSoundPlayer();
   String? _recordedAudioPath;
@@ -68,6 +60,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
 
   Future<void> playAudio(int index) async {
     if (_currentlyPlayingIndex == index && isPlaying) {
+      await stopAudio();
       return;
     }
 
@@ -78,37 +71,63 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     _currentlyPlayingIndex = index;
     File audioFile = selectedAudio[index];
 
-    await _player.startPlayer(
-      fromURI: audioFile.path,
-      whenFinished: () {
-        isPlaying = false;
-        _currentlyPlayingIndex = null;
-        playerController.stop();
-        update();
-      },
-    );
-
-    isPlaying = true;
-    playerController.record();
-    update();
+    try {
+      await _player.startPlayer(
+        fromURI: audioFile.path,
+        whenFinished: () {
+          _onAudioPlaybackComplete();
+        },
+      );
+      isPlaying = true;
+      playerController.record();
+      update();
+    } catch (e) {
+      debugPrint("Error playing audio: $e");
+    }
   }
 
   Future<void> stopAudio() async {
-    await _player.stopPlayer();
-    playerController.stop();
+    try {
+      await _player.stopPlayer();
+      playerController.stop();
+    } catch (e) {
+      debugPrint("Error stopping audio: $e");
+    }
     isPlaying = false;
+    _currentlyPlayingIndex = null;
+    update();
+  }
+
+  void _onAudioPlaybackComplete() {
+    isPlaying = false;
+    _currentlyPlayingIndex = null;
+    playerController.stop();
     update();
   }
 
   Future<void> startRecording() async {
+    if (selectedAudio.length >= 3) {
+      CustomOverlays.showToastMessage(
+        message: "You can only record up to 3 audios.",
+      );
+      return;
+    }
+
     final directory = await getApplicationDocumentsDirectory();
     final path =
         '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
 
-    await _recorder.startRecorder(toFile: path);
-    _recordedAudioPath = path;
-    isRecording = true;
-    update();
+    try {
+      await _recorder.startRecorder(toFile: path);
+      _recordedAudioPath = path;
+      isRecording = true;
+      update();
+    } catch (e) {
+      debugPrint("Error starting recorder: $e");
+      CustomOverlays.showToastMessage(
+        message: "Failed to start recording. Please try again.",
+      );
+    }
   }
 
   Future<void> stopRecording() async {
@@ -135,22 +154,117 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     await _player.openPlayer();
   }
 
-  void multiImagePic() async {
-    final List<XFile> images = await _picker.pickMultiImage(
-      imageQuality: 80,
-      limit: 3,
-      requestFullMetadata: false,
-    );
+  // void multiImagePic() async {
+  //   final List<XFile>? images = await _picker.pickMultiImage(
+  //     imageQuality: 80,
+  //     requestFullMetadata: false,
+  //   );
 
-    if (images.length > 3) {
-      CustomOverlays.showToastMessage(
-          message: 'You can only select up to 3 images.');
-      selectedImages.value =
-          images.take(3).map((image) => File(image.path)).toList();
-    } else {
-      selectedImages.value = images.map((image) => File(image.path)).toList();
+  //   if (images == null || images.isEmpty) return;
+
+  //   int remainingSpace = 3 - selectedImages.length;
+
+  //   if (remainingSpace == 0) {
+  //     CustomOverlays.showToastMessage(
+  //         message: 'You have already selected the maximum of 3 images.');
+  //     return;
+  //   }
+
+  //   final List<File> newImages =
+  //       images.take(remainingSpace).map((image) => File(image.path)).toList();
+
+  //   selectedImages.addAll(newImages);
+
+  //   if (images.length > remainingSpace) {
+  //     CustomOverlays.showToastMessage(
+  //         message: 'Only $remainingSpace more image(s) can be selected.');
+  //   }
+
+  //   update();
+  // }
+  void multiImagePic() async {
+    // Show a dialog to let the user choose between Camera and Gallery
+    final ImageSource? source = await _showImageSourceDialog();
+
+    if (source == null) return;
+
+    if (source == ImageSource.camera) {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+      );
+
+      if (image == null) return;
+
+      if (selectedImages.length >= 3) {
+        CustomOverlays.showToastMessage(
+            message: 'You have already selected the maximum of 3 images.');
+        return;
+      }
+
+      selectedImages.add(File(image.path));
+      update();
+    } else if (source == ImageSource.gallery) {
+      final List<XFile>? images = await _picker.pickMultiImage(
+        imageQuality: 80,
+        requestFullMetadata: false,
+      );
+
+      if (images == null || images.isEmpty) return; // No images selected
+
+      int remainingSpace = 3 - selectedImages.length;
+
+      if (remainingSpace == 0) {
+        CustomOverlays.showToastMessage(
+            message: 'You have already selected the maximum of 3 images.');
+        return;
+      }
+
+      // Add new images within the limit
+      final List<File> newImages =
+          images.take(remainingSpace).map((image) => File(image.path)).toList();
+
+      selectedImages.addAll(newImages);
+
+      // Notify the user if images were ignored
+      if (images.length > remainingSpace) {
+        CustomOverlays.showToastMessage(
+            message: 'Only $remainingSpace more image(s) can be selected.');
+      }
+
+      update(); // Notify the UI to rebuild
     }
-    update();
+  }
+
+  Future<ImageSource?> _showImageSourceDialog() async {
+    return await Get.dialog<ImageSource>(
+      AlertDialog(
+        backgroundColor: AppColors.white,
+        title: Text('Choose Image Source'),
+        content: Text(
+            'Would you like to pick an image from the gallery or capture it using the camera?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: ImageSource.camera),
+            child: Text(
+              'Camera',
+              style: TextStyle(
+                color: AppColors.black,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Get.back(result: ImageSource.gallery),
+            child: Text(
+              'Gallery',
+              style: TextStyle(
+                color: AppColors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void removeImage(int index) {
@@ -183,21 +297,12 @@ class CreateTicketController extends GetxController with EmployeeMixin {
 
     int? departmentId = profileController.departmentId;
 
-    // List<Department> departments =
     await departmentsController.getDepartments(
-      // For Employee Get only My Department
-      // For Manager Get All Departments
       departmentId: isEmployee ? departmentId : _initialDepartmentId,
     );
     Department? myDepartment = departmentsController.selectMyDepartment();
-    // if (departments.isNotEmpty) {
-    //   myDepartment = departments
-    //       .firstWhereOrNull((item) => item.departmentId == departmentId);
-    //   departmentsController.onDepartmentSelect(myDepartment?.departmentName);
-    // }
 
     if (isEmployee) {
-      // For Employee Select his manager from his own department
       if (myDepartment != null && myDepartment.managerId != null) {
         _employeeList.add(Employee(
           userId: myDepartment.managerId,
@@ -214,11 +319,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
           update();
         });
       }
-    } else if (isManager) {
-      // For Manager Fetch his employees from his department
-      // _fetchEmployeesFromDepartment();
-      // // Auto Fetch above as Department Selected
-    }
+    } else if (isManager) {}
 
     update();
   }
@@ -231,31 +332,23 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     bool managersOnly = true;
 
     if (isManager && departmentId != null && myDepartmentId != null) {
-      // if other department selected then Managers Only
-      // if My Department matched then just my employee
       managersOnly = departmentId != myDepartmentId;
     }
 
     List<Employee> resp = await getEmployeeList(
       departmentId: departmentId,
       managersOnly: managersOnly,
-      // managerId: isManager ? managerId : null,
     );
 
     if (resp.isNotEmpty) {
       _employeeList = List.from(resp);
-      // Select Employee from EmployeeDirectory
       if (_initialEmployee != null && _initialEmployee?.userId != null) {
         int empIndex = _employeeList
             .indexWhere((e) => e.userId == _initialEmployee?.userId);
         if (empIndex != -1) {
-          // Future.delayed(Duration(seconds: 1), () {
-          // Set Selected Employee if Found in Employee List
           _selectedEmployee = _initialEmployee;
           employeeSelectController.value =
               _selectedEmployee?.employeeName?.trim();
-          // update();
-          // });
         }
       }
       update();
@@ -296,9 +389,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
 
     String? map = profileController.user?.map;
     if (map != null && map.trim().isNotEmpty) {
-      // if (map.isURL) {
       mapImage = map.completeUrl;
-      // }
     }
     Get.to(() => Obx(() => FloorPlanView(
           image: mapImage,
@@ -324,7 +415,6 @@ class CreateTicketController extends GetxController with EmployeeMixin {
       RenderRepaintBoundary boundary = _boundaryKey.currentContext!
           .findRenderObject() as RenderRepaintBoundary;
 
-      // Capture the full image from the boundary
       ui.Image fullImage = await boundary.toImage(pixelRatio: 2.0);
       ByteData? byteData =
           await fullImage.toByteData(format: ui.ImageByteFormat.png);
@@ -363,16 +453,6 @@ class CreateTicketController extends GetxController with EmployeeMixin {
         screenshotImageBytes = croppedPngBytes;
         update();
       }
-
-      /* // Save the cropped image to the device
-      final directory = (await getApplicationDocumentsDirectory()).path;
-      File imgFile = File('$directory/screenshot_cropped.png');
-      await imgFile.writeAsBytes(croppedPngBytes);
-
-      // Show a snackbar to notify the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Screenshot saved to $directory/screenshot_cropped.png')),
-      ); */
     } catch (e) {
       customLogger(
         e.toString(),
@@ -383,27 +463,30 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   }
 
   void onSendTicketTap() async {
-    // if (formKey.validateFields) {
-    // if (_selectedEmployee != null) {
     if (screenshotImageBytes != null &&
         screenshotImageBytes?.isNotEmpty == true) {
+      Map<String, String> ticketData = {};
       String? base64String = base64.encode(screenshotImageBytes!);
-      Map<String, dynamic> data = {
+      ticketData = {
         "roomName": roomController.text.trim(),
         "floorName": floorController.text.trim(),
-        "assignTo": _selectedEmployee?.userId,
+        "assignTo": '${_selectedEmployee?.userId}',
         "description": descriptionController.text.trim(),
         "imageKey": base64String,
-        "isUrgent": _urgent == YesNo.yes,
+        "isUrgent": '${_urgent == YesNo.yes}',
       };
 
       var resp = await APIFunction.call(
         APIMethods.post,
         Urls.saveTicketByEmployee,
-        dataMap: data,
+        dataMap: ticketData,
         showLoader: true,
         showErrorMessage: true,
         showSuccessMessage: true,
+        audioKey: 'AudiosList',
+        imageKey: 'ImagesList',
+        imageListFile: selectedImages,
+        audioListFile: selectedAudio,
       );
 
       if (resp != null && resp is bool && resp == true) {
@@ -412,10 +495,6 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     } else {
       CustomOverlays.showToastMessage(message: AppStrings.pleaseSelectFromMap);
     }
-    // } else {
-    //   CustomOverlays.showToastMessage(message: AppStrings.pleaseSelectEmployee);
-    // }
-    // }
   }
 
   void onUrgentChanged(YesNo value) {

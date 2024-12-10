@@ -14,6 +14,10 @@ class APIFunction {
     // var model,
     File? file,
     String? fileKey,
+    String? audioKey,
+    String? imageKey,
+    List<File>? imageListFile,
+    List<File>? audioListFile,
     bool showLoader = true,
     bool showErrorMessage = true,
     bool showSuccessMessage = false,
@@ -54,6 +58,25 @@ class APIFunction {
         multipartRequest.files.add(
           await http.MultipartFile.fromPath(fileKey ?? "", file.path),
         );
+        request = multipartRequest;
+      } else if (imageListFile != null || audioListFile != null) {
+        // Multipart request for file upload
+        var multipartRequest = http.MultipartRequest(apiMethod, uri);
+        multipartRequest.fields.addAll(dataMap);
+        if (imageListFile != null) {
+          for (var element in imageListFile) {
+            multipartRequest.files.add(
+              await http.MultipartFile.fromPath(imageKey ?? "", element.path),
+            );
+          }
+        }
+        if (audioListFile != null) {
+          for (var element in audioListFile) {
+            multipartRequest.files.add(
+              await http.MultipartFile.fromPath(audioKey ?? "", element.path),
+            );
+          }
+        }
         request = multipartRequest;
       } else {
         // Standard request for non-file data

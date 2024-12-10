@@ -961,6 +961,7 @@ class AssignedThreadDialouge extends StatelessWidget {
                   ),
                   SB.h(5),
                   DialougeComponents.detailWithBorder(context, ticket?.comment),
+                  //Images
                   SB.h(20),
                   Text(
                     AppStrings.directory,

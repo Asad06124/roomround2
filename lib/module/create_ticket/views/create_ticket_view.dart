@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/create_ticket/components/create_ticket_components.dart';
@@ -139,45 +137,6 @@ class CreateTicketView extends StatelessWidget with Validators {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    controller.selectedImages.isEmpty
-                                        ? SizedBox()
-                                        : Wrap(
-                                            spacing: 10.0,
-                                            runSpacing: 10.0,
-                                            children: controller.selectedImages
-                                                .map((image) {
-                                              int index = controller
-                                                  .selectedImages
-                                                  .indexOf(image);
-                                              return Stack(
-                                                children: [
-                                                  Image.file(
-                                                    image,
-                                                    width: 50,
-                                                    height: 50,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                  Positioned(
-                                                    right: 0,
-                                                    child: GestureDetector(
-                                                      onTap: () => controller
-                                                          .removeImage(index),
-                                                      child: CircleAvatar(
-                                                        radius: 8,
-                                                        backgroundColor:
-                                                            Colors.red,
-                                                        child: Icon(
-                                                          Icons.close,
-                                                          color: Colors.white,
-                                                          size: 12,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            }).toList(),
-                                          ),
                                     Row(
                                       children: [
                                         IconButton(
@@ -211,83 +170,155 @@ class CreateTicketView extends StatelessWidget with Validators {
                             ],
                           ),
                         ),
-                        controller.selectedAudio.isEmpty
-                            ? const SizedBox()
-                            : Wrap(
-                                spacing: 10.0,
-                                runSpacing: 10.0,
-                                children: controller.selectedAudio
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
-                                  int index = entry.key;
-                                  bool isCurrentAudioPlaying =
-                                      controller.currentlyPlayingIndex ==
-                                              index &&
-                                          controller.isPlaying;
-
-                                  return Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(
-                                          controller.currentlyPlayingIndex ==
-                                                      index &&
-                                                  controller.isPlaying
-                                              ? Icons.pause
-                                              : Icons.play_arrow,
-                                          color: Colors.green,
-                                        ),
-                                        onPressed: () async {
-                                          if (controller
-                                                      .currentlyPlayingIndex ==
-                                                  index &&
-                                              controller.isPlaying) {
-                                            await controller.stopAudio();
-                                          } else {
-                                            await controller.playAudio(index);
-                                          }
-                                        },
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: AppColors.gry),
+                          ),
+                          child: Column(
+                            children: [
+                              controller.selectedImages.isEmpty
+                                  ? SizedBox()
+                                  : Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Wrap(
+                                        spacing: 10.0,
+                                        runSpacing: 10.0,
+                                        children: controller.selectedImages
+                                            .map((image) {
+                                          int index = controller.selectedImages
+                                              .indexOf(image);
+                                          return Stack(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  // Navigator.push(
+                                                  //   context,
+                                                  //   MaterialPageRoute(
+                                                  //     builder: (context) =>
+                                                  //         FullImageView(image: image),
+                                                  //   ),
+                                                  // );
+                                                },
+                                                child: Image.file(
+                                                  image,
+                                                  width: 50,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                              Positioned(
+                                                right: 0,
+                                                child: GestureDetector(
+                                                  onTap: () => controller
+                                                      .removeImage(index),
+                                                  child: CircleAvatar(
+                                                    radius: 8,
+                                                    backgroundColor: Colors.red,
+                                                    child: Icon(
+                                                      Icons.close,
+                                                      color: Colors.white,
+                                                      size: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }).toList(),
                                       ),
-                                      isCurrentAudioPlaying
-                                          ? AudioWaveforms(
-                                              size: Size(
-                                                200,
-                                                80,
+                                    ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: AppColors.gry),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              controller.isRecording
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Recording........',
+                                        style: TextStyle(color: AppColors.gry),
+                                      ),
+                                    )
+                                  : SizedBox(),
+                              controller.selectedAudio.isEmpty
+                                  ? const SizedBox()
+                                  : Column(
+                                      children: controller.selectedAudio
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
+                                        int index = entry.key;
+                                        return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            IconButton(
+                                              icon: Icon(
+                                                controller.currentlyPlayingIndex ==
+                                                            index &&
+                                                        controller.isPlaying
+                                                    ? Icons.pause
+                                                    : Icons.play_arrow,
+                                                color: Colors.green,
                                               ),
-                                              waveStyle: WaveStyle(
-                                                showMiddleLine: false,
-                                                durationTextPadding: 0.0,
-                                                extendWaveform: true,
-                                              ),
-                                              recorderController:
-                                                  controller.playerController,
-                                            )
-                                          : AudioWaveforms(
-                                              size: Size(
-                                                200,
-                                                80,
-                                              ),
-                                              waveStyle: WaveStyle(
-                                                showMiddleLine: false,
-                                                durationTextPadding: 0.0,
-                                                extendWaveform: true,
-                                              ),
-                                              recorderController:
-                                                  RecorderController(
-                                                useLegacyNormalization: false,
-                                              ),
+                                              onPressed: () =>
+                                                  controller.playAudio(index),
                                             ),
-                                      IconButton(
-                                        icon: Icon(Icons.delete,
-                                            color: Colors.red),
-                                        onPressed: () =>
-                                            controller.removeAudio(index),
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
-                              ),
+                                            if (controller
+                                                    .currentlyPlayingIndex ==
+                                                index)
+                                              AudioWaveforms(
+                                                size: const Size(200, 40),
+                                                waveStyle: WaveStyle(
+                                                  showMiddleLine: false,
+                                                  extendWaveform: true,
+                                                  durationTextPadding: 0.0,
+                                                  waveThickness: 2.0,
+                                                  waveColor: Colors.green,
+                                                  waveCap: StrokeCap.round,
+                                                ),
+                                                recorderController:
+                                                    controller.playerController,
+                                              ),
+                                            if (controller
+                                                    .currentlyPlayingIndex !=
+                                                index)
+                                              Expanded(
+                                                child: Container(
+                                                  color: Colors.green,
+                                                  height: 3,
+                                                ),
+                                              ),
+                                            IconButton(
+                                              icon: Icon(Icons.delete,
+                                                  color: Colors.red),
+                                              onPressed: () =>
+                                                  controller.removeAudio(index),
+                                            ),
+                                          ],
+                                        );
+                                      }).toList(),
+                                    ),
+                            ],
+                          ),
+                        ),
 
                         SB.h(20),
                         GestureDetector(
