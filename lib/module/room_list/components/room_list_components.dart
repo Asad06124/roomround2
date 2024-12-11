@@ -28,10 +28,10 @@ class RoomListComponents {
           ),
           RoomMapComponents.radioButton<YesNo>(
             context,
-            YesNo.no,
+            YesNo.no, // AssignedValue
             selectedValue, // SelectedValue
             AppStrings.na, // Title
-            (value) {},
+            (value) => onTaskValueChanged(value),
             width: 0,
           ),
         ],

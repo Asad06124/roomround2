@@ -1,3 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:audioplayers/audioplayers.dart';
+
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/components/app_image.dart';
@@ -902,15 +905,107 @@ class SeeThreadDialouge extends StatelessWidget {
   }
 }
 
-class AssignedThreadDialouge extends StatelessWidget {
-  const AssignedThreadDialouge({super.key, this.ticket, this.onDeleteTap});
+class AudioController extends GetxController {
+  AudioPlayer player = AudioPlayer();
+  RxBool isPlaying = false.obs;
+  int? currentlyPlayingIndex;
+
+  AudioController();
+  Future<void> playAudio(String audioUrl, int index) async {
+    print('xxxxxxxxxxx$audioUrl');
+    if (currentlyPlayingIndex == index && isPlaying.value) {
+      await stopAudio();
+      return;
+    }
+
+    if (currentlyPlayingIndex != null) {
+      await stopAudio();
+    }
+
+    currentlyPlayingIndex = index;
+
+    try {
+      print('Playing audio from URL: $audioUrl');
+
+      await player.setAudioContext(AudioContext(
+        android: AudioContextAndroid(
+          isSpeakerphoneOn: false,
+          stayAwake: false,
+          audioMode: AndroidAudioMode.normal,
+          audioFocus: AndroidAudioFocus.gain,
+          usageType: AndroidUsageType.media,
+          contentType: AndroidContentType.music,
+        ),
+      ));
+
+      // Play audio
+      await player.play(
+          UrlSource('https://samplelib.com/lib/preview/mp3/sample-3s.mp3'));
+
+      // Listen for completion
+      player.onPlayerComplete.listen((_) {
+        isPlaying.value = false;
+        currentlyPlayingIndex = null;
+      });
+
+      isPlaying.value = true;
+      update();
+    } catch (e) {
+      debugPrint("Error playing audio: $e");
+    }
+    update();
+  }
+
+  Future<void> stopAudio() async {
+    try {
+      await player.stop();
+    } catch (e) {
+      debugPrint("Error stopping audio: $e");
+    }
+    isPlaying.value = false;
+    currentlyPlayingIndex = null;
+    update();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    player.dispose();
+    update();
+  }
+}
+
+class AssignedThreadDialouge extends StatefulWidget {
+  const AssignedThreadDialouge({
+    super.key,
+    this.ticket,
+    this.onDeleteTap,
+  });
   final Ticket? ticket;
   final GestureTapCallback? onDeleteTap;
+  @override
+  State<AssignedThreadDialouge> createState() => _AssignedThreadDialougeState();
+}
+
+class _AssignedThreadDialougeState extends State<AssignedThreadDialouge> {
+  late AudioController audioController;
+  @override
+  void initState() {
+    super.initState();
+    audioController = AudioController();
+  }
+
+  @override
+  void dispose() {
+    audioController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    bool isUrgent = ticket?.isUrgent == true;
-    DateTime? dateTime = ticket?.assignDate?.toDateTime();
+    const String baseUrl = 'http://roomroundapis.rootpointers.net/';
+    bool isUrgent = widget.ticket?.isUrgent == true;
+    DateTime? dateTime = widget.ticket?.assignDate?.toDateTime();
     String? date, time;
     if (dateTime != null) {
       date = dateTime.format();
@@ -931,7 +1026,7 @@ class AssignedThreadDialouge extends StatelessWidget {
           children: [
             DialougeComponents.closeBtn(
               isDeleteBtn: true,
-              onDelete: onDeleteTap,
+              onDelete: widget.onDeleteTap,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -942,8 +1037,8 @@ class AssignedThreadDialouge extends StatelessWidget {
                   DialougeComponents.labelTile(
                     context,
                     isUnderline: false,
-                    title: ticket?.ticketName,
-                    status: ticket?.status,
+                    title: widget.ticket?.ticketName,
+                    status: widget.ticket?.status,
                     statusColor: AppColors.gry,
                     titleStyle: context.bodyLarge!.copyWith(
                       color: AppColors.textGrey,
@@ -960,8 +1055,83 @@ class AssignedThreadDialouge extends StatelessWidget {
                     ),
                   ),
                   SB.h(5),
-                  DialougeComponents.detailWithBorder(context, ticket?.comment),
+
+                  DialougeComponents.detailWithBorder(
+                      context, widget.ticket?.comment),
                   //Images
+                  widget.ticket!.ticketMedia!.isNotEmpty
+                      ? Column(
+                          children: [
+                            SizedBox(
+                              height: 80,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount:
+                                    widget.ticket?.ticketMedia?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  final imageUrl =
+                                      '$baseUrl${widget.ticket!.ticketMedia![index].imagekey}';
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CachedNetworkImage(
+                                      imageUrl: imageUrl,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Center(
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.black,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox(),
+                  widget.ticket?.ticketMedia?.isNotEmpty ?? false
+                      ? Column(
+                          children: widget.ticket!.ticketMedia!
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                            final media = entry.value;
+                            final index = entry.key;
+                            final audioUrl = '$baseUrl${media.audioKey}';
+
+                            return Row(
+                              children: [
+                                Obx(() {
+                                  return IconButton(
+                                    icon: Icon(
+                                      audioController.isPlaying.value &&
+                                              audioController
+                                                      .currentlyPlayingIndex ==
+                                                  index
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      color: Colors.green,
+                                    ),
+                                    onPressed: () async {
+                                      if (audioUrl.isNotEmpty) {
+                                        await audioController.playAudio(
+                                            audioUrl, index);
+                                      } else {
+                                        debugPrint(
+                                            'Invalid audio URL for index $index');
+                                      }
+                                    },
+                                  );
+                                }),
+                                Text('Audio ${index + 1}'),
+                              ],
+                            );
+                          }).toList(),
+                        )
+                      : const SizedBox(),
                   SB.h(20),
                   Text(
                     AppStrings.directory,
@@ -981,8 +1151,10 @@ class AssignedThreadDialouge extends StatelessWidget {
                     ),
                   ),
                   SB.h(15),
-                  DialougeComponents.nameTile(context,
-                      name: ticket?.assignToName),
+                  DialougeComponents.nameTile(
+                    context,
+                    name: widget.ticket?.assignToName,
+                  ),
                   SB.h(15),
                   DialougeComponents.dateTile(context,
                       label: AppStrings.assignedDate, date: date, time: time),

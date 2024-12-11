@@ -2,6 +2,7 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/create_ticket/components/create_ticket_components.dart';
 import 'package:roomrounds/module/create_ticket/controller/create_ticket_controller.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 
 class CreateTicketView extends StatelessWidget with Validators {
   const CreateTicketView({super.key});
@@ -185,51 +186,96 @@ class CreateTicketView extends StatelessWidget with Validators {
                                   ? SizedBox()
                                   : Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Wrap(
-                                        spacing: 10.0,
-                                        runSpacing: 10.0,
-                                        children: controller.selectedImages
-                                            .map((image) {
-                                          int index = controller.selectedImages
-                                              .indexOf(image);
-                                          return Stack(
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  // Navigator.push(
-                                                  //   context,
-                                                  //   MaterialPageRoute(
-                                                  //     builder: (context) =>
-                                                  //         FullImageView(image: image),
-                                                  //   ),
-                                                  // );
-                                                },
-                                                child: Image.file(
-                                                  image,
-                                                  width: 50,
-                                                  height: 50,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                              Positioned(
-                                                right: 0,
-                                                child: GestureDetector(
-                                                  onTap: () => controller
-                                                      .removeImage(index),
-                                                  child: CircleAvatar(
-                                                    radius: 8,
-                                                    backgroundColor: Colors.red,
-                                                    child: Icon(
-                                                      Icons.close,
-                                                      color: Colors.white,
-                                                      size: 12,
+                                      child: Container(
+                                        width: MediaQuery.sizeOf(context).width,
+                                        child: Wrap(
+                                          spacing: 10.0,
+                                          runSpacing: 10.0,
+                                          children: controller.selectedImages
+                                              .map((image) {
+                                            int index = controller
+                                                .selectedImages
+                                                .indexOf(image);
+                                            return Stack(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    // Navigator.push(
+                                                    //   context,
+                                                    //   MaterialPageRoute(
+                                                    //     builder: (context) =>
+                                                    //         FullImageView(image: image),
+                                                    //   ),
+                                                    // );
+                                                  },
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              FullScreenWidget(
+                                                            disposeLevel:
+                                                                DisposeLevel
+                                                                    .Low,
+                                                            child: Hero(
+                                                              tag: "",
+                                                              child: ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            16),
+                                                                child:
+                                                                    Image.file(
+                                                                  image,
+                                                                  fit: BoxFit
+                                                                      .contain,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          //     FullScreenWidget(
+                                                          //   disposeLevel:
+                                                          //       DisposeLevel
+                                                          //           .Low,
+                                                          //   child: Image.file(
+                                                          //     image,
+                                                          //     fit: BoxFit
+                                                          //         .contain,
+                                                          //   ),
+                                                          // ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Image.file(
+                                                      image,
+                                                      width: 92,
+                                                      height: 92,
+                                                      fit: BoxFit.cover,
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          );
-                                        }).toList(),
+                                                Positioned(
+                                                  right: 0,
+                                                  child: GestureDetector(
+                                                    onTap: () => controller
+                                                        .removeImage(index),
+                                                    child: CircleAvatar(
+                                                      radius: 8,
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      child: Icon(
+                                                        Icons.close,
+                                                        color: Colors.white,
+                                                        size: 12,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }).toList(),
+                                        ),
                                       ),
                                     ),
                             ],
@@ -350,7 +396,8 @@ class CreateTicketView extends StatelessWidget with Validators {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Assets.icons.cameraAlt.svg(height: 23),
+                                        Assets.icons.locationPinDrop
+                                            .svg(height: 40),
                                         SB.w(10),
                                         Text(AppStrings.selectFromMap,
                                             style: headingTextStyle),

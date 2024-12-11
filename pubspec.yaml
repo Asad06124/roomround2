@@ -30,12 +30,14 @@ environment:
 dependencies:
   animated_custom_dropdown: ^3.1.1
   audio_waveforms: ^1.2.0
+  audioplayers: ^6.1.0
   cached_network_image: ^3.4.1
   camera: ^0.11.0+2
   connectivity_plus: ^6.1.0
   cool_dropdown: ^2.1.1
   cupertino_icons: ^1.0.8
   dots_indicator: ^3.0.0
+  ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
   flutter_gen: ^5.8.0
@@ -43,6 +45,7 @@ dependencies:
   flutter_sound: ^9.17.8
   flutter_svg: ^2.0.10
   fluttertoast: ^8.2.8
+  full_screen_image: ^2.0.0
   get: ^4.6.6
   get_storage: ^2.1.1
   http: ^1.2.2

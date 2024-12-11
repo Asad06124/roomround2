@@ -5,6 +5,7 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -105,6 +106,30 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     update();
   }
 
+  // Future<void> startRecording() async {
+  //   if (selectedAudio.length >= 3) {
+  //     CustomOverlays.showToastMessage(
+  //       message: "You can only record up to 3 audios.",
+  //     );
+  //     return;
+  //   }
+
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final path =
+  //       '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+  //   try {
+  //     await _recorder.startRecorder(toFile: path);
+  //     _recordedAudioPath = path;
+  //     isRecording = true;
+  //     update();
+  //   } catch (e) {
+  //     debugPrint("Error starting recorder: $e");
+  //     CustomOverlays.showToastMessage(
+  //       message: "Failed to start recording. Please try again.",
+  //     );
+  //   }
+  // }
   Future<void> startRecording() async {
     if (selectedAudio.length >= 3) {
       CustomOverlays.showToastMessage(
@@ -118,7 +143,10 @@ class CreateTicketController extends GetxController with EmployeeMixin {
         '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
 
     try {
-      await _recorder.startRecorder(toFile: path);
+      // Specify codec for MP3
+      await _recorder.startRecorder(
+        toFile: path,
+      );
       _recordedAudioPath = path;
       isRecording = true;
       update();
