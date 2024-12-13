@@ -80,6 +80,7 @@ class APIFunction {
         request = multipartRequest;
       } else {
         // Standard request for non-file data
+
         var normalRequest = http.Request(apiMethod, uri);
         normalRequest.body = encodedData;
         request = normalRequest;

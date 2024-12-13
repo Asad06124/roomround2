@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:audioplayers/audioplayers.dart';
-
+import 'package:just_audio/just_audio.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/components/app_image.dart';
@@ -905,14 +904,151 @@ class SeeThreadDialouge extends StatelessWidget {
   }
 }
 
+// class AudioController extends GetxController {
+//   AudioPlayer player = AudioPlayer();
+//   RxBool isPlaying = false.obs;
+//   int? currentlyPlayingIndex;
+
+//   AudioController();
+//   Future<void> playAudio(String audioUrl, int index) async {
+//     print('xxxxxxxxxxx$audioUrl');
+//     if (currentlyPlayingIndex == index && isPlaying.value) {
+//       await stopAudio();
+//       return;
+//     }
+
+//     if (currentlyPlayingIndex != null) {
+//       await stopAudio();
+//     }
+
+//     currentlyPlayingIndex = index;
+
+//     try {
+//       print('Playing audio from URL: $audioUrl');
+
+//       await player.setAudioContext(AudioContext(
+//         android: AudioContextAndroid(
+//           isSpeakerphoneOn: false,
+//           stayAwake: false,
+//           audioMode: AndroidAudioMode.normal,
+//           audioFocus: AndroidAudioFocus.gain,
+//           usageType: AndroidUsageType.media,
+//           contentType: AndroidContentType.music,
+//         ),
+//       ));
+
+//       // Play audio
+//       await player.play(
+//           UrlSource('https://samplelib.com/lib/preview/mp3/sample-3s.mp3'));
+
+//       // Listen for completion
+//       player.onPlayerComplete.listen((_) {
+//         isPlaying.value = false;
+//         currentlyPlayingIndex = null;
+//       });
+
+//       isPlaying.value = true;
+//       update();
+//     } catch (e) {
+//       debugPrint("Error playing audio: $e");
+//     }
+//     update();
+//   }
+
+//   Future<void> stopAudio() async {
+//     try {
+//       await player.stop();
+//     } catch (e) {
+//       debugPrint("Error stopping audio: $e");
+//     }
+//     isPlaying.value = false;
+//     currentlyPlayingIndex = null;
+//     update();
+//   }
+
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     player.dispose();
+//     update();
+//   }
+// }
 class AudioController extends GetxController {
-  AudioPlayer player = AudioPlayer();
+  final AudioPlayer player = AudioPlayer(); // Using just_audio player
   RxBool isPlaying = false.obs;
   int? currentlyPlayingIndex;
 
   AudioController();
+
+  // Future<void> playAudio(String audioUrl, int index) async {
+  //   print('Playing audio from URL: $audioUrl');
+
+  //   if (currentlyPlayingIndex == index && isPlaying.value) {
+  //     await stopAudio();
+  //     return;
+  //   }
+
+  //   if (currentlyPlayingIndex != null) {
+  //     await stopAudio();
+  //   }
+
+  //   currentlyPlayingIndex = index;
+
+  //   try {
+  //     await player.setAudioSource(AudioSource.uri(Uri.parse(audioUrl)));
+
+  //     await player.play();
+
+  //     player.playerStateStream.listen((playerState) {
+  //       if (playerState.processingState == ProcessingState.completed) {
+  //         isPlaying.value = false;
+  //         currentlyPlayingIndex = null;
+  //       }
+  //     });
+
+  //     isPlaying.value = true;
+  //   } catch (e) {
+  //     debugPrint("Error playing audio: $e");
+  //   }
+  //   update();
+  // }
+
+  // // Future<void> playAudio(String audioUrl) async {
+  // //   try {
+  // //     // Set the audio source using the URL
+  // //     await player.setAudioSource(AudioSource.uri(Uri.parse(
+  // //         'http://roomroundapis.rootpointers.net/TicketAudio/bcad8d48-3d0f-4b6c-b710-d641baf1eabc.aac')));
+
+  // //     // Start playing
+  // //     await player.play();
+
+  // //     // Update playing state
+  // //     isPlaying.value = true;
+  // //   } catch (e) {
+  // //     debugPrint("Error playing audio: $e");
+
+  // //     // Show an error message to the user
+  // //     Get.snackbar(
+  // //       "Playback Error",
+  // //       "Could not play audio. Please check your internet or audio format.",
+  // //     );
+  // //   }
+  // // }
+
+  // Future<void> stopAudio() async {
+  //   try {
+  //     await player.stop();
+  //   } catch (e) {
+  //     debugPrint("Error stopping audio: $e");
+  //   }
+  //   isPlaying.value = false;
+  //   currentlyPlayingIndex = null;
+  //   update();
+  // }
+
   Future<void> playAudio(String audioUrl, int index) async {
-    print('xxxxxxxxxxx$audioUrl');
+    print('Playing audio from URL: $audioUrl');
+
     if (currentlyPlayingIndex == index && isPlaying.value) {
       await stopAudio();
       return;
@@ -925,35 +1061,22 @@ class AudioController extends GetxController {
     currentlyPlayingIndex = index;
 
     try {
-      print('Playing audio from URL: $audioUrl');
+      await player.setAudioSource(AudioSource.uri(Uri.parse(audioUrl)));
 
-      await player.setAudioContext(AudioContext(
-        android: AudioContextAndroid(
-          isSpeakerphoneOn: false,
-          stayAwake: false,
-          audioMode: AndroidAudioMode.normal,
-          audioFocus: AndroidAudioFocus.gain,
-          usageType: AndroidUsageType.media,
-          contentType: AndroidContentType.music,
-        ),
-      ));
+      await player.play();
 
-      // Play audio
-      await player.play(
-          UrlSource('https://samplelib.com/lib/preview/mp3/sample-3s.mp3'));
-
-      // Listen for completion
-      player.onPlayerComplete.listen((_) {
-        isPlaying.value = false;
-        currentlyPlayingIndex = null;
+      player.playerStateStream.listen((playerState) {
+        if (playerState.processingState == ProcessingState.completed) {
+          isPlaying.value = false;
+          currentlyPlayingIndex = null;
+        }
       });
 
       isPlaying.value = true;
-      update();
+      update(); // Ensure the controller is updated to trigger UI change
     } catch (e) {
       debugPrint("Error playing audio: $e");
     }
-    update();
   }
 
   Future<void> stopAudio() async {
@@ -964,14 +1087,13 @@ class AudioController extends GetxController {
     }
     isPlaying.value = false;
     currentlyPlayingIndex = null;
-    update();
+    update(); // Ensure the controller is updated to trigger UI change
   }
 
   @override
   void dispose() {
-    super.dispose();
     player.dispose();
-    update();
+    super.dispose();
   }
 }
 
@@ -1100,7 +1222,8 @@ class _AssignedThreadDialougeState extends State<AssignedThreadDialouge> {
                               .map((entry) {
                             final media = entry.value;
                             final index = entry.key;
-                            final audioUrl = '$baseUrl${media.audioKey}';
+                            final audioUrl =
+                                'http://roomroundapis.rootpointers.net/${media.audioKey}';
 
                             return Row(
                               children: [
@@ -1117,6 +1240,8 @@ class _AssignedThreadDialougeState extends State<AssignedThreadDialouge> {
                                     ),
                                     onPressed: () async {
                                       if (audioUrl.isNotEmpty) {
+                                        print(
+                                            'Attempting to play audio: $audioUrl');
                                         await audioController.playAudio(
                                             audioUrl, index);
                                       } else {

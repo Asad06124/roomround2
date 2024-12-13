@@ -5,6 +5,7 @@ class Urls {
   // Authentication
   static const String _auth = "/auth";
   static const String login = "$_auth/login";
+  static const String forget = "$_auth/forgetPassword?email=";
 
   // Rooms
   // static const String _room = "/room";

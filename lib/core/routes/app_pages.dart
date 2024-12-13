@@ -1,4 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/authentications/views/forget_view.dart';
 import 'package:roomrounds/module/create_ticket/views/create_ticket_view.dart';
 import 'package:roomrounds/module/profile/change_password/view/change_password_view.dart';
 import 'package:roomrounds/module/profile/views/edit_profile_view.dart';
@@ -22,6 +23,14 @@ class AppPages {
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => const LoginView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.FORGET,
+      page: () => const ForgetView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

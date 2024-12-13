@@ -3,6 +3,7 @@
 abstract class AppRoutes {
   static const SPLASH_SCREEN = "/";
   static const LOGIN = "/login";
+  static const FORGET = "/forget";
   static const HOME = "/home";
   static const DASHBOARD = '/dashboard';
   static const TEAM_MEMBERS = '/team_members';
