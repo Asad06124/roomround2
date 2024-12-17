@@ -182,6 +182,7 @@ class APIFunction {
     if (customHeaders != null && customHeaders.isNotEmpty) {
       headers.addAll(customHeaders);
     }
+    log('$token');
     // customLogger("Headers: $headers");
     return headers;
   }

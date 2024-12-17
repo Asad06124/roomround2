@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:intl/intl.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/room/room_model.dart';
@@ -16,7 +19,8 @@ class RoomTasksController extends GetxController {
   bool hasData = false;
   Rx<YesNo?> urgent = Rx<YesNo?>(null);
   Rx<Employee?> assignedTo = Rx<Employee?>(null);
-
+  List<File> selectedImages = <File>[];
+  List<File> selectedAudio = <File>[];
   List<RoomTask> _tasks = [
     /*   RoomTask(
       roomId: 11,
@@ -276,21 +280,21 @@ class RoomTasksController extends GetxController {
 
   void _createNewTicket(RoomTask? task) async {
     // _updateHasData(false);
-
-    String comments = _commentsController.text.trim();
     int? assignedToId = assignedTo.value?.userId;
+    String comments = _commentsController.text.trim();
     bool isUrgent = urgent.value == YesNo.yes;
     int? taskId = task?.assignTemplateTaskId;
     int? roomId = getRoomIdByTask(task);
+    final String formattedDate =
+        DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
 
-    Map<String, dynamic> data = {
-      // "assignDate": "2024-09-29T12:54:33.858Z",
-      "statusId": 301,
-      "comment": comments,
-      "isUrgent": isUrgent,
-      "assignTo": assignedToId,
-      "roomId": roomId,
-      "assignTemplateTaskId": taskId,
+    Map<String, String> data = {
+      "RoomId": '$roomId',
+      "AssignTemplateTaskId": '$taskId',
+      "AssignDate": formattedDate,
+      "Comment": comments,
+      "IsUrgent": '$isUrgent',
+      "AssignTo": '$assignedToId',
     };
 
     var resp = await APIFunction.call(
@@ -300,6 +304,10 @@ class RoomTasksController extends GetxController {
       showLoader: true,
       showErrorMessage: true,
       showSuccessMessage: true,
+      audioKey: 'AudiosList',
+      imageKey: 'ImagesList',
+      imageListFile: selectedImages,
+      audioListFile: selectedAudio,
     );
 
     if (resp != null && resp is bool) {

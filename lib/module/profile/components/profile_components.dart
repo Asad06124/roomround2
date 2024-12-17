@@ -107,7 +107,9 @@ class ProfileComponents {
                       bottom: 3,
                       right: 0,
                       child: InkWell(
-                        onTap: profileController.updateUserImage,
+                        onTap: () {
+                          profileController.updateUserImage(context);
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 8),

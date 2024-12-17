@@ -97,14 +97,62 @@ class ProfileController extends GetxController {
     }
   }
 
-  void updateUserImage() async {
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+  void updateUserImage(BuildContext context) async {
+    // Show dialog to choose between camera or gallery
+    final ImageSource? source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          bottom: true,
+          child: Wrap(
+            children: [
+              Container(
+                color: AppColors.primary,
+                child: ListTile(
+                  leading:
+                      const Icon(Icons.photo_library, color: AppColors.white),
+                  title: Text(
+                    'Pick from Gallery',
+                    style: TextStyle(color: AppColors.white),
+                  ),
+                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                ),
+              ),
+              Container(
+                color: AppColors.primary,
+                child: ListTile(
+                  leading: const Icon(Icons.camera_alt, color: AppColors.white),
+                  title: const Text(
+                    'Take a Picture',
+                    style: TextStyle(color: AppColors.white),
+                  ),
+                  onTap: () => Navigator.pop(
+                    context,
+                    ImageSource.camera,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (source == null) {
+      // User dismissed the modal
+      CustomOverlays.showToastMessage(
+        message: 'No option selected.',
+        isSuccess: false,
+      );
+      return;
+    }
+
+    // Pick image from the selected source
+    final XFile? pickedFile = await _picker.pickImage(source: source);
 
     if (pickedFile != null) {
       try {
         final bytes = await pickedFile.readAsBytes();
-
         String base64Image = base64Encode(bytes);
 
         // Make API call to update image
@@ -137,6 +185,46 @@ class ProfileController extends GetxController {
       );
     }
   }
+  // void updateUserImage() async {
+  //   final XFile? pickedFile =
+  //       await _picker.pickImage(source: ImageSource.gallery);
+
+  //   if (pickedFile != null) {
+  //     try {
+  //       final bytes = await pickedFile.readAsBytes();
+
+  //       String base64Image = base64Encode(bytes);
+
+  //       // Make API call to update image
+  //       var resp = await APIFunction.call(
+  //         APIMethods.post,
+  //         Urls.updateUser,
+  //         dataMap: {
+  //           "userName": userName,
+  //           "email": email,
+  //           "image": base64Image,
+  //         },
+  //         showLoader: true,
+  //         showErrorMessage: true,
+  //         showSuccessMessage: true,
+  //       );
+
+  //       if (resp != null && resp is bool && resp == true) {
+  //         fetchUserProfile();
+  //       }
+  //     } catch (e) {
+  //       CustomOverlays.showToastMessage(
+  //         message: "Failed to process the image. Error: $e",
+  //         isSuccess: false,
+  //       );
+  //     }
+  //   } else {
+  //     CustomOverlays.showToastMessage(
+  //       message: 'No image selected.',
+  //       isSuccess: false,
+  //     );
+  //   }
+  // }
 
   void showLogoutDialog() {
     String description = AppStrings.areYouSureWantToLogout;
