@@ -2,7 +2,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_map/controller/room_map_controller.dart';
 
 class RoomMapDetailsView extends StatelessWidget {
-  const RoomMapDetailsView({Key? key}) : super(key: key);
+  const RoomMapDetailsView({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:roomrounds/module/message/controller/message_controller.dart';
 
 // ignore: must_be_immutable
 class ChatView extends StatelessWidget {
-  ChatView({Key? key}) : super(key: key);
+  ChatView({super.key});
   LayerLink link = LayerLink();
   @override
   Widget build(BuildContext context) {

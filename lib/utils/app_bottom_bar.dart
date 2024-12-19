@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppBottomBar extends StatefulWidget {
   const AppBottomBar({
-    Key? key,
+    super.key,
     required this.activeIndex,
     this.onTap,
     this.tabCurve = Curves.linearToEaseOut,
@@ -29,8 +29,7 @@ class AppBottomBar extends StatefulWidget {
         assert(activeIcons.length == inactiveIcons.length,
             "activeIcons.length and inactiveIcons.length must be equal!"),
         assert(activeIcons.length > activeIndex,
-            "activeIcons.length > activeIndex"),
-        super(key: key);
+            "activeIcons.length > activeIndex");
 
   final double height;
 

@@ -1,3 +1,7 @@
+// ignore_for_file: unused_local_variable
+
+import 'dart:io';
+
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/create_ticket/components/create_ticket_components.dart';
@@ -98,14 +102,6 @@ class CreateTicketView extends StatelessWidget with Validators {
                         SB.w(context.width),
                         Text(AppStrings.description, style: headingTextStyle),
                         SB.h(10),
-                        // CustomTextField(
-                        //   maxLines: 8,
-                        //   borderRadius: 16,
-                        //   validator: (v) => null,
-                        //   borderColor: AppColors.gry,
-                        //   hintText: AppStrings.writeDescription,
-                        //   controller: controller.descriptionController,
-                        // ),
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -140,16 +136,36 @@ class CreateTicketView extends StatelessWidget with Validators {
                                   children: [
                                     Row(
                                       children: [
+                                        controller
+                                                .recorderController.isRecording
+                                            ? AudioWaveforms(
+                                                size: Size(80, 50),
+                                                waveStyle: WaveStyle(
+                                                  showMiddleLine: false,
+                                                  extendWaveform: true,
+                                                  durationTextPadding: 0.0,
+                                                  waveThickness: 2.0,
+                                                  waveColor: Colors.green,
+                                                  waveCap: StrokeCap.round,
+                                                ),
+                                                recorderController: controller
+                                                    .recorderController,
+                                              )
+                                            : SizedBox(),
                                         IconButton(
                                           icon: Icon(
-                                            controller.isRecording
+                                            controller.recorderController
+                                                    .isRecording
                                                 ? Icons.stop
                                                 : Icons.keyboard_voice_sharp,
-                                            color: controller.isRecording
+                                            color: controller.recorderController
+                                                    .isRecording
                                                 ? Colors.red
                                                 : AppColors.gry,
                                           ),
-                                          onPressed: controller.isRecording
+                                          onPressed: controller
+                                                  .recorderController
+                                                  .isRecording
                                               ? controller.stopRecording
                                               : controller.startRecording,
                                         ),
@@ -186,7 +202,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                                   ? SizedBox()
                                   : Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Container(
+                                      child: SizedBox(
                                         width: MediaQuery.sizeOf(context).width,
                                         child: Wrap(
                                           spacing: 10.0,
@@ -199,15 +215,7 @@ class CreateTicketView extends StatelessWidget with Validators {
                                             return Stack(
                                               children: [
                                                 InkWell(
-                                                  onTap: () {
-                                                    // Navigator.push(
-                                                    //   context,
-                                                    //   MaterialPageRoute(
-                                                    //     builder: (context) =>
-                                                    //         FullImageView(image: image),
-                                                    //   ),
-                                                    // );
-                                                  },
+                                                  onTap: () {},
                                                   child: InkWell(
                                                     onTap: () {
                                                       Navigator.push(
@@ -234,16 +242,6 @@ class CreateTicketView extends StatelessWidget with Validators {
                                                               ),
                                                             ),
                                                           ),
-                                                          //     FullScreenWidget(
-                                                          //   disposeLevel:
-                                                          //       DisposeLevel
-                                                          //           .Low,
-                                                          //   child: Image.file(
-                                                          //     image,
-                                                          //     fit: BoxFit
-                                                          //         .contain,
-                                                          //   ),
-                                                          // ),
                                                         ),
                                                       );
                                                     },
@@ -294,78 +292,77 @@ class CreateTicketView extends StatelessWidget with Validators {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              controller.isRecording
-                                  ? Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Recording........',
-                                        style: TextStyle(color: AppColors.gry),
-                                      ),
-                                    )
-                                  : SizedBox(),
-                              controller.selectedAudio.isEmpty
-                                  ? const SizedBox()
-                                  : Column(
-                                      children: controller.selectedAudio
-                                          .asMap()
-                                          .entries
-                                          .map((entry) {
-                                        int index = entry.key;
-                                        return Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            IconButton(
-                                              icon: Icon(
-                                                controller.currentlyPlayingIndex ==
-                                                            index &&
-                                                        controller.isPlaying
-                                                    ? Icons.pause
-                                                    : Icons.play_arrow,
+                              Column(
+                                children: controller.selectedAudio
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                  int index = entry.key;
+                                  File audioFile = entry.value;
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(
+                                              controller.currentlyPlayingIndex ==
+                                                      index
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                              color: Colors.green,
+                                            ),
+                                            onPressed: () => controller
+                                                .playAudio(audioFile, index),
+                                          ),
+                                          if (controller
+                                                  .currentlyPlayingIndex ==
+                                              index)
+                                            Expanded(
+                                              child: AudioFileWaveforms(
+                                                size: Size.fromHeight(20),
+                                                padding: EdgeInsets.all(0.0),
+                                                margin: EdgeInsets.all(0.0),
+                                                playerController:
+                                                    controller.playerController,
+                                                enableSeekGesture: true,
+                                                waveformType: WaveformType.long,
+                                                playerWaveStyle:
+                                                    PlayerWaveStyle(
+                                                  spacing: 10,
+                                                  waveThickness: 2.0,
+                                                  liveWaveColor: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          if (controller
+                                                  .currentlyPlayingIndex !=
+                                              index)
+                                            Expanded(
+                                              child: Container(
+                                                width:
+                                                    MediaQuery.sizeOf(context)
+                                                        .width,
+                                                height: 2.0,
                                                 color: Colors.green,
                                               ),
-                                              onPressed: () =>
-                                                  controller.playAudio(index),
                                             ),
-                                            if (controller
-                                                    .currentlyPlayingIndex ==
-                                                index)
-                                              AudioWaveforms(
-                                                size: const Size(200, 40),
-                                                waveStyle: WaveStyle(
-                                                  showMiddleLine: false,
-                                                  extendWaveform: true,
-                                                  durationTextPadding: 0.0,
-                                                  waveThickness: 2.0,
-                                                  waveColor: Colors.green,
-                                                  waveCap: StrokeCap.round,
-                                                ),
-                                                recorderController:
-                                                    controller.playerController,
-                                              ),
-                                            if (controller
-                                                    .currentlyPlayingIndex !=
-                                                index)
-                                              Expanded(
-                                                child: Container(
-                                                  color: Colors.green,
-                                                  height: 3,
-                                                ),
-                                              ),
-                                            IconButton(
-                                              icon: Icon(Icons.delete,
-                                                  color: Colors.red),
-                                              onPressed: () =>
-                                                  controller.removeAudio(index),
-                                            ),
-                                          ],
-                                        );
-                                      }).toList(),
-                                    ),
+                                          IconButton(
+                                            icon: Icon(Icons.delete,
+                                                color: Colors.red),
+                                            onPressed: () =>
+                                                controller.deleteAudio(index),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
                             ],
                           ),
                         ),
-
                         SB.h(20),
                         GestureDetector(
                           onTap: controller.goToMapView,

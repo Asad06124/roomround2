@@ -108,6 +108,7 @@ class ProfileComponents {
                       right: 0,
                       child: InkWell(
                         onTap: () {
+                          // AppGlobals.requestPermissions();
                           profileController.updateUserImage(context);
                         },
                         child: Container(

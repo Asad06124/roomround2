@@ -2,7 +2,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/settings/controller/settings_controller.dart';
 
 class SettingsView extends StatelessWidget {
-  const SettingsView({Key? key}) : super(key: key);
+  const SettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {

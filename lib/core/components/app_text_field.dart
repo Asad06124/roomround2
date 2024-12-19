@@ -4,7 +4,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
-    Key? key,
+    super.key,
     this.title,
     // required this.hint,
     this.controller,
@@ -35,7 +35,7 @@ class CustomTextField extends StatefulWidget {
     this.hintText,
     this.sufficIconBackgroundColor = AppColors.primary,
     this.borderRadius = 9.0,
-  }) : super(key: key);
+  });
 
   final String? title, hintText;
   final TextEditingController? controller;

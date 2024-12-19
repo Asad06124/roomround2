@@ -1,7 +1,6 @@
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/notifications/notification_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/constants/utilities.dart';
 
 class NotificationController extends GetxController {
   // bool _isClearAll = false;

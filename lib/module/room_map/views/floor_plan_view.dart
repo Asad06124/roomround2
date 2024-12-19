@@ -1,4 +1,3 @@
-import 'package:flutter/rendering.dart';
 import 'package:roomrounds/core/components/app_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
@@ -34,8 +33,8 @@ class FloorPlanView extends StatelessWidget {
         notificationActive: false,
         showNotificationIcon: false,
         actionWidget: TextButton(
-          child: Text(AppStrings.done, style: titleTextStyle),
           onPressed: onDoneTap,
+          child: Text(AppStrings.done, style: titleTextStyle),
         ),
       ),
       body: Center(
@@ -65,7 +64,8 @@ class FloorPlanView extends StatelessWidget {
                             width: context.width,
                             height: context.height,
                             fit: BoxFit.cover,
-                            errorWidget: (p0, p1, p2) => _mapPlaceHolderImage(p0),
+                            errorWidget: (p0, p1, p2) =>
+                                _mapPlaceHolderImage(p0),
                           )
                         : _mapPlaceHolderImage(context),
                   ),

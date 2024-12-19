@@ -135,12 +135,11 @@ class CustomePainterDialouge extends StatelessWidget {
   GestureTapCallback? onTap;
   Widget child;
   CustomePainterDialouge(
-      {Key? key,
+      {super.key,
       required this.link,
       required this.controller,
       this.onTap,
-      required this.child})
-      : super(key: key);
+      required this.child});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,4 @@
 import 'package:roomrounds/core/apis/api_function.dart';
-import 'package:roomrounds/core/apis/models/user_data/user_model.dart';
-import 'package:roomrounds/core/constants/controllers.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class LoginController extends GetxController {

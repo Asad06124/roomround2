@@ -2,7 +2,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/dashboard/controller/dashboard_controller.dart';
 
 class DashboardView extends StatelessWidget {
-  const DashboardView({Key? key}) : super(key: key);
+  const DashboardView({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,14 +1,12 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
-import 'package:full_screen_image/full_screen_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/department/department_model.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
@@ -17,7 +15,6 @@ import 'package:roomrounds/core/extensions/string_extension.dart';
 import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/module/room_map/views/floor_plan_view.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
-import 'package:http/http.dart' as http;
 
 class CreateTicketController extends GetxController with EmployeeMixin {
   YesNo? _urgent;
@@ -40,178 +37,93 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   final ImagePicker _picker = ImagePicker();
   List<File> selectedImages = <File>[];
   List<File> selectedAudio = <File>[];
-  final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
-  final FlutterSoundPlayer _player = FlutterSoundPlayer();
-  String? _recordedAudioPath;
-  bool isRecording = false;
-  bool isPlaying = false;
-  String? recordedAudioPath;
+  String? recordedFilePath;
   int? _currentlyPlayingIndex;
   int? get currentlyPlayingIndex => _currentlyPlayingIndex;
-  final RecorderController playerController = RecorderController();
+  final RecorderController recorderController = RecorderController();
+  final PlayerController playerController = PlayerController();
+
   @override
   void onInit() {
     super.onInit();
     _initialEmployeeDepartment();
     _resetSelectedDepartment();
     _fetchDepartments();
-    _initRecorder();
-    _initPlayer();
+    recorderController.checkPermission();
+    playerController.onCompletion.listen((_) {
+      playerController.stopPlayer();
+      _currentlyPlayingIndex = null;
+      update();
+    });
+
+    playerController.setFinishMode(finishMode: FinishMode.stop);
+    playerController.preparePlayer(path: recordedFilePath.toString());
   }
 
-  Future<void> playAudio(int index) async {
-    if (_currentlyPlayingIndex == index && isPlaying) {
-      await stopAudio();
-      return;
+  @override
+  void dispose() {
+    recorderController.dispose();
+    playerController.dispose();
+    super.dispose();
+  }
+
+  Future<void> startRecording() async {
+    if (recorderController.hasPermission) {
+      if (selectedAudio.length >= 3) {
+        CustomOverlays.showToastMessage(
+          message: 'You can only record up to 3 audios.',
+          isSuccess: true,
+        );
+        return;
+      }
+      final directory = await getApplicationDocumentsDirectory();
+      final path =
+          '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.aac';
+      try {
+        await recorderController.record(path: path);
+        recordedFilePath = path;
+        update();
+      } catch (e) {
+        debugPrint("Error starting recording: $e");
+      }
     }
+  }
 
-    if (_currentlyPlayingIndex != null) {
-      await stopAudio();
-    }
-
-    _currentlyPlayingIndex = index;
-    File audioFile = selectedAudio[index];
-
+  Future<void> stopRecording() async {
     try {
-      await _player.startPlayer(
-        fromURI: audioFile.path,
-        whenFinished: () {
-          _onAudioPlaybackComplete();
-        },
-      );
-      isPlaying = true;
-      playerController.record();
+      final path = await recorderController.stop();
+      if (path != null) {
+        selectedAudio.add(File(path));
+      }
+      update();
+    } catch (e) {
+      debugPrint("Error stopping recording: $e");
+    }
+  }
+
+  Future<void> playAudio(File audioFile, int index) async {
+    try {
+      if (playerController.playerState.isPlaying) {
+        await playerController.pausePlayer();
+        _currentlyPlayingIndex = null;
+      } else {
+        await playerController.stopPlayer();
+        await playerController.preparePlayer(path: audioFile.path);
+        await playerController.startPlayer();
+        _currentlyPlayingIndex = index;
+      }
       update();
     } catch (e) {
       debugPrint("Error playing audio: $e");
     }
   }
 
-  Future<void> stopAudio() async {
-    try {
-      await _player.stopPlayer();
-      playerController.stop();
-    } catch (e) {
-      debugPrint("Error stopping audio: $e");
-    }
-    isPlaying = false;
-    _currentlyPlayingIndex = null;
-    update();
-  }
-
-  void _onAudioPlaybackComplete() {
-    isPlaying = false;
-    _currentlyPlayingIndex = null;
-    playerController.stop();
-    update();
-  }
-
-  // Future<void> startRecording() async {
-  //   if (selectedAudio.length >= 3) {
-  //     CustomOverlays.showToastMessage(
-  //       message: "You can only record up to 3 audios.",
-  //     );
-  //     return;
-  //   }
-
-  //   final directory = await getApplicationDocumentsDirectory();
-  //   final path =
-  //       '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
-
-  //   try {
-  //     await _recorder.startRecorder(toFile: path);
-  //     _recordedAudioPath = path;
-  //     isRecording = true;
-  //     update();
-  //   } catch (e) {
-  //     debugPrint("Error starting recorder: $e");
-  //     CustomOverlays.showToastMessage(
-  //       message: "Failed to start recording. Please try again.",
-  //     );
-  //   }
-  // }
-  Future<void> startRecording() async {
-    if (selectedAudio.length >= 3) {
-      CustomOverlays.showToastMessage(
-        message: "You can only record up to 3 audios.",
-      );
-      return;
-    }
-
-    final directory = await getApplicationDocumentsDirectory();
-    final path =
-        '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
-
-    try {
-      // Specify codec for MP3
-      await _recorder.startRecorder(
-        toFile: path,
-      );
-      _recordedAudioPath = path;
-      isRecording = true;
-      update();
-    } catch (e) {
-      debugPrint("Error starting recorder: $e");
-      CustomOverlays.showToastMessage(
-        message: "Failed to start recording. Please try again.",
-      );
-    }
-  }
-
-  Future<void> stopRecording() async {
-    await _recorder.stopRecorder();
-    isRecording = false;
-
-    if (_recordedAudioPath != null) {
-      selectedAudio.add(File(_recordedAudioPath!));
-    }
-    update();
-  }
-
-  void removeAudio(int index) {
+  void deleteAudio(int index) {
     selectedAudio.removeAt(index);
     update();
   }
 
-  Future<void> _initRecorder() async {
-    await _recorder.openRecorder();
-    await Permission.microphone.request();
-  }
-
-  Future<void> _initPlayer() async {
-    await _player.openPlayer();
-  }
-
-  // void multiImagePic() async {
-  //   final List<XFile>? images = await _picker.pickMultiImage(
-  //     imageQuality: 80,
-  //     requestFullMetadata: false,
-  //   );
-
-  //   if (images == null || images.isEmpty) return;
-
-  //   int remainingSpace = 3 - selectedImages.length;
-
-  //   if (remainingSpace == 0) {
-  //     CustomOverlays.showToastMessage(
-  //         message: 'You have already selected the maximum of 3 images.');
-  //     return;
-  //   }
-
-  //   final List<File> newImages =
-  //       images.take(remainingSpace).map((image) => File(image.path)).toList();
-
-  //   selectedImages.addAll(newImages);
-
-  //   if (images.length > remainingSpace) {
-  //     CustomOverlays.showToastMessage(
-  //         message: 'Only $remainingSpace more image(s) can be selected.');
-  //   }
-
-  //   update();
-  // }
   void multiImagePic() async {
-    // Show a dialog to let the user choose between Camera and Gallery
     final ImageSource? source = await _showImageSourceDialog();
 
     if (source == null) return;
@@ -226,19 +138,21 @@ class CreateTicketController extends GetxController with EmployeeMixin {
 
       if (selectedImages.length >= 3) {
         CustomOverlays.showToastMessage(
-            message: 'You have already selected the maximum of 3 images.');
+          message: 'You have already selected the maximum of 3 images.',
+          isSuccess: true,
+        );
         return;
       }
 
       selectedImages.add(File(image.path));
       update();
     } else if (source == ImageSource.gallery) {
-      final List<XFile>? images = await _picker.pickMultiImage(
+      final List<XFile> images = await _picker.pickMultiImage(
         imageQuality: 80,
         requestFullMetadata: false,
       );
 
-      if (images == null || images.isEmpty) return; // No images selected
+      if (images.isEmpty) return;
 
       int remainingSpace = 3 - selectedImages.length;
 
@@ -248,19 +162,17 @@ class CreateTicketController extends GetxController with EmployeeMixin {
         return;
       }
 
-      // Add new images within the limit
       final List<File> newImages =
           images.take(remainingSpace).map((image) => File(image.path)).toList();
 
       selectedImages.addAll(newImages);
 
-      // Notify the user if images were ignored
       if (images.length > remainingSpace) {
         CustomOverlays.showToastMessage(
             message: 'Only $remainingSpace more image(s) can be selected.');
       }
 
-      update(); // Notify the UI to rebuild
+      update();
     }
   }
 

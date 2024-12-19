@@ -1,80 +1,3 @@
-// class Ticket {
-//   int? ticketId;
-//   int? statusId;
-//   String? ticketName;
-//   String? assignDate;
-//   String? comment;
-//   String? roomName;
-//   String? floorName;
-//   bool? isUrgent;
-//   int? assignTo;
-//   int? assignTemplateRoomId;
-//   String? assignTemplateName;
-//   String? completionDate;
-//   int? assignBy;
-//   String? assignByName;
-//   String? assignToName;
-//   String? status;
-
-//   Ticket(
-//       {this.ticketId,
-//       this.statusId,
-//       this.ticketName,
-//       this.assignDate,
-//       this.comment,
-//       this.roomName,
-//       this.floorName,
-//       this.isUrgent,
-//       this.assignTo,
-//       this.assignTemplateRoomId,
-//       this.assignTemplateName,
-//       this.completionDate,
-//       this.assignBy,
-//       this.assignByName,
-//       this.assignToName,
-//       this.status});
-
-//   Ticket.fromJson(Map<String, dynamic> json) {
-//     ticketId = json['ticketId'];
-//     statusId = json['statusId'];
-//     ticketName = json['ticketName'];
-//     assignDate = json['assignDate'];
-//     comment = json['comment'];
-//     roomName = json['roomName'];
-//     floorName = json['floorName'];
-//     isUrgent = json['isUrgent'];
-//     assignTo = json['assignTo'];
-//     assignTemplateRoomId = json['assignTemplateRoomId'];
-//     assignTemplateName = json['assignTemplateName'];
-//     completionDate = json['completionDate'];
-//     assignBy = json['assignBy'];
-//     assignByName = json['assignByName'];
-//     assignToName = json['assignToName'];
-//     status = json['status'];
-//   }
-
-//   Map<String, dynamic> toJson() {
-//     final Map<String, dynamic> data = <String, dynamic>{};
-//     data['ticketId'] = ticketId;
-//     data['statusId'] = statusId;
-//     data['ticketName'] = ticketName;
-//     data['assignDate'] = assignDate;
-//     data['comment'] = comment;
-//     data['roomName'] = roomName;
-//     data['floorName'] = floorName;
-//     data['isUrgent'] = isUrgent;
-//     data['assignTo'] = assignTo;
-//     data['assignTemplateRoomId'] = assignTemplateRoomId;
-//     data['assignTemplateName'] = assignTemplateName;
-//     data['completionDate'] = completionDate;
-//     data['assignBy'] = assignBy;
-//     data['assignByName'] = assignByName;
-//     data['assignToName'] = assignToName;
-//     data['status'] = status;
-//     return data;
-//   }
-// }
-
 class Ticket {
   int? assignTemplateRoomId;
   String? assignTemplateName;
@@ -128,7 +51,7 @@ class Ticket {
     if (json['ticketMedia'] != null) {
       ticketMedia = <TicketMedia>[];
       json['ticketMedia'].forEach((v) {
-        ticketMedia!.add(new TicketMedia.fromJson(v));
+        ticketMedia!.add(TicketMedia.fromJson(v));
       });
     }
     ticketId = json['ticketId'];
@@ -139,26 +62,26 @@ class Ticket {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['assignTemplateRoomId'] = this.assignTemplateRoomId;
-    data['assignTemplateName'] = this.assignTemplateName;
-    data['completionDate'] = this.completionDate;
-    data['assignBy'] = this.assignBy;
-    data['assignByName'] = this.assignByName;
-    data['assignToName'] = this.assignToName;
-    data['status'] = this.status;
-    data['statusId'] = this.statusId;
-    data['roomName'] = this.roomName;
-    data['floorName'] = this.floorName;
-    data['ticketName'] = this.ticketName;
-    if (this.ticketMedia != null) {
-      data['ticketMedia'] = this.ticketMedia!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['assignTemplateRoomId'] = assignTemplateRoomId;
+    data['assignTemplateName'] = assignTemplateName;
+    data['completionDate'] = completionDate;
+    data['assignBy'] = assignBy;
+    data['assignByName'] = assignByName;
+    data['assignToName'] = assignToName;
+    data['status'] = status;
+    data['statusId'] = statusId;
+    data['roomName'] = roomName;
+    data['floorName'] = floorName;
+    data['ticketName'] = ticketName;
+    if (ticketMedia != null) {
+      data['ticketMedia'] = ticketMedia!.map((v) => v.toJson()).toList();
     }
-    data['ticketId'] = this.ticketId;
-    data['assignDate'] = this.assignDate;
-    data['comment'] = this.comment;
-    data['isUrgent'] = this.isUrgent;
-    data['assignTo'] = this.assignTo;
+    data['ticketId'] = ticketId;
+    data['assignDate'] = assignDate;
+    data['comment'] = comment;
+    data['isUrgent'] = isUrgent;
+    data['assignTo'] = assignTo;
     return data;
   }
 }
@@ -180,11 +103,11 @@ class TicketMedia {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['imagekey'] = this.imagekey;
-    data['audioKey'] = this.audioKey;
-    data['ticketsMediaId'] = this.ticketsMediaId;
-    data['ticketId'] = this.ticketId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['imagekey'] = imagekey;
+    data['audioKey'] = audioKey;
+    data['ticketsMediaId'] = ticketsMediaId;
+    data['ticketId'] = ticketId;
     return data;
   }
 }

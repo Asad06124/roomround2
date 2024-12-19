@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:roomrounds/core/apis/models/room/room_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_list/components/room_list_components.dart';

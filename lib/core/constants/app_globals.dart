@@ -1,11 +1,11 @@
+// ignore_for_file: unused_field
+
 import 'package:roomrounds/core/apis/models/user_data/user_model.dart';
 import 'package:roomrounds/core/constants/app_enum.dart';
 
 class AppGlobals {
-  
-  
-  User? _user; 
-  
+  User? _user;
+
   static List<DummyUser> dummyData = [
     DummyUser(
         name: 'Wahab Sohail',
@@ -28,6 +28,21 @@ class AppGlobals {
         time: '1:20 pm',
         type: UserType.manager),
   ];
+  // static Future<void> requestPermissions() async {
+  //   Map<Permission, PermissionStatus> statuses = await [
+  //     Permission.microphone,
+  //     Permission.camera,
+  //     Permission.photos,
+  //   ].request();
+
+  //   // if (statuses.values.any((status) => status.isPermanentlyDenied)) {
+  //   //   CustomOverlays.showToastMessage(
+  //   //     message:
+  //   //         "Permissions are required to use this app. Please enable them in the settings.",
+  //   //   );
+  //   //   await openAppSettings();
+  //   // }
+  // }
 }
 
 class DummyUser {

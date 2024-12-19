@@ -1,31 +1,12 @@
-import 'package:permission_handler/permission_handler.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/routes/app_pages.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
-import 'package:roomrounds/utils/custom_overlays.dart';
 
 void main() async {
-  Future<void> requestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.microphone,
-      Permission.camera,
-      Permission.photos,
-      Permission.storage
-    ].request();
-
-    if (statuses.values.any((status) => status.isPermanentlyDenied)) {
-      CustomOverlays.showToastMessage(
-        message:
-            "Permissions are required to use this app. Please enable them in the settings.",
-      );
-      await openAppSettings();
-    }
-  }
-
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
-  await requestPermissions();
+
   _initControllers();
 
   runApp(const MyApp());

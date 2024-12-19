@@ -7,12 +7,11 @@ class CustomContainer extends StatelessWidget {
   bool isGradient;
   EdgeInsetsGeometry padding;
   CustomContainer(
-      {Key? key,
+      {super.key,
       this.child,
       this.appBar,
       this.padding = const EdgeInsets.symmetric(horizontal: 20),
-      this.isGradient = true})
-      : super(key: key);
+      this.isGradient = true});
 
   @override
   Widget build(BuildContext context) {

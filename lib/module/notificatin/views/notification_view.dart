@@ -3,7 +3,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 
 class NotificationView extends StatelessWidget {
-  const NotificationView({Key? key}) : super(key: key);
+  const NotificationView({super.key});
 
   @override
   Widget build(BuildContext context) {

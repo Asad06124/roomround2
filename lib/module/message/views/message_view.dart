@@ -2,7 +2,7 @@ import 'package:roomrounds/core/constants/app_globals.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class MessageView extends StatelessWidget {
-  const MessageView({Key? key}) : super(key: key);
+  const MessageView({super.key});
 
   @override
   Widget build(BuildContext context) {

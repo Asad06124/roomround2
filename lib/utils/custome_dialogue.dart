@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:just_audio/just_audio.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/components/app_image.dart';
@@ -7,6 +6,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/extensions/datetime_extension.dart';
 import 'package:roomrounds/core/extensions/string_extension.dart';
 import 'package:roomrounds/module/assigned_task/controller/assigned_task_controller.dart';
+import 'package:roomrounds/module/create_ticket/controller/audio_controller.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
 class CloseTicketDialouge extends StatefulWidget {
@@ -500,37 +500,30 @@ class CreateTicketDialog extends StatelessWidget {
               ),
             ),
             SB.h(10),
-            Container(
-              // padding: const EdgeInsets.all(3),
-              // decoration: BoxDecoration(
-              // borderRadius: BorderRadius.circular(10),
-              // color: AppColors.lightWhite,
-              // ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CustomTextField(
-                    maxLines: 5,
-                    borderRadius: 10,
-                    isRequiredField: false,
-                    controller: textFieldController,
-                    fillColor: AppColors.lightWhite,
-                    borderColor: AppColors.lightWhite,
-                    hintText: AppStrings.writeMessage,
-                    validator: (value) => null,
-                  ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.end,
-                  //   children: [
-                  //     Assets.icons.cameraCircle.svg(),
-                  //     SB.w(10),
-                  // Assets.icons.mic.svg(),
-                  //     SB.w(10)
-                  //   ],
-                  // ),
-                  // SB.h(5),
-                ],
-              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextField(
+                  maxLines: 5,
+                  borderRadius: 10,
+                  isRequiredField: false,
+                  controller: textFieldController,
+                  fillColor: AppColors.lightWhite,
+                  borderColor: AppColors.lightWhite,
+                  hintText: AppStrings.writeMessage,
+                  validator: (value) => null,
+                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.end,
+                //   children: [
+                //     Assets.icons.cameraCircle.svg(),
+                //     SB.w(10),
+                // Assets.icons.mic.svg(),
+                //     SB.w(10)
+                //   ],
+                // ),
+                // SB.h(5),
+              ],
             ),
             SB.h(15),
             DialougeComponents.labelTile(
@@ -904,200 +897,7 @@ class SeeThreadDialouge extends StatelessWidget {
   }
 }
 
-// class AudioController extends GetxController {
-//   AudioPlayer player = AudioPlayer();
-//   RxBool isPlaying = false.obs;
-//   int? currentlyPlayingIndex;
-
-//   AudioController();
-//   Future<void> playAudio(String audioUrl, int index) async {
-//     print('xxxxxxxxxxx$audioUrl');
-//     if (currentlyPlayingIndex == index && isPlaying.value) {
-//       await stopAudio();
-//       return;
-//     }
-
-//     if (currentlyPlayingIndex != null) {
-//       await stopAudio();
-//     }
-
-//     currentlyPlayingIndex = index;
-
-//     try {
-//       print('Playing audio from URL: $audioUrl');
-
-//       await player.setAudioContext(AudioContext(
-//         android: AudioContextAndroid(
-//           isSpeakerphoneOn: false,
-//           stayAwake: false,
-//           audioMode: AndroidAudioMode.normal,
-//           audioFocus: AndroidAudioFocus.gain,
-//           usageType: AndroidUsageType.media,
-//           contentType: AndroidContentType.music,
-//         ),
-//       ));
-
-//       // Play audio
-//       await player.play(
-//           UrlSource('https://samplelib.com/lib/preview/mp3/sample-3s.mp3'));
-
-//       // Listen for completion
-//       player.onPlayerComplete.listen((_) {
-//         isPlaying.value = false;
-//         currentlyPlayingIndex = null;
-//       });
-
-//       isPlaying.value = true;
-//       update();
-//     } catch (e) {
-//       debugPrint("Error playing audio: $e");
-//     }
-//     update();
-//   }
-
-//   Future<void> stopAudio() async {
-//     try {
-//       await player.stop();
-//     } catch (e) {
-//       debugPrint("Error stopping audio: $e");
-//     }
-//     isPlaying.value = false;
-//     currentlyPlayingIndex = null;
-//     update();
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     player.dispose();
-//     update();
-//   }
-// }
-class AudioController extends GetxController {
-  final AudioPlayer player = AudioPlayer(); // Using just_audio player
-  RxBool isPlaying = false.obs;
-  int? currentlyPlayingIndex;
-
-  AudioController();
-
-  // Future<void> playAudio(String audioUrl, int index) async {
-  //   print('Playing audio from URL: $audioUrl');
-
-  //   if (currentlyPlayingIndex == index && isPlaying.value) {
-  //     await stopAudio();
-  //     return;
-  //   }
-
-  //   if (currentlyPlayingIndex != null) {
-  //     await stopAudio();
-  //   }
-
-  //   currentlyPlayingIndex = index;
-
-  //   try {
-  //     await player.setAudioSource(AudioSource.uri(Uri.parse(audioUrl)));
-
-  //     await player.play();
-
-  //     player.playerStateStream.listen((playerState) {
-  //       if (playerState.processingState == ProcessingState.completed) {
-  //         isPlaying.value = false;
-  //         currentlyPlayingIndex = null;
-  //       }
-  //     });
-
-  //     isPlaying.value = true;
-  //   } catch (e) {
-  //     debugPrint("Error playing audio: $e");
-  //   }
-  //   update();
-  // }
-
-  // // Future<void> playAudio(String audioUrl) async {
-  // //   try {
-  // //     // Set the audio source using the URL
-  // //     await player.setAudioSource(AudioSource.uri(Uri.parse(
-  // //         'http://roomroundapis.rootpointers.net/TicketAudio/bcad8d48-3d0f-4b6c-b710-d641baf1eabc.aac')));
-
-  // //     // Start playing
-  // //     await player.play();
-
-  // //     // Update playing state
-  // //     isPlaying.value = true;
-  // //   } catch (e) {
-  // //     debugPrint("Error playing audio: $e");
-
-  // //     // Show an error message to the user
-  // //     Get.snackbar(
-  // //       "Playback Error",
-  // //       "Could not play audio. Please check your internet or audio format.",
-  // //     );
-  // //   }
-  // // }
-
-  // Future<void> stopAudio() async {
-  //   try {
-  //     await player.stop();
-  //   } catch (e) {
-  //     debugPrint("Error stopping audio: $e");
-  //   }
-  //   isPlaying.value = false;
-  //   currentlyPlayingIndex = null;
-  //   update();
-  // }
-
-  Future<void> playAudio(String audioUrl, int index) async {
-    print('Playing audio from URL: $audioUrl');
-
-    if (currentlyPlayingIndex == index && isPlaying.value) {
-      await stopAudio();
-      return;
-    }
-
-    if (currentlyPlayingIndex != null) {
-      await stopAudio();
-    }
-
-    currentlyPlayingIndex = index;
-
-    try {
-      await player.setAudioSource(AudioSource.uri(Uri.parse(audioUrl)));
-
-      await player.play();
-
-      player.playerStateStream.listen((playerState) {
-        if (playerState.processingState == ProcessingState.completed) {
-          isPlaying.value = false;
-          currentlyPlayingIndex = null;
-        }
-      });
-
-      isPlaying.value = true;
-      update(); // Ensure the controller is updated to trigger UI change
-    } catch (e) {
-      debugPrint("Error playing audio: $e");
-    }
-  }
-
-  Future<void> stopAudio() async {
-    try {
-      await player.stop();
-    } catch (e) {
-      debugPrint("Error stopping audio: $e");
-    }
-    isPlaying.value = false;
-    currentlyPlayingIndex = null;
-    update(); // Ensure the controller is updated to trigger UI change
-  }
-
-  @override
-  void dispose() {
-    player.dispose();
-    super.dispose();
-  }
-}
-
-class AssignedThreadDialouge extends StatefulWidget {
+class AssignedThreadDialouge extends StatelessWidget {
   const AssignedThreadDialouge({
     super.key,
     this.ticket,
@@ -1106,221 +906,208 @@ class AssignedThreadDialouge extends StatefulWidget {
   final Ticket? ticket;
   final GestureTapCallback? onDeleteTap;
   @override
-  State<AssignedThreadDialouge> createState() => _AssignedThreadDialougeState();
-}
-
-class _AssignedThreadDialougeState extends State<AssignedThreadDialouge> {
-  late AudioController audioController;
-  @override
-  void initState() {
-    super.initState();
-    audioController = AudioController();
-  }
-
-  @override
-  void dispose() {
-    audioController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     const String baseUrl = 'http://roomroundapis.rootpointers.net/';
-    bool isUrgent = widget.ticket?.isUrgent == true;
-    DateTime? dateTime = widget.ticket?.assignDate?.toDateTime();
+    bool isUrgent = ticket?.isUrgent == true;
+    DateTime? dateTime = ticket?.assignDate?.toDateTime();
     String? date, time;
     if (dateTime != null) {
       date = dateTime.format();
       time = dateTime.formatTime();
     }
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      // height: context.height * 0.75,
-      width: context.width,
-      padding: const EdgeInsets.all(10),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DialougeComponents.closeBtn(
-              isDeleteBtn: true,
-              onDelete: widget.onDeleteTap,
+    return GetBuilder<AudioController>(
+        init: AudioController(),
+        builder: (controller) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(15),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+            // height: context.height * 0.75,
+            width: context.width,
+            padding: const EdgeInsets.all(10),
+            child: SingleChildScrollView(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SB.h(15),
-                  DialougeComponents.labelTile(
-                    context,
-                    isUnderline: false,
-                    title: widget.ticket?.ticketName,
-                    status: widget.ticket?.status,
-                    statusColor: AppColors.gry,
-                    titleStyle: context.bodyLarge!.copyWith(
-                      color: AppColors.textGrey,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  DialougeComponents.closeBtn(
+                    isDeleteBtn: true,
+                    onDelete: onDeleteTap,
                   ),
-                  SB.h(20),
-                  Text(
-                    "${AppStrings.ticket}:",
-                    textAlign: TextAlign.start,
-                    style: context.bodyLarge!.copyWith(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SB.h(5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SB.h(15),
+                        DialougeComponents.labelTile(
+                          context,
+                          isUnderline: false,
+                          title: ticket?.ticketName,
+                          status: ticket?.status,
+                          statusColor: AppColors.gry,
+                          titleStyle: context.bodyLarge!.copyWith(
+                            color: AppColors.textGrey,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SB.h(20),
+                        Text(
+                          "${AppStrings.ticket}:",
+                          textAlign: TextAlign.start,
+                          style: context.bodyLarge!.copyWith(
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SB.h(5),
 
-                  DialougeComponents.detailWithBorder(
-                      context, widget.ticket?.comment),
-                  //Images
-                  widget.ticket!.ticketMedia!.isNotEmpty
-                      ? Column(
-                          children: [
-                            SizedBox(
-                              height: 80,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount:
-                                    widget.ticket?.ticketMedia?.length ?? 0,
-                                itemBuilder: (context, index) {
-                                  final imageUrl =
-                                      '$baseUrl${widget.ticket!.ticketMedia![index].imagekey}';
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: CachedNetworkImage(
-                                      imageUrl: imageUrl,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => Center(
-                                        child: CircularProgressIndicator(
-                                          color: AppColors.black,
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
+                        DialougeComponents.detailWithBorder(
+                            context, ticket?.comment),
+                        //Images
+                        ticket!.ticketMedia!.isNotEmpty
+                            ? Column(
+                                children: [
+                                  SizedBox(
+                                    height: 80,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount:
+                                          ticket?.ticketMedia?.length ?? 0,
+                                      itemBuilder: (context, index) {
+                                        final imageUrl =
+                                            '$baseUrl${ticket!.ticketMedia![index].imagekey}';
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: CachedNetworkImage(
+                                            imageUrl: imageUrl,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Center(
+                                              child: CircularProgressIndicator(
+                                                color: AppColors.black,
+                                              ),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                          ),
+                                        );
+                                      },
                                     ),
+                                  ),
+                                ],
+                              )
+                            : SizedBox(),
+                        ticket?.ticketMedia?.isNotEmpty ?? false
+                            ? Column(
+                                children: ticket!.ticketMedia!
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                  final media = entry.value;
+                                  final index = entry.key;
+                                  final audioUrl =
+                                      'http://roomroundapis.rootpointers.net/${media.audioKey}';
+
+                                  return Row(
+                                    children: [
+                                      Obx(() => IconButton(
+                                            icon: Icon(
+                                              controller.isPlaying.value &&
+                                                      controller
+                                                              .currentlyPlayingIndex!
+                                                              .value ==
+                                                          index
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                              color: Colors.green,
+                                            ),
+                                            onPressed: () async {
+                                              if (audioUrl.isNotEmpty) {
+                                                await controller.playAudio(
+                                                    audioUrl, index);
+                                              } else {
+                                                debugPrint(
+                                                    'Invalid audio URL for index $index');
+                                              }
+                                            },
+                                          )),
+                                      Text('Audio ${index + 1}'),
+                                    ],
                                   );
-                                },
-                              ),
+                                }).toList(),
+                              )
+                            : const SizedBox(),
+                        SB.h(20),
+                        Text(
+                          AppStrings.directory,
+                          textAlign: TextAlign.start,
+                          style: context.bodyLarge!.copyWith(
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SB.h(15),
+                        Text(
+                          "${AppStrings.assignedTo}:",
+                          textAlign: TextAlign.start,
+                          style: context.bodyLarge!.copyWith(
+                            color: AppColors.gry,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SB.h(15),
+                        DialougeComponents.nameTile(
+                          context,
+                          name: ticket?.assignToName,
+                        ),
+                        SB.h(15),
+                        DialougeComponents.dateTile(context,
+                            label: AppStrings.assignedDate,
+                            date: date,
+                            time: time),
+                        SB.h(20),
+                        Text(
+                          AppStrings.urgent,
+                          textAlign: TextAlign.start,
+                          style: context.bodyLarge!.copyWith(
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SB.h(15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            RoomMapComponents.radioButton<YesNo>(
+                              context,
+                              YesNo.yes,
+                              isUrgent ? YesNo.yes : YesNo.no,
+                              AppStrings.yes,
+                              (value) {},
+                              width: context.width * 0.35,
+                            ),
+                            RoomMapComponents.radioButton<YesNo>(
+                              context,
+                              YesNo.no,
+                              isUrgent ? YesNo.yes : YesNo.no,
+                              AppStrings.no,
+                              (value) {},
                             ),
                           ],
-                        )
-                      : SizedBox(),
-                  widget.ticket?.ticketMedia?.isNotEmpty ?? false
-                      ? Column(
-                          children: widget.ticket!.ticketMedia!
-                              .asMap()
-                              .entries
-                              .map((entry) {
-                            final media = entry.value;
-                            final index = entry.key;
-                            final audioUrl =
-                                'http://roomroundapis.rootpointers.net/${media.audioKey}';
-
-                            return Row(
-                              children: [
-                                Obx(() {
-                                  return IconButton(
-                                    icon: Icon(
-                                      audioController.isPlaying.value &&
-                                              audioController
-                                                      .currentlyPlayingIndex ==
-                                                  index
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      color: Colors.green,
-                                    ),
-                                    onPressed: () async {
-                                      if (audioUrl.isNotEmpty) {
-                                        print(
-                                            'Attempting to play audio: $audioUrl');
-                                        await audioController.playAudio(
-                                            audioUrl, index);
-                                      } else {
-                                        debugPrint(
-                                            'Invalid audio URL for index $index');
-                                      }
-                                    },
-                                  );
-                                }),
-                                Text('Audio ${index + 1}'),
-                              ],
-                            );
-                          }).toList(),
-                        )
-                      : const SizedBox(),
-                  SB.h(20),
-                  Text(
-                    AppStrings.directory,
-                    textAlign: TextAlign.start,
-                    style: context.bodyLarge!.copyWith(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w600,
+                        ),
+                        SB.h(15),
+                      ],
                     ),
                   ),
-                  SB.h(15),
-                  Text(
-                    "${AppStrings.assignedTo}:",
-                    textAlign: TextAlign.start,
-                    style: context.bodyLarge!.copyWith(
-                      color: AppColors.gry,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SB.h(15),
-                  DialougeComponents.nameTile(
-                    context,
-                    name: widget.ticket?.assignToName,
-                  ),
-                  SB.h(15),
-                  DialougeComponents.dateTile(context,
-                      label: AppStrings.assignedDate, date: date, time: time),
-                  SB.h(20),
-                  Text(
-                    AppStrings.urgent,
-                    textAlign: TextAlign.start,
-                    style: context.bodyLarge!.copyWith(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SB.h(15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      RoomMapComponents.radioButton<YesNo>(
-                        context,
-                        YesNo.yes,
-                        isUrgent ? YesNo.yes : YesNo.no,
-                        AppStrings.yes,
-                        (value) {},
-                        width: context.width * 0.35,
-                      ),
-                      RoomMapComponents.radioButton<YesNo>(
-                        context,
-                        YesNo.no,
-                        isUrgent ? YesNo.yes : YesNo.no,
-                        AppStrings.no,
-                        (value) {},
-                      ),
-                    ],
-                  ),
-                  SB.h(15),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 }
 
