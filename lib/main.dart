@@ -6,9 +6,7 @@ import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
-
   _initControllers();
-
   runApp(const MyApp());
 }
 

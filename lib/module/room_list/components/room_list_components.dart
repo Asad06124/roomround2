@@ -4,17 +4,15 @@ class RoomListComponents {
   static Widget yesNoWidget(BuildContext context, YesNo? selectedValue,
       Function(YesNo) onTaskValueChanged) {
     return Container(
-      // margin: EdgeInsets.only(top: 15, left: 25),
       margin: EdgeInsets.only(top: 15),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // SB.w(25),
           RoomMapComponents.radioButton<YesNo>(
             context,
-            YesNo.yes, // AssignedValue
-            selectedValue, // SelectedValue
-            AppStrings.yes, // Title
+            YesNo.yes,
+            selectedValue,
+            AppStrings.yes,
             (value) => onTaskValueChanged(value),
             width: 0,
           ),
@@ -26,14 +24,14 @@ class RoomListComponents {
             (value) => onTaskValueChanged(value),
             width: 0,
           ),
-          RoomMapComponents.radioButton<YesNo>(
-            context,
-            YesNo.no, // AssignedValue
-            selectedValue, // SelectedValue
-            AppStrings.na, // Title
-            (value) => onTaskValueChanged(value),
-            width: 0,
-          ),
+          // RoomMapComponents.radioButton<YesNo>(
+          //   context,
+          //   YesNo.no, // AssignedValue
+          //   selectedValue, // SelectedValue
+          //   AppStrings.na, // Title
+          //   (value) => onTaskValueChanged(value),
+          //   width: 0,
+          // ),
         ],
       ),
     );

@@ -114,17 +114,23 @@ class TasksList extends StatelessWidget {
                 },
               ),
             ),
-            subtitleWidget: IgnorePointer(
-              ignoring: isTaskCompleted,
-              child: RoomListComponents.yesNoWidget(
-                context,
-                task.userSelection,
-                (newVal) => controller.changeTaskStatus(index, newVal),
-              ),
-            ),
-            // onTap: () {
-            //   _showYesNoDialog();
-            // },
+            subtitleWidget: task.taskStatus == true
+                ? IgnorePointer(
+                    ignoring: isTaskCompleted,
+                    child: RoomListComponents.yesNoWidget(
+                      context,
+                      YesNo.no,
+                      (newVal) => controller.changeTaskStatus(index, newVal),
+                    ),
+                  )
+                : IgnorePointer(
+                    ignoring: isTaskCompleted,
+                    child: RoomListComponents.yesNoWidget(
+                      context,
+                      task.userSelection,
+                      (newVal) => controller.changeTaskStatus(index, newVal),
+                    ),
+                  ),
           );
         },
       );

@@ -403,11 +403,26 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   }
 
   void onSendTicketTap() async {
-    if (screenshotImageBytes != null &&
-        screenshotImageBytes?.isNotEmpty == true) {
-      Map<String, String> ticketData = {};
-      String? base64String = base64.encode(screenshotImageBytes!);
-      ticketData = {
+    try {
+      // Ensure required data is not null
+      if (roomController.text.trim().isEmpty) {
+        return CustomOverlays.showToastMessage(
+          message: 'Please Write Room Name',
+        );
+      }
+      if (descriptionController.text.trim().isEmpty) {
+        return CustomOverlays.showToastMessage(
+          message: 'Please Write Description',
+        );
+      }
+
+      // Encode the image
+      String base64String = base64.encode(
+        screenshotImageBytes ?? [],
+      );
+
+      // Prepare the ticket data
+      Map<String, String> ticketData = {
         "roomName": roomController.text.trim(),
         "floorName": floorController.text.trim(),
         "assignTo": '${_selectedEmployee?.userId}',
@@ -416,6 +431,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
         "isUrgent": '${_urgent == YesNo.yes}',
       };
 
+      // API call
       var resp = await APIFunction.call(
         APIMethods.post,
         Urls.saveTicketByEmployee,
@@ -430,10 +446,12 @@ class CreateTicketController extends GetxController with EmployeeMixin {
       );
 
       if (resp != null && resp is bool && resp == true) {
-        // Get.back();
+        debugPrint("Ticket sent successfully!");
+      } else {
+        throw Exception('Failed to send the ticket. Please try again.');
       }
-    } else {
-      CustomOverlays.showToastMessage(message: AppStrings.pleaseSelectFromMap);
+    } catch (e) {
+      debugPrint('Error: ${e.toString()}');
     }
   }
 

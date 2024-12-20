@@ -93,21 +93,21 @@ class CustomeTiles {
                       ),
                     ),
                   ),
-                if (onRemoveTap != null)
-                  InkWell(
-                    onTap: onRemoveTap,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(35),
-                        border: Border.all(color: AppColors.gry),
-                      ),
-                      child: const Icon(
-                        Icons.remove,
-                        color: AppColors.gry,
-                        size: 16,
-                      ),
-                    ),
-                  ),
+                // if (onRemoveTap != null)
+                //   InkWell(
+                //     onTap: onRemoveTap,
+                //     child: Container(
+                //       decoration: BoxDecoration(
+                //         borderRadius: BorderRadius.circular(35),
+                //         border: Border.all(color: AppColors.gry),
+                //       ),
+                //       child: const Icon(
+                //         Icons.remove,
+                //         color: AppColors.gry,
+                //         size: 16,
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
           ),
