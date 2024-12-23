@@ -316,38 +316,26 @@ class CreateTicketView extends StatelessWidget with Validators {
                                             onPressed: () => controller
                                                 .playAudio(audioFile, index),
                                           ),
-                                          if (controller
-                                                  .currentlyPlayingIndex ==
-                                              index)
-                                            Expanded(
-                                              child: AudioFileWaveforms(
-                                                size: Size.fromHeight(20),
-                                                padding: EdgeInsets.all(0.0),
-                                                margin: EdgeInsets.all(0.0),
-                                                playerController:
-                                                    controller.playerController,
-                                                enableSeekGesture: true,
-                                                waveformType: WaveformType.long,
-                                                playerWaveStyle:
-                                                    PlayerWaveStyle(
-                                                  spacing: 10,
-                                                  waveThickness: 2.0,
-                                                  liveWaveColor: Colors.green,
-                                                ),
+                                          Expanded(
+                                            child: AudioFileWaveforms(
+                                              size: const Size.fromHeight(40),
+                                              padding: EdgeInsets.zero,
+                                              margin: EdgeInsets.zero,
+                                              playerController:
+                                                  controller.playerController,
+                                              enableSeekGesture: true,
+                                              waveformType:
+                                                  WaveformType.fitWidth,
+                                              playerWaveStyle: PlayerWaveStyle(
+                                                fixedWaveColor: Colors.grey,
+                                                waveCap: StrokeCap.square,
+                                                liveWaveColor:
+                                                    AppColors.primary,
+                                                spacing: 10.0,
+                                                scrollScale: 10.0,
                                               ),
                                             ),
-                                          if (controller
-                                                  .currentlyPlayingIndex !=
-                                              index)
-                                            Expanded(
-                                              child: Container(
-                                                width:
-                                                    MediaQuery.sizeOf(context)
-                                                        .width,
-                                                height: 2.0,
-                                                color: Colors.green,
-                                              ),
-                                            ),
+                                          ),
                                           IconButton(
                                             icon: Icon(Icons.delete,
                                                 color: Colors.red),

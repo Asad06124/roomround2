@@ -118,6 +118,23 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     }
   }
 
+  // Future<void> playAudio(File audioFile, int index) async {
+  //   try {
+  //     if (playerController.playerState.isPlaying) {
+  //       await playerController.pausePlayer();
+  //       _currentlyPlayingIndex = null;
+  //     } else {
+  //       await playerController.stopPlayer();
+  //       await playerController.preparePlayer(path: audioFile.path);
+  //       await playerController.startPlayer();
+  //       _currentlyPlayingIndex = index;
+  //     }
+  //     update();
+  //   } catch (e) {
+  //     debugPrint("Error playing audio: $e");
+  //   }
+  // }
+
   void deleteAudio(int index) {
     selectedAudio.removeAt(index);
     update();
