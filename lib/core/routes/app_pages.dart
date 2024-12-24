@@ -3,6 +3,10 @@ import 'package:roomrounds/module/authentications/views/forget_view.dart';
 import 'package:roomrounds/module/create_ticket/views/create_ticket_view.dart';
 import 'package:roomrounds/module/profile/change_password/view/change_password_view.dart';
 import 'package:roomrounds/module/profile/views/edit_profile_view.dart';
+import 'package:roomrounds/module/settings/views/contact_view.dart';
+import 'package:roomrounds/module/settings/views/help_view.dart';
+import 'package:roomrounds/module/settings/views/notification_setting_view.dart';
+import 'package:roomrounds/module/settings/views/privacy_policy.dart';
 
 class AppPages {
   static Transition? transitionType;
@@ -159,6 +163,38 @@ class AppPages {
     GetPage(
       name: AppRoutes.ROOM_MAP_MANAGER,
       page: () => const RoomMapManagerView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.Notification_Setting_View,
+      page: () => const NotificationSettingView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.Help_Screen,
+      page: () => const HelpScreen(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.Privacy_Policy_Screen,
+      page: () => const PrivacyPolicyScreen(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.Contact_Us_Screen,
+      page: () => const ContactUsScreen(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

@@ -20,4 +20,8 @@ abstract class AppRoutes {
   static const ROOMS_LIST = '/rooms_list';
   static const TASKS_LISTS = '/tasks_list';
   static const ROOM_MAP_MANAGER = '/room_map_manager';
+  static const Notification_Setting_View = '/Notification_Setting_View';
+  static const Help_Screen = '/Help_Screen';
+  static const Privacy_Policy_Screen = '/Privacy_Policy_Screen';
+  static const Contact_Us_Screen = '/Contact_Us_Screen';
 }
