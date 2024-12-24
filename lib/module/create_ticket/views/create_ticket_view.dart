@@ -316,26 +316,41 @@ class CreateTicketView extends StatelessWidget with Validators {
                                             onPressed: () => controller
                                                 .playAudio(audioFile, index),
                                           ),
-                                          Expanded(
-                                            child: AudioFileWaveforms(
-                                              size: const Size.fromHeight(40),
-                                              padding: EdgeInsets.zero,
-                                              margin: EdgeInsets.zero,
-                                              playerController:
-                                                  controller.playerController,
-                                              enableSeekGesture: true,
-                                              waveformType:
-                                                  WaveformType.fitWidth,
-                                              playerWaveStyle: PlayerWaveStyle(
-                                                fixedWaveColor: Colors.grey,
-                                                waveCap: StrokeCap.square,
-                                                liveWaveColor:
-                                                    AppColors.primary,
-                                                spacing: 10.0,
-                                                scrollScale: 10.0,
-                                              ),
-                                            ),
-                                          ),
+                                          controller.currentlyPlayingIndex !=
+                                                  index
+                                              ? Expanded(
+                                                  child: Container(
+                                                    width: MediaQuery.sizeOf(
+                                                            context)
+                                                        .width,
+                                                    color: AppColors.primary,
+                                                    height: 2.0,
+                                                  ),
+                                                )
+                                              : Expanded(
+                                                  child: AudioFileWaveforms(
+                                                    size: const Size.fromHeight(
+                                                        40),
+                                                    padding: EdgeInsets.zero,
+                                                    margin: EdgeInsets.zero,
+                                                    playerController: controller
+                                                        .playerController,
+                                                    enableSeekGesture: true,
+                                                    waveformType:
+                                                        WaveformType.long,
+                                                    playerWaveStyle:
+                                                        PlayerWaveStyle(
+                                                      fixedWaveColor:
+                                                          Colors.grey,
+                                                      waveCap: StrokeCap.square,
+                                                      liveWaveColor:
+                                                          AppColors.primary,
+                                                      showSeekLine: true,
+                                                      seekLineColor:
+                                                          AppColors.red,
+                                                    ),
+                                                  ),
+                                                ),
                                           IconButton(
                                             icon: Icon(Icons.delete,
                                                 color: Colors.red),

@@ -1,4 +1,4 @@
-enum YesNo { yes, no }
+enum YesNo { yes, no, na }
 
 enum UserType {
   superAdmin,

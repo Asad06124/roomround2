@@ -427,9 +427,19 @@ class CreateTicketController extends GetxController with EmployeeMixin {
           message: 'Please Write Room Name',
         );
       }
+      if (_selectedEmployee?.userId == null) {
+        return CustomOverlays.showToastMessage(
+          message: 'Please Select Employee',
+        );
+      }
       if (descriptionController.text.trim().isEmpty) {
         return CustomOverlays.showToastMessage(
           message: 'Please Write Description',
+        );
+      }
+      if (_urgent?.index == null) {
+        return CustomOverlays.showToastMessage(
+          message: 'Please Select Urgent Option',
         );
       }
 
