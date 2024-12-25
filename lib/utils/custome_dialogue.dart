@@ -42,78 +42,153 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
   Widget build(BuildContext context) {
     Ticket? ticket = widget.ticket;
     bool isUrgent = ticket?.isUrgent == true;
-    // DateTime? dateTime = ticket?.assignDate?.toDateTime();
-    // String? date, time;
-    // if (dateTime != null) {
-    //   date = dateTime.format();
-    //   time = dateTime.formatTime();
-    // }
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      // height: context.height * 0.75,
-      width: context.width,
-      padding: const EdgeInsets.all(12),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DialougeComponents.closeBtn(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+    const String baseUrl = 'http://roomroundapis.rootpointers.net/';
+    return GetBuilder<AudioController>(
+        init: AudioController(),
+        builder: (controller) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            // height: context.height * 0.75,
+            width: context.width,
+            padding: const EdgeInsets.all(12),
+            child: SingleChildScrollView(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SB.h(15),
-                  DialougeComponents.labelTile(
-                    context,
-                    isUnderline: true,
-                    title: ticket?.ticketName,
-                    status: AppStrings.close,
-                    onStatusTap: widget.onCloseTap,
+                  DialougeComponents.closeBtn(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      children: [
+                        SB.h(15),
+                        DialougeComponents.labelTile(
+                          context,
+                          isUnderline: true,
+                          title: ticket?.ticketName,
+                          status: AppStrings.close,
+                          onStatusTap: widget.onCloseTap,
+                        ),
+                        SB.h(20),
+                        DialougeComponents.tile(
+                          context,
+                          title: AppStrings.assignedBy,
+                          isDecoration: isUrgent,
+                          value: isUrgent ? AppStrings.urgent : null,
+                        ),
+                        SB.h(20),
+                        DialougeComponents.nameTile(
+                          context,
+                          name: ticket?.assignByName,
+                          desc: ticket?.roomName,
+                        ),
+                        SB.h(20),
+                        DialougeComponents.detailWithBorder(
+                            context, ticket?.comment),
+                        ticket!.ticketMedia!.isNotEmpty
+                            ? Row(
+                                children: [
+                                  SizedBox(
+                                    height: 80,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount:
+                                          ticket.ticketMedia?.length ?? 0,
+                                      itemBuilder: (context, index) {
+                                        final imageUrl =
+                                            '$baseUrl${ticket.ticketMedia![index].imagekey}';
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: CachedNetworkImage(
+                                            imageUrl: imageUrl,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Center(
+                                              child: CircularProgressIndicator(
+                                                color: AppColors.black,
+                                              ),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : SizedBox(),
+                        ticket.ticketMedia?.isNotEmpty ?? false
+                            ? Column(
+                                children: ticket.ticketMedia!
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                  final media = entry.value;
+                                  final index = entry.key;
+                                  final audioUrl =
+                                      'http://roomroundapis.rootpointers.net/${media.audioKey}';
+
+                                  return Row(
+                                    children: [
+                                      Obx(() => IconButton(
+                                            icon: Icon(
+                                              controller.isPlaying.value &&
+                                                      controller
+                                                              .currentlyPlayingIndex!
+                                                              .value ==
+                                                          index
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                              color: Colors.green,
+                                            ),
+                                            onPressed: () async {
+                                              if (audioUrl.isNotEmpty) {
+                                                await controller.playAudio(
+                                                    audioUrl, index);
+                                              } else {
+                                                debugPrint(
+                                                    'Invalid audio URL for index $index');
+                                              }
+                                            },
+                                          )),
+                                      Text('Audio ${index + 1}'),
+                                    ],
+                                  );
+                                }).toList(),
+                              )
+                            : const SizedBox(),
+                        SB.h(20),
+                        DialougeComponents.reply(
+                          context,
+                          sendStatusList: widget.sendStatusList,
+                          selectedIndex: _selectedIndex,
+                          onTap: (index) {
+                            setState(() {
+                              _selectedIndex = index;
+                            });
+                          },
+                        ),
+                        SB.h(20),
+                        AppButton.primary(
+                          height: 40,
+                          title: AppStrings.send,
+                          onPressed: widget.onReplyButtonTap,
+                        ),
+                        SB.h(10),
+                      ],
+                    ),
                   ),
-                  SB.h(20),
-                  DialougeComponents.tile(
-                    context,
-                    title: AppStrings.assignedBy,
-                    isDecoration: isUrgent,
-                    value: isUrgent ? AppStrings.urgent : null,
-                  ),
-                  SB.h(20),
-                  DialougeComponents.nameTile(
-                    context,
-                    name: ticket?.assignByName,
-                    desc: ticket?.roomName,
-                  ),
-                  SB.h(20),
-                  DialougeComponents.detailWithBorder(context, ticket?.comment),
-                  SB.h(20),
-                  DialougeComponents.reply(
-                    context,
-                    sendStatusList: widget.sendStatusList,
-                    selectedIndex: _selectedIndex,
-                    onTap: (index) {
-                      setState(() {
-                        _selectedIndex = index;
-                      });
-                    },
-                  ),
-                  SB.h(20),
-                  AppButton.primary(
-                    height: 40,
-                    title: AppStrings.send,
-                    onPressed: widget.onReplyButtonTap,
-                  ),
-                  SB.h(10),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 }
 

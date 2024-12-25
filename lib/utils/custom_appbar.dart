@@ -1,6 +1,7 @@
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/extensions/datetime_extension.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
+import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
 class CustomAppbar {
   static PreferredSize simpleAppBar(BuildContext context,
@@ -104,16 +105,23 @@ class CustomAppbar {
                       ),
                     if (showMailIcon) ...{
                       SB.w(10),
-                      GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.MESSAGE),
-                        child: Assets.icons.mail.svg(
-                          colorFilter: iconsClor != null
-                              ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
-                              : null,
-                          height: iconHeight,
-                          width: iconWeight,
-                        ),
-                      )
+                      GetBuilder<ProfileController>(
+                        builder: (controller) {
+                          return GestureDetector(
+                            onTap: () {
+                              controller.fetchUserProfile();
+                              Get.offNamed(AppRoutes.MESSAGE);
+                            },
+                            child: Assets.icons.mail.svg(
+                              colorFilter: iconsClor != null
+                                  ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
+                                  : null,
+                              height: iconHeight,
+                              width: iconWeight,
+                            ),
+                          );
+                        },
+                      ),
                     },
                     if (actionWidget != null) actionWidget,
                   ],

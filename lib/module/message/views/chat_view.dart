@@ -9,7 +9,7 @@ class ChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MessageController>(
-        init: MessageController(),
+        init: Get.put(MessageController()),
         builder: (controller) {
           return Scaffold(
             appBar: CustomAppbar.simpleAppBar(
@@ -90,15 +90,22 @@ class ChatView extends StatelessWidget {
                               child: Column(
                                 children: [
                                   SB.w(context.width),
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: 20,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return MessageComponents.messageTile(
-                                          context,
-                                          sender: index % 2 == 0);
+                                  Obx(
+                                    () {
+                                      return ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: controller.messages.length,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, index) {
+                                          return MessageComponents.messageTile(
+                                            context,
+                                            sender: index % 1 == 1,
+                                            msg: controller
+                                                .messages[index].message,
+                                          );
+                                        },
+                                      );
                                     },
                                   )
                                 ],
@@ -138,11 +145,19 @@ class ChatView extends StatelessWidget {
                               : context.width * 0.22) -
                           30,
                       child: CustomTextField(
+                        controller: controller.messageController,
                         validator: (value) => null,
                         borderRadius: 30,
                         hintText: AppStrings.typeeMessageHere,
                         suffixIcon: AppImages.send,
-                        onSuffixTap: () {},
+                        onSuffixTap: () {
+                          controller.sendMessages(
+                            userData.id,
+                            userData.id,
+                            controller.messageController.value.text.trim(),
+                            '${userData.type}',
+                          );
+                        },
                         maxLines: 1,
                       ),
                     ),
