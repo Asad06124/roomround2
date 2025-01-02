@@ -13,7 +13,6 @@ class APIFunction {
     APIMethods method,
     String endPoint, {
     var dataMap,
-    // var model,
     File? file,
     String? fileKey,
     String? audioKey,

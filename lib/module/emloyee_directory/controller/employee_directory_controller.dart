@@ -17,26 +17,26 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
   List<Employee> get searchResults => _searchResults;
 
   final List<String> _employeeTypes = [
+    AppStrings.all,
     AppStrings.allEmployees,
     AppStrings.allManagers,
   ];
 
   List<String> get employeeTypes => _employeeTypes;
   String? selectedEmployeeType;
-
   bool hasData = false;
-
-  bool managersOnly = false;
-
-  bool myEmployees = false;
-
+  bool? managersOnly;
   int? myDepartmentId;
+  int? managerId;
+  int? departmentId;
+  bool myEmployees = false;
 
   @override
   void onInit() {
     super.onInit();
     _addMyEmployeesType();
     _resetSelectedDepartment();
+    selectedEmployeeType = AppStrings.all;
     if (fetchEmployees) onSearch('');
   }
 
@@ -44,8 +44,15 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
     if (Get.isRegistered<DepartmentsController>()) {
       departmentsController.onDepartmentSelect(null);
       if (fetchDepartments) {
-        await departmentsController.getDepartments();
-        departmentsController.selectMyDepartment();
+        await departmentsController.getDepartments(
+          unassigned: null,
+          isAssignedEmployee: true,
+        );
+        onSearch(
+          departmentsController.selectedDepartment == null
+              ? searchTextField.text
+              : searchTextField.text,
+        );
         update();
       }
     }
@@ -54,11 +61,9 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
   void _addMyEmployeesType() {
     try {
       bool isManager = profileController.isManager;
-
       if (isManager) {
         String myEmployeesText = AppStrings.myEmployees;
         _employeeTypes.add(myEmployeesText);
-        selectedEmployeeType = myEmployeesText;
         myEmployees = true;
       }
 
@@ -90,10 +95,6 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
 
     int? departmentId =
         myDepartmentId ?? departmentsController.selectedDepartmentId;
-    int? managerId;
-    if (myEmployees) {
-      managerId = profileController.userId;
-    }
 
     List<Employee> resp = await getEmployeeList(
       search: text,
@@ -146,21 +147,41 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
 
   void onChangeEmployeeType(String? type) {
     switch (type) {
-      case AppStrings.myEmployees:
-        managersOnly = false;
-        myEmployees = true;
-        break;
-      case AppStrings.allManagers:
-        managersOnly = true;
-        myEmployees = false;
+      case AppStrings.all:
+        managersOnly = null;
+        managerId = null;
+        departmentId = null;
         break;
       case AppStrings.allEmployees:
         managersOnly = false;
-        myEmployees = false;
+        managerId = null;
+        departmentId = null;
+        break;
+      case AppStrings.allManagers:
+        managersOnly = true;
+        managerId = null;
+        departmentId = null;
+        break;
+      case AppStrings.myEmployees:
+        managersOnly = false;
+        myEmployees = true;
+        managerId = profileController.userId;
+        departmentId = profileController.departmentId;
         break;
       default:
         break;
     }
+    departmentsController.getDepartments(
+      unassigned: type == AppStrings.allManagers ? false : null,
+      isAssignedEmployee:
+          type == AppStrings.all || type == AppStrings.allEmployees
+              ? true
+              : null,
+      departmentId: type == AppStrings.myEmployees
+          ? profileController.departmentId
+          : null,
+    );
+    departmentsController.onDepartmentSelect(null);
     onSearch(searchTextField.text);
   }
 

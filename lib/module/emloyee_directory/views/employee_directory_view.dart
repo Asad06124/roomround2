@@ -4,9 +4,7 @@ import 'package:roomrounds/module/emloyee_directory/controller/employee_director
 
 class EmployeeDirectoryView extends StatelessWidget {
   EmployeeDirectoryView({super.key});
-
   final Debouncer _debouncer = Debouncer();
-
   @override
   Widget build(BuildContext context) {
     User? user = profileController.user;
@@ -70,9 +68,13 @@ class EmployeeDirectoryView extends StatelessWidget {
                               context,
                               hintText: AppStrings.selectDepartment,
                               list: departmentsController.getDepartmentsNames(),
-                              initialItem: departmentsController
-                                  .selectedDepartment?.departmentName
-                                  ?.trim(),
+                              initialItem:
+                                  departmentsController.selectedDepartment ==
+                                          null
+                                      ? "Select"
+                                      : departmentsController
+                                          .selectedDepartment?.departmentName
+                                          ?.trim(),
                               onSelect: controller.onChangeDepartment,
                             ),
                           ],
@@ -126,19 +128,21 @@ class EmployeeDirectoryView extends StatelessWidget {
         itemCount: list.length,
         itemBuilder: (context, index) {
           Employee employee = list[index];
-
-          String? image;
-          if (employee.imageKey?.isURL == true) {
-            image = employee.imageKey;
-          }
-
+          String imageUrl = (employee.imageKey?.isNotEmpty ?? false)
+              ? '${Urls.domain}${employee.imageKey}'
+              : AppImages.personPlaceholder;
+          Color roleColor = employee.roleName?.toLowerCase() == 'manager'
+              ? Color(0xff326FEA)
+              : AppColors.darkGrey;
           return CustomeTiles.employeeTile(
             context,
-            image: image,
+            image: imageUrl,
             title: employee.employeeName,
             subHeading: employee.roleName,
             subtile: employee.departmentName,
+            roleColor: roleColor,
             onPressed: () {
+              Get.toNamed(AppRoutes.CHAT);
               // Get.toNamed(
               //   AppRoutes.CREATE_TICKET,
               //   arguments: {
@@ -146,7 +150,6 @@ class EmployeeDirectoryView extends StatelessWidget {
               //     "initialDepartmentId": employee.departmentId,
               //   },
               // );
-              Get.toNamed(AppRoutes.CHAT);
             },
           );
         },

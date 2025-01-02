@@ -1041,41 +1041,55 @@ class AssignedThreadDialouge extends StatelessWidget {
                         DialougeComponents.detailWithBorder(
                             context, ticket?.comment),
                         //Images
-                        ticket!.ticketMedia!.isNotEmpty
-                            ? Column(
-                                children: [
-                                  SizedBox(
-                                    height: 80,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount:
-                                          ticket?.ticketMedia?.length ?? 0,
-                                      itemBuilder: (context, index) {
-                                        final imageUrl =
-                                            '$baseUrl${ticket!.ticketMedia![index].imagekey}';
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: CachedNetworkImage(
-                                            imageUrl: imageUrl,
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                Center(
-                                              child: CircularProgressIndicator(
-                                                color: AppColors.black,
-                                              ),
-                                            ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Icon(Icons.error),
+
+                        Row(
+                          children: [
+                            if ((ticket?.ticketMedia
+                                    ?.where((media) =>
+                                        media.imagekey?.isNotEmpty ?? false)
+                                    .isNotEmpty ??
+                                false))
+                              SizedBox(
+                                height: 80,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: ticket?.ticketMedia
+                                          ?.where((media) =>
+                                              media.imagekey?.isNotEmpty ??
+                                              false)
+                                          .length ??
+                                      0,
+                                  itemBuilder: (context, index) {
+                                    final imageMedia = ticket!.ticketMedia!
+                                        .where((media) =>
+                                            media.imagekey?.isNotEmpty ?? false)
+                                        .toList()[index];
+                                    final imageUrl =
+                                        '$baseUrl${imageMedia.imagekey}';
+
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: CachedNetworkImage(
+                                        imageUrl: imageUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => Center(
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.black,
                                           ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      ),
+                                    );
+                                  },
+                                ),
                               )
-                            : SizedBox(),
+                            else
+                              const SizedBox(),
+                          ],
+                        ),
+
                         ticket?.ticketMedia?.isNotEmpty ?? false
                             ? Column(
                                 children: ticket!.ticketMedia!
