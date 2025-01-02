@@ -12,19 +12,20 @@ class User {
   String? rgbColor;
   String? token;
 
-  User(
-      {this.userId,
-      this.username,
-      this.email,
-      this.rememberMe,
-      this.roleId,
-      this.role,
-      this.organizationId,
-      this.image,
-      this.map,
-      this.departmentId,
-      this.rgbColor,
-      this.token});
+  User({
+    this.userId,
+    this.username,
+    this.email,
+    this.rememberMe,
+    this.roleId,
+    this.role,
+    this.organizationId,
+    this.image,
+    this.map,
+    this.departmentId,
+    this.rgbColor,
+    this.token,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];

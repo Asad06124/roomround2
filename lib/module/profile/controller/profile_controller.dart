@@ -48,8 +48,11 @@ class ProfileController extends GetxController {
 
   bool get isEmployee => userType == UserType.employee;
 
-  void setUser(User? user, {bool saveUser = false}) {
+  void setUser(User? user, {bool saveUser = false, String? fcmToken}) {
     if (user != null) {
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        user.token = fcmToken;
+      }
       _user = user;
       log('data update=${_user!.toJson()}');
       update();

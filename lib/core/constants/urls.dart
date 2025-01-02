@@ -6,6 +6,7 @@ class Urls {
   static const String _auth = "/auth";
   static const String login = "$_auth/login";
   static const String forget = "$_auth/forgetPassword?email=";
+  static const String fcmToken = "$_auth/setFcmToken?fcmToken";
 
   // Rooms
   // static const String _room = "/room";
@@ -47,4 +48,7 @@ class Urls {
   static const String updateUser = "$_settings/updateUser";
   static const String updatePassword = "$_settings/updatePassword";
   static const String getUserProfile = "$_settings/getUserProfile";
+  //Push Notification
+  // static const String setFcmToken = "$_auth/setFcmToken";
+  // auth/setFcmToken?fcmToken=
 }
