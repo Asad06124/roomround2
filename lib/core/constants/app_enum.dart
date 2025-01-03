@@ -1,5 +1,7 @@
 enum YesNo { yes, no, na }
 
+enum PushNotify { ticketCreate, ticketStatus, assignedTemplate }
+
 enum UserType {
   superAdmin,
   organizationAdmin,

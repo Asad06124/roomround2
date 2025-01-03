@@ -1,5 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:overlay_notification/overlay_notification.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/routes/app_pages.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
@@ -10,13 +8,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
   _initControllers();
-  await Firebase.initializeApp();
-  PushNotificationController.notificationValues();
-  runApp(
-    OverlayNotification.global(
-      child: MyApp(),
-    ),
-  );
+  await PushNotificationController.initialize();
+
+  runApp(MyApp());
 }
 
 void _initControllers() {

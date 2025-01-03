@@ -1,14 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:overlay_notification/overlay_notification.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class PushNotificationController {
-  static FirebaseMessaging fcmMessage = FirebaseMessaging.instance;
+  static final FirebaseMessaging fcmMessage = FirebaseMessaging.instance;
   static String fcmToken = '';
   static bool isPermissionGranted = false;
-  // Grant Notification Permissions
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  static Future<void> initialize() async {
+    await Firebase.initializeApp();
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: androidSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+    await grantNotificationPermission();
+    await localNotificationByFirebase();
+  }
 
-  static grantNotificationPermission() async {
+  static Future<void> grantNotificationPermission() async {
     NotificationSettings settings = await fcmMessage.requestPermission(
       alert: true,
       announcement: false,
@@ -18,6 +32,7 @@ class PushNotificationController {
       provisional: false,
       sound: true,
     );
+
     await fcmMessage.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
@@ -30,28 +45,74 @@ class PushNotificationController {
         settings.authorizationStatus == AuthorizationStatus.authorized;
   }
 
-  static notificationValues() async {
-    await grantNotificationPermission();
-    await setupLocalNotifications();
-  }
-
-//Local Notification
-  static setupLocalNotifications() async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      showOverlayNotification((context) {
-        return Card(
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(vertical: 50, horizontal: 15),
-          child: ListTile(
-            minVerticalPadding: 0,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            title: Text(message.notification!.title ?? ""),
-            subtitle: Text(message.notification!.body ?? ""),
-            trailing: IconButton(icon: Icon(Icons.close), onPressed: () {}),
-          ),
+  static Future<void> localNotificationByFirebase() async {
+    // Listen for foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage? message) async {
+      if (message?.notification?.title != null) {
+        showNotification(
+          title: message?.notification?.title,
+          body: message?.notification?.body,
         );
-      }, duration: Duration(milliseconds: 4000));
+      }
+    });
+
+    // Listen for messages when the app is opened from the background
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) async {
+      if (message?.notification?.title != null) {
+        showNotification(
+          title: message?.notification?.title,
+          body: message?.notification?.body,
+        );
+      }
+    });
+
+    // Listen for initial messages when the app is launched from a terminated state
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) async {
+      if (message?.notification?.title != null) {
+        showNotification(
+          title: message?.notification?.title,
+          body: message?.notification?.body,
+        );
+      }
     });
   }
+
+  static Future<void> showNotification({
+    int? id,
+    String? title,
+    String? body,
+    String? payload,
+  }) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+      channelDescription: 'your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await flutterLocalNotificationsPlugin.show(
+      id ?? 0,
+      title,
+      body,
+      notificationDetails,
+      payload: payload,
+    );
+  }
+
+  // static clicksForNotification(Map<String, dynamic> notification) {
+  //   switch (notification["screen"]) {
+  //     case notification:
+  //       break;
+  //     case FireBaseMessageType.simpleChatMessage:
+  //       break;
+  //     case FireBaseMessageType.groupChatMessage:
+  //       break;
+  //   }
+  // }
 }

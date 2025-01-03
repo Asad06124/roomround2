@@ -2,6 +2,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/extensions/datetime_extension.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
+import 'package:roomrounds/module/push_notification/push_notification.dart';
 
 class CustomAppbar {
   static PreferredSize simpleAppBar(BuildContext context,
@@ -80,8 +81,11 @@ class CustomAppbar {
                           return Stack(
                             children: [
                               GestureDetector(
-                                  onTap: () =>
-                                      Get.toNamed(AppRoutes.NOTIFICATION),
+                                  onTap: () async {
+                                    print('xxxxxxxxxxxxxx');
+                                    await PushNotificationController
+                                        .showNotification();
+                                  },
                                   child: Assets.icons.bell.svg(
                                     colorFilter: iconsClor != null
                                         ? ColorFilter.mode(
