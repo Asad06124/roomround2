@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:full_screen_image/full_screen_image.dart';
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/components/app_image.dart';
@@ -13,8 +14,9 @@ class CloseTicketDialouge extends StatefulWidget {
   const CloseTicketDialouge({
     super.key,
     this.ticket,
-    this.controller,
+    this.assighController,
     this.onCloseTap,
+    this.showClose = true,
     this.onReplyButtonTap,
     this.sendStatusList = const [
       "Unable to resolve",
@@ -23,14 +25,18 @@ class CloseTicketDialouge extends StatefulWidget {
       'Pending',
       'Resolved',
     ],
+    this.onRadioTap,
+    this.textController,
   });
 
   final List<String> sendStatusList;
   final Ticket? ticket;
   final GestureTapCallback? onCloseTap;
   final GestureTapCallback? onReplyButtonTap;
-  final AssignedTaskController? controller;
-
+  final AssignedTaskController? assighController;
+  final bool showClose;
+  final Function(int)? onRadioTap;
+  final TextEditingController? textController;
   @override
   State<CloseTicketDialouge> createState() => _CloseTicketDialougeState();
 }
@@ -42,7 +48,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
   Widget build(BuildContext context) {
     Ticket? ticket = widget.ticket;
     bool isUrgent = ticket?.isUrgent == true;
-    const String baseUrl = 'http://roomroundapis.rootpointers.net/';
     return GetBuilder<AudioController>(
         init: AudioController(),
         builder: (controller) {
@@ -64,14 +69,16 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Column(
                       children: [
-                        SB.h(15),
-                        DialougeComponents.labelTile(
-                          context,
-                          isUnderline: true,
-                          title: ticket?.ticketName,
-                          status: AppStrings.close,
-                          onStatusTap: widget.onCloseTap,
-                        ),
+                        widget.showClose ? SB.h(15) : SizedBox(),
+                        widget.showClose
+                            ? DialougeComponents.labelTile(
+                                context,
+                                isUnderline: true,
+                                title: ticket?.ticketName,
+                                status: AppStrings.close,
+                                onStatusTap: widget.onCloseTap,
+                              )
+                            : SizedBox(),
                         SB.h(20),
                         DialougeComponents.tile(
                           context,
@@ -84,6 +91,8 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                           context,
                           name: ticket?.assignByName,
                           desc: ticket?.roomName,
+                          image: '${Urls.domain}${ticket?.assignByImage}',
+                          //Mohsin
                         ),
                         SB.h(20),
                         DialougeComponents.detailWithBorder(
@@ -100,7 +109,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                           ticket.ticketMedia?.length ?? 0,
                                       itemBuilder: (context, index) {
                                         final imageUrl =
-                                            '$baseUrl${ticket.ticketMedia![index].imagekey}';
+                                            '${Urls.domain}${ticket.ticketMedia![index].imagekey}';
                                         return Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: CachedNetworkImage(
@@ -132,31 +141,52 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                   final media = entry.value;
                                   final index = entry.key;
                                   final audioUrl =
-                                      'http://roomroundapis.rootpointers.net/${media.audioKey}';
+                                      '${Urls.domain}/${media.audioKey}';
 
                                   return Row(
                                     children: [
-                                      Obx(() => IconButton(
-                                            icon: Icon(
-                                              controller.isPlaying.value &&
-                                                      controller
-                                                              .currentlyPlayingIndex!
-                                                              .value ==
-                                                          index
-                                                  ? Icons.pause
-                                                  : Icons.play_arrow,
-                                              color: Colors.green,
+                                      Obx(() {
+                                        if (controller.isLoading.value &&
+                                            controller.currentlyPlayingIndex!
+                                                    .value ==
+                                                index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 20,
+                                              top: 5,
                                             ),
-                                            onPressed: () async {
-                                              if (audioUrl.isNotEmpty) {
-                                                await controller.playAudio(
-                                                    audioUrl, index);
-                                              } else {
-                                                debugPrint(
-                                                    'Invalid audio URL for index $index');
-                                              }
-                                            },
-                                          )),
+                                            child: SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child:
+                                                  const CircularProgressIndicator(
+                                                color: AppColors.primary,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        return IconButton(
+                                          icon: Icon(
+                                            controller.isPlaying.value &&
+                                                    controller
+                                                            .currentlyPlayingIndex!
+                                                            .value ==
+                                                        index
+                                                ? Icons.pause
+                                                : Icons.play_arrow,
+                                            color: Colors.green,
+                                          ),
+                                          onPressed: () async {
+                                            if (audioUrl.isNotEmpty) {
+                                              await controller.playAudio(
+                                                  audioUrl, index);
+                                            } else {
+                                              debugPrint(
+                                                  'Invalid audio URL for index $index');
+                                            }
+                                          },
+                                        );
+                                      }),
                                       Text('Audio ${index + 1}'),
                                     ],
                                   );
@@ -168,16 +198,18 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                           context,
                           sendStatusList: widget.sendStatusList,
                           selectedIndex: _selectedIndex,
+                          textField: widget.textController,
                           onTap: (index) {
                             setState(() {
                               _selectedIndex = index;
+                              widget.onRadioTap!(_selectedIndex);
                             });
                           },
                         ),
                         SB.h(20),
                         AppButton.primary(
                           height: 40,
-                          title: AppStrings.send,
+                          title: AppStrings.done,
                           onPressed: widget.onReplyButtonTap,
                         ),
                         SB.h(10),
@@ -710,14 +742,14 @@ class CreateTicketDialog extends StatelessWidget {
                 context,
                 isSelected: true,
                 name: selectedItem.employeeName,
-                image: selectedItem.employeeImage,
+                image: '${Urls.domain}${selectedItem.imageKey}',
               );
             },
             listItemBuilder: (context, item, isSelected, onItemSelect) {
               return DialougeComponents.nameTile(
                 context,
                 name: item.employeeName,
-                image: item.employeeImage,
+                image: '${Urls.domain}${item.imageKey}',
               );
             },
           );
@@ -982,7 +1014,6 @@ class AssignedThreadDialouge extends StatelessWidget {
   final GestureTapCallback? onDeleteTap;
   @override
   Widget build(BuildContext context) {
-    const String baseUrl = 'http://roomroundapis.rootpointers.net/';
     bool isUrgent = ticket?.isUrgent == true;
     DateTime? dateTime = ticket?.assignDate?.toDateTime();
     String? date, time;
@@ -1006,10 +1037,10 @@ class AssignedThreadDialouge extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  DialougeComponents.closeBtn(
-                    isDeleteBtn: true,
-                    onDelete: onDeleteTap,
-                  ),
+                  // DialougeComponents.closeBtn(
+                  //   isDeleteBtn: true,
+                  //   onDelete: onDeleteTap,
+                  // ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Column(
@@ -1020,7 +1051,7 @@ class AssignedThreadDialouge extends StatelessWidget {
                           context,
                           isUnderline: false,
                           title: ticket?.ticketName,
-                          status: ticket?.status,
+                          // status: ticket?.status,
                           statusColor: AppColors.gry,
                           titleStyle: context.bodyLarge!.copyWith(
                             color: AppColors.textGrey,
@@ -1066,20 +1097,57 @@ class AssignedThreadDialouge extends StatelessWidget {
                                             media.imagekey?.isNotEmpty ?? false)
                                         .toList()[index];
                                     final imageUrl =
-                                        '$baseUrl${imageMedia.imagekey}';
+                                        '${Urls.domain}${imageMedia.imagekey}';
 
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: CachedNetworkImage(
-                                        imageUrl: imageUrl,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) => Center(
-                                          child: CircularProgressIndicator(
-                                            color: AppColors.black,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  FullScreenWidget(
+                                                disposeLevel: DisposeLevel.Low,
+                                                child: Hero(
+                                                  tag: "",
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: imageUrl,
+                                                      fit: BoxFit.cover,
+                                                      placeholder:
+                                                          (context, url) =>
+                                                              Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          color:
+                                                              AppColors.black,
+                                                        ),
+                                                      ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Icon(Icons.error),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: CachedNetworkImage(
+                                          imageUrl: imageUrl,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) => Center(
+                                            child: CircularProgressIndicator(
+                                              color: AppColors.black,
+                                            ),
                                           ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
                                         ),
-                                        errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
                                       ),
                                     );
                                   },
@@ -1090,6 +1158,46 @@ class AssignedThreadDialouge extends StatelessWidget {
                           ],
                         ),
 
+                        // ticket?.ticketMedia?.isNotEmpty ?? false
+                        //     ? Column(
+                        //         children: ticket!.ticketMedia!
+                        //             .asMap()
+                        //             .entries
+                        //             .map((entry) {
+                        //           final media = entry.value;
+                        //           final index = entry.key;
+                        //           final audioUrl =
+                        //               'http://roomroundapis.rootpointers.net/${media.audioKey}';
+
+                        //           return Row(
+                        //             children: [
+                        //               Obx(() => IconButton(
+                        //                     icon: Icon(
+                        //                       controller.isPlaying.value &&
+                        //                               controller
+                        //                                       .currentlyPlayingIndex!
+                        //                                       .value ==
+                        //                                   index
+                        //                           ? Icons.pause
+                        //                           : Icons.play_arrow,
+                        //                       color: Colors.green,
+                        //                     ),
+                        //                     onPressed: () async {
+                        //                       if (audioUrl.isNotEmpty) {
+                        //                         await controller.playAudio(
+                        //                             audioUrl, index);
+                        //                       } else {
+                        //                         debugPrint(
+                        //                             'Invalid audio URL for index $index');
+                        //                       }
+                        //                     },
+                        //                   )),
+                        //               Text('Audio ${index + 1}'),
+                        //             ],
+                        //           );
+                        //         }).toList(),
+                        //       )
+                        //     : const SizedBox(),
                         ticket?.ticketMedia?.isNotEmpty ?? false
                             ? Column(
                                 children: ticket!.ticketMedia!
@@ -1103,27 +1211,48 @@ class AssignedThreadDialouge extends StatelessWidget {
 
                                   return Row(
                                     children: [
-                                      Obx(() => IconButton(
-                                            icon: Icon(
-                                              controller.isPlaying.value &&
-                                                      controller
-                                                              .currentlyPlayingIndex!
-                                                              .value ==
-                                                          index
-                                                  ? Icons.pause
-                                                  : Icons.play_arrow,
-                                              color: Colors.green,
+                                      Obx(() {
+                                        if (controller.isLoading.value &&
+                                            controller.currentlyPlayingIndex!
+                                                    .value ==
+                                                index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 20,
+                                              top: 5,
                                             ),
-                                            onPressed: () async {
-                                              if (audioUrl.isNotEmpty) {
-                                                await controller.playAudio(
-                                                    audioUrl, index);
-                                              } else {
-                                                debugPrint(
-                                                    'Invalid audio URL for index $index');
-                                              }
-                                            },
-                                          )),
+                                            child: SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child:
+                                                  const CircularProgressIndicator(
+                                                color: AppColors.primary,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        return IconButton(
+                                          icon: Icon(
+                                            controller.isPlaying.value &&
+                                                    controller
+                                                            .currentlyPlayingIndex!
+                                                            .value ==
+                                                        index
+                                                ? Icons.pause
+                                                : Icons.play_arrow,
+                                            color: Colors.green,
+                                          ),
+                                          onPressed: () async {
+                                            if (audioUrl.isNotEmpty) {
+                                              await controller.playAudio(
+                                                  audioUrl, index);
+                                            } else {
+                                              debugPrint(
+                                                  'Invalid audio URL for index $index');
+                                            }
+                                          },
+                                        );
+                                      }),
                                       Text('Audio ${index + 1}'),
                                     ],
                                   );
@@ -1152,12 +1281,16 @@ class AssignedThreadDialouge extends StatelessWidget {
                         DialougeComponents.nameTile(
                           context,
                           name: ticket?.assignToName,
+                          image: '${Urls.domain}${ticket?.assignToImage}',
+                          //Image2
                         ),
                         SB.h(15),
-                        DialougeComponents.dateTile(context,
-                            label: AppStrings.assignedDate,
-                            date: date,
-                            time: time),
+                        DialougeComponents.dateTile(
+                          context,
+                          label: AppStrings.assignedDate,
+                          date: date,
+                          time: time,
+                        ),
                         SB.h(20),
                         Text(
                           AppStrings.urgent,
@@ -1191,6 +1324,11 @@ class AssignedThreadDialouge extends StatelessWidget {
                         SB.h(15),
                       ],
                     ),
+                  ),
+                  AppButton.primary(
+                    height: 40,
+                    title: AppStrings.done,
+                    onPressed: onDeleteTap,
                   ),
                 ],
               ),
@@ -1394,7 +1532,7 @@ class DialougeComponents {
           // if (image != null && image.trim().isNotEmpty)
           AppImage.network(
             imageUrl: image != null && image.trim().isNotEmpty
-                ? image.trim().completeUrl
+                ? image
                 : AppImages.personPlaceholder,
             borderRadius: BorderRadius.circular(20),
             fit: BoxFit.cover,
@@ -1468,7 +1606,8 @@ class DialougeComponents {
   static Widget reply(BuildContext context,
       {List<String>? sendStatusList,
       Function(int v)? onTap,
-      int? selectedIndex}) {
+      int? selectedIndex,
+      TextEditingController? textField}) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -1490,6 +1629,7 @@ class DialougeComponents {
             validator: (value) => null,
             borderColor: AppColors.gry,
             hintText: "Write reply...",
+            controller: textField,
           ),
           SB.h(10),
           Text(

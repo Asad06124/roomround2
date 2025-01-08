@@ -13,7 +13,6 @@ class AssignedTasksView extends StatelessWidget {
           bool isManager = profileController.isManager;
           int? totalTickets = controller.totalTicketsCount;
           int? urgentTickets = controller.urgentTicketsCount;
-
           return Scaffold(
             backgroundColor: AppColors.white,
             appBar: CustomAppbar.simpleAppBar(
@@ -79,7 +78,8 @@ class AssignedTasksView extends StatelessWidget {
                         : CustomLoader(),
                   ),
                   SB.h(10),
-                  if (controller.ticketsType == TicketsType.assignedMe) ...[
+                  if (controller.ticketsType == TicketsType.assignedMe ||
+                      controller.ticketsType == TicketsType.assignedTo) ...[
                     // Show Closed Tickets List Container
                     Expanded(
                       child: controller.hasClosedTickets

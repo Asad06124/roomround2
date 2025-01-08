@@ -24,6 +24,7 @@ class APIFunction {
     bool showSuccessMessage = false,
     bool getOnlyStatusCode = false,
     bool getStatusOnly = false,
+    bool isGoBack = true,
     Map<String, String>? customHeaders,
     Function(Map<String, dynamic>)? fromJson,
   }) async {
@@ -107,7 +108,11 @@ class APIFunction {
         type: LoggerType.info,
       );
 
-      if (showLoader) CustomOverlays.dismissLoader();
+      if (showLoader) {
+        isGoBack
+            ? CustomOverlays.dismissLoader()
+            : CustomOverlays.showLoaderOnScreen();
+      }
 
       String? errorMessage;
 

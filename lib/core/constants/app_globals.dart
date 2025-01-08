@@ -2,9 +2,12 @@
 
 import 'package:roomrounds/core/apis/models/user_data/user_model.dart';
 import 'package:roomrounds/core/constants/app_enum.dart';
+import 'package:roomrounds/core/constants/imports.dart';
 
 class AppGlobals {
   User? _user;
+  static int selectedIndex = -1;
+  static TextEditingController? replyController;
 
   static List<DummyUser> dummyData = [
     DummyUser(

@@ -80,16 +80,20 @@ class CustomAppbar {
                           return Stack(
                             children: [
                               GestureDetector(
-                                  onTap: () =>
-                                      Get.toNamed(AppRoutes.NOTIFICATION),
-                                  child: Assets.icons.bell.svg(
-                                    colorFilter: iconsClor != null
-                                        ? ColorFilter.mode(
-                                            iconsClor, BlendMode.srcIn)
-                                        : null,
-                                    height: iconHeight + 4,
-                                    width: iconWeight + 4,
-                                  )),
+                                onTap: () {
+                                  Get.find<NotificationController>()
+                                      .fetchNotificationsList();
+                                  Get.toNamed(AppRoutes.NOTIFICATION);
+                                },
+                                child: Assets.icons.bell.svg(
+                                  colorFilter: iconsClor != null
+                                      ? ColorFilter.mode(
+                                          iconsClor, BlendMode.srcIn)
+                                      : null,
+                                  height: iconHeight + 4,
+                                  width: iconWeight + 4,
+                                ),
+                              ),
                               if (hasNotifications)
                                 Positioned(
                                   right: 3,

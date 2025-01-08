@@ -3,7 +3,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 class AppStrings {
   static const String about = "About";
   static const String account = "Account";
-  static const String all = "All";
+  static const String all = "Employee";
   static const String allEmployees = "All Employees";
   static const String allManagers = "All Managers";
   static const String allRooms = "All Rooms";

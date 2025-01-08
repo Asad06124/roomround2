@@ -9,7 +9,6 @@ void main() async {
   await DataStorageHelper.init();
   _initControllers();
   await PushNotificationController.initialize();
-
   runApp(MyApp());
 }
 

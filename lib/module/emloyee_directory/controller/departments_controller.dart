@@ -57,7 +57,7 @@ class DepartmentsController extends GetxController {
   }
 
   List<String> getDepartmentsNames() {
-    List<String> names = ['Select'];
+    List<String> names = ['Department'];
 
     if (_departments.isNotEmpty) {
       for (var dep in _departments) {

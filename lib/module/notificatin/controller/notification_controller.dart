@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/notifications/notification_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
@@ -44,10 +46,11 @@ class NotificationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _fetchNotificationsList();
+    fetchNotificationsList();
+    log('xxxxxxxxxxxxxxxxxxxx');
   }
 
-  void _fetchNotificationsList() async {
+  void fetchNotificationsList() async {
     _updateHasData(false);
 
     Map<String, dynamic> data = {

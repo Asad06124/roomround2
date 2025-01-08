@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
+import 'package:roomrounds/core/apis/models/tickets/ticket_status_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
@@ -16,15 +19,16 @@ class AssignedTaskController extends GetxController {
 
   List<Ticket> get openTicketsList => _openTicketsList;
   List<Ticket> get closedTicketsList => _closedTicketsList;
+  List<TicketStatusModel>? _ticketStatusList;
 
   final List<String> _ticketsTypesList = [AppStrings.assignedMe];
 
   List<String> get ticketsTypesList => _ticketsTypesList;
-
+  int? statusId;
   TicketsType _ticketsType = TicketsType.assignedMe;
 
   TicketsType get ticketsType => _ticketsType;
-
+  TextEditingController replyController = TextEditingController();
   @override
   void onInit() {
     super.onInit();
@@ -80,7 +84,7 @@ class AssignedTaskController extends GetxController {
 
     Map<String, dynamic> data = {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
-      "ticketStatus": statuses,
+      "isClosed": false,
       "assignBy": managerId,
       "pageNo": 1,
       "size": 20,
@@ -97,6 +101,7 @@ class AssignedTaskController extends GetxController {
     );
 
     if (resp != null && resp is TicketsListModel) {
+      fetchTicketStatusList();
       List<Ticket>? tickets = resp.tickets;
       totalTicketsCount = resp.totalTicketCount;
       urgentTicketsCount = resp.urgentTicketCount;
@@ -128,9 +133,15 @@ class AssignedTaskController extends GetxController {
     }
   }
 
-  void _closeTicketApi({int? ticketId, String? status}) async {
+  void _closeTicketApi({
+    int? ticketId,
+    String? reply,
+    int? statusId,
+    bool? isClosed,
+  }) async {
     if (ticketId != null) {
-      String params = '?ticketId=$ticketId&statusName=$status';
+      String params =
+          '?ticketId=12&reply=$reply&statusId=$statusId&isClosed=$isClosed';
 
       var resp = await APIFunction.call(
         APIMethods.post,
@@ -194,10 +205,36 @@ class AssignedTaskController extends GetxController {
       }
       // update();
       _fetchAssignedTickets();
-      if (_ticketsType == TicketsType.assignedMe) {
+      if (_ticketsType == TicketsType.assignedMe ||
+          _ticketsType == TicketsType.assignedTo) {
         _fetchAssignedTickets(isClosed: true);
       }
     }
+  }
+
+  Future<List<TicketStatusModel>> fetchTicketStatusList() async {
+    if (_ticketStatusList != null && _ticketStatusList!.isNotEmpty) {
+      return _ticketStatusList!;
+    }
+
+    Map<String, dynamic> data = {
+      "type": "TicketDependenciesStatus",
+    };
+    var resp = await APIFunction.call(
+      APIMethods.post,
+      Urls.ticketStatus,
+      dataMap: data,
+      showLoader: false,
+      showErrorMessage: true,
+      isGoBack: false,
+    );
+
+    if (resp != null && resp is List) {
+      _ticketStatusList =
+          resp.map((item) => TicketStatusModel.fromJson(item)).toList();
+      return _ticketStatusList!;
+    }
+    return [];
   }
 
   void onTicketTap(
@@ -278,22 +315,31 @@ class AssignedTaskController extends GetxController {
     update();
   }
 
-  void _openTicketsDialog({TicketDialogs? type, Ticket? ticket}) {
+  void _openTicketsDialog({TicketDialogs? type, Ticket? ticket}) async {
+    List<TicketStatusModel> statusList = await fetchTicketStatusList();
+    List<String> statusStrings =
+        statusList.map((status) => status.value ?? '').toList();
+
     customLogger("Ticket: ${ticket?.toJson()}");
     // Employee Dialogs
     if (type == TicketDialogs.closeTicket) {
       _showFullWidthDialog(
         CloseTicketDialouge(
           ticket: ticket,
-          onCloseTap: () {
-            Get.back(); // Close Dialog
+          showClose: false,
+          sendStatusList: statusStrings,
+          textController: replyController,
+          onReplyButtonTap: () {
             _closeTicketApi(
               ticketId: ticket?.ticketId,
-              status: TicketStatus.closed.name.capitalize,
+              reply: replyController.text,
+              statusId: statusId,
+              isClosed: true,
             );
           },
-          onReplyButtonTap: () {
-            Get.back();
+          onRadioTap: (index) {
+            index = statusList[index].lookupId!;
+            statusId = index;
           },
         ),
       );
@@ -341,7 +387,10 @@ class AssignedTaskController extends GetxController {
           ticket: ticket,
           onDeleteTap: () {
             Get.back(); // Close the dialog
-            _deleteTicket(ticketId: ticket?.ticketId, isDeleted: true);
+            _deleteTicket(
+              ticketId: ticket?.ticketId,
+              isDeleted: true,
+            );
           },
         ),
       );

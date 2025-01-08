@@ -33,6 +33,9 @@ class EmployeeDirectoryView extends StatelessWidget {
           builder: (controller) {
             return Column(
               children: [
+                SizedBox(
+                  height: 10.0,
+                ),
                 Expanded(
                   child: Container(
                     // width: context.width,
@@ -71,7 +74,7 @@ class EmployeeDirectoryView extends StatelessWidget {
                               initialItem:
                                   departmentsController.selectedDepartment ==
                                           null
-                                      ? "Select"
+                                      ? "Department"
                                       : departmentsController
                                           .selectedDepartment?.departmentName
                                           ?.trim(),

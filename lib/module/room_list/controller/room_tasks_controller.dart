@@ -205,6 +205,7 @@ class RoomTasksController extends GetxController {
       showLoader: true,
       showErrorMessage: true,
       showSuccessMessage: true,
+      isGoBack: false,
     );
 
     if (resp != null && resp is bool && resp == true) {
@@ -237,11 +238,14 @@ class RoomTasksController extends GetxController {
       showLoader: true,
       showErrorMessage: true,
       showSuccessMessage: true,
+      isGoBack: false,
     );
 
     if (resp != null && resp is bool && resp == true) {
       if (resp && index < _tasks.length) {
+        _fetchTasksList(roomId);
         _tasks[index].taskStatus = resp;
+
         // update();
       }
     }
