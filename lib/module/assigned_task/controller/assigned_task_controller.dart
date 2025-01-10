@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_status_model.dart';
@@ -84,7 +82,7 @@ class AssignedTaskController extends GetxController {
 
     Map<String, dynamic> data = {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
-      "isClosed": false,
+      "isClosed": isClosed ? true : false,
       "assignBy": managerId,
       "pageNo": 1,
       "size": 20,
@@ -141,7 +139,7 @@ class AssignedTaskController extends GetxController {
   }) async {
     if (ticketId != null) {
       String params =
-          '?ticketId=12&reply=$reply&statusId=$statusId&isClosed=$isClosed';
+          '?ticketId=$ticketId&reply=$reply&statusId=$statusId&isClosed=$isClosed';
 
       var resp = await APIFunction.call(
         APIMethods.post,
@@ -175,22 +173,22 @@ class AssignedTaskController extends GetxController {
     }
   }
 
-  void _deleteTicket({int? ticketId, bool isDeleted = false}) async {
-    if (ticketId != null) {
-      var resp = await APIFunction.call(
-        APIMethods.delete,
-        Urls.deleteTicket,
-        dataMap: {"id": ticketId, "isDeleted": isDeleted},
-        showLoader: true,
-        showErrorMessage: true,
-        showSuccessMessage: true,
-      );
+  // void _deleteTicket({int? ticketId, bool isDeleted = false}) async {
+  //   if (ticketId != null) {
+  //     var resp = await APIFunction.call(
+  //       APIMethods.delete,
+  //       Urls.deleteTicket,
+  //       dataMap: {"id": ticketId, "isDeleted": isDeleted},
+  //       showLoader: true,
+  //       showErrorMessage: true,
+  //       showSuccessMessage: true,
+  //     );
 
-      if (resp != null && resp is bool && resp == true) {
-        _refreshOpenAndClosedTickets();
-      }
-    }
-  }
+  //     if (resp != null && resp is bool && resp == true) {
+  //       _refreshOpenAndClosedTickets();
+  //     }
+  //   }
+  // }
 
   void changeTicketsType(String? value) {
     if (value != null && value.trim().isNotEmpty) {
@@ -385,11 +383,11 @@ class AssignedTaskController extends GetxController {
       _showFullWidthDialog(
         AssignedThreadDialouge(
           ticket: ticket,
-          onDeleteTap: () {
-            Get.back(); // Close the dialog
-            _deleteTicket(
+          onCompleteTap: () {
+            Get.back();
+            _completeTicket(
               ticketId: ticket?.ticketId,
-              isDeleted: true,
+              isCompleted: true,
             );
           },
         ),

@@ -13,6 +13,7 @@ class AssignedTasksView extends StatelessWidget {
           bool isManager = profileController.isManager;
           int? totalTickets = controller.totalTicketsCount;
           int? urgentTickets = controller.urgentTicketsCount;
+
           return Scaffold(
             backgroundColor: AppColors.white,
             appBar: CustomAppbar.simpleAppBar(
@@ -280,16 +281,15 @@ class AssignedTasksView extends StatelessWidget {
               itemBuilder: (context, index) {
                 Ticket ticket = list[index];
 
-                String? status = isClosedTickets
-                    ? AppStrings.closed
-                    : type == TicketsType.assignedMe
-                        ? isManager
-                            ? AppStrings.seeThread
-                            : AppStrings.close
-                        : type == TicketsType.assignedTo
-                            ? AppStrings.assigned
-                            : AppStrings.openThread;
-
+//                 String? status = isClosedTickets
+//                     ? AppStrings.closed
+//                     : type == TicketsType.assignedMe
+//                         ? isManager
+//                             ? AppStrings.seeThread
+//                             : AppStrings.close
+//                         : type == TicketsType.assignedTo
+//                             ? AppStrings.assigned
+//                             : AppStrings.openThread;
                 bool showUnderline =
                     !isClosedTickets && type != TicketsType.assignedTo;
 
@@ -300,7 +300,7 @@ class AssignedTasksView extends StatelessWidget {
                       ticket.assignToName,
                   // showIsActiveDot:
                   //     type == TicketsType.assignedMe ? index % 2 == 0 : false,
-                  status: status,
+                  status: ticket.isClosed == false ? 'Open' : 'Close',
                   isUnderline: showUnderline,
                   onStatusPressed: showUnderline
                       ? () {

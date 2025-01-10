@@ -133,7 +133,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                               )
                             : SizedBox(),
                         ticket.ticketMedia?.isNotEmpty ?? false
-                            ? Column(
+                            ? Row(
                                 children: ticket.ticketMedia!
                                     .asMap()
                                     .entries
@@ -1008,10 +1008,10 @@ class AssignedThreadDialouge extends StatelessWidget {
   const AssignedThreadDialouge({
     super.key,
     this.ticket,
-    this.onDeleteTap,
+    this.onCompleteTap,
   });
   final Ticket? ticket;
-  final GestureTapCallback? onDeleteTap;
+  final GestureTapCallback? onCompleteTap;
   @override
   Widget build(BuildContext context) {
     bool isUrgent = ticket?.isUrgent == true;
@@ -1046,292 +1046,555 @@ class AssignedThreadDialouge extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SB.h(15),
-                        DialougeComponents.labelTile(
-                          context,
-                          isUnderline: false,
-                          title: ticket?.ticketName,
-                          // status: ticket?.status,
-                          statusColor: AppColors.gry,
-                          titleStyle: context.bodyLarge!.copyWith(
-                            color: AppColors.textGrey,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SB.h(20),
-                        Text(
-                          "${AppStrings.ticket}:",
-                          textAlign: TextAlign.start,
-                          style: context.bodyLarge!.copyWith(
-                            color: AppColors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SB.h(5),
-
-                        DialougeComponents.detailWithBorder(
-                            context, ticket?.comment),
-                        //Images
-
+                        // SB.h(15),
+                        // DialougeComponents.labelTile(
+                        //   context,
+                        //   isUnderline: false,
+                        //   title: ticket?.ticketName,
+                        //   // status: ticket?.status,
+                        //   statusColor: AppColors.gry,
+                        //   titleStyle: context.bodyLarge!.copyWith(
+                        //     color: AppColors.textGrey,
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        // ),
+                        // SB.h(20),
+                        // Text(
+                        //   "${AppStrings.ticket}:",
+                        //   textAlign: TextAlign.start,
+                        //   style: context.bodyLarge!.copyWith(
+                        //     color: AppColors.black,
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        // ),
+                        // SB.h(5),
                         Row(
                           children: [
-                            if ((ticket?.ticketMedia
-                                    ?.where((media) =>
-                                        media.imagekey?.isNotEmpty ?? false)
-                                    .isNotEmpty ??
-                                false))
-                              SizedBox(
-                                height: 80,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: ticket?.ticketMedia
-                                          ?.where((media) =>
-                                              media.imagekey?.isNotEmpty ??
-                                              false)
-                                          .length ??
-                                      0,
-                                  itemBuilder: (context, index) {
-                                    final imageMedia = ticket!.ticketMedia!
-                                        .where((media) =>
-                                            media.imagekey?.isNotEmpty ?? false)
-                                        .toList()[index];
-                                    final imageUrl =
-                                        '${Urls.domain}${imageMedia.imagekey}';
-
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  FullScreenWidget(
-                                                disposeLevel: DisposeLevel.Low,
-                                                child: Hero(
-                                                  tag: "",
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: imageUrl,
-                                                      fit: BoxFit.cover,
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          color:
-                                                              AppColors.black,
-                                                        ),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          Icon(Icons.error),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: CachedNetworkImage(
-                                          imageUrl: imageUrl,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) => Center(
-                                            child: CircularProgressIndicator(
-                                              color: AppColors.black,
-                                            ),
-                                          ),
-                                          errorWidget: (context, url, error) =>
-                                              Icon(Icons.error),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            else
-                              const SizedBox(),
+                            Text(
+                              'RoomName:  ',
+                              textAlign: TextAlign.start,
+                              style: context.bodyLarge!.copyWith(
+                                color: AppColors.gry,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              ticket!.roomName.toString(),
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.bodyLarge!.copyWith(
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
-
-                        // ticket?.ticketMedia?.isNotEmpty ?? false
-                        //     ? Column(
-                        //         children: ticket!.ticketMedia!
-                        //             .asMap()
-                        //             .entries
-                        //             .map((entry) {
-                        //           final media = entry.value;
-                        //           final index = entry.key;
-                        //           final audioUrl =
-                        //               'http://roomroundapis.rootpointers.net/${media.audioKey}';
-
-                        //           return Row(
-                        //             children: [
-                        //               Obx(() => IconButton(
-                        //                     icon: Icon(
-                        //                       controller.isPlaying.value &&
-                        //                               controller
-                        //                                       .currentlyPlayingIndex!
-                        //                                       .value ==
-                        //                                   index
-                        //                           ? Icons.pause
-                        //                           : Icons.play_arrow,
-                        //                       color: Colors.green,
-                        //                     ),
-                        //                     onPressed: () async {
-                        //                       if (audioUrl.isNotEmpty) {
-                        //                         await controller.playAudio(
-                        //                             audioUrl, index);
-                        //                       } else {
-                        //                         debugPrint(
-                        //                             'Invalid audio URL for index $index');
-                        //                       }
-                        //                     },
-                        //                   )),
-                        //               Text('Audio ${index + 1}'),
-                        //             ],
-                        //           );
-                        //         }).toList(),
-                        //       )
-                        //     : const SizedBox(),
-                        ticket?.ticketMedia?.isNotEmpty ?? false
-                            ? Column(
-                                children: ticket!.ticketMedia!
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
-                                  final media = entry.value;
-                                  final index = entry.key;
-                                  final audioUrl =
-                                      'http://roomroundapis.rootpointers.net/${media.audioKey}';
-
-                                  return Row(
-                                    children: [
-                                      Obx(() {
-                                        if (controller.isLoading.value &&
-                                            controller.currentlyPlayingIndex!
-                                                    .value ==
-                                                index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                              right: 20,
-                                              top: 5,
-                                            ),
-                                            child: SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child:
-                                                  const CircularProgressIndicator(
-                                                color: AppColors.primary,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        return IconButton(
-                                          icon: Icon(
-                                            controller.isPlaying.value &&
-                                                    controller
-                                                            .currentlyPlayingIndex!
-                                                            .value ==
-                                                        index
-                                                ? Icons.pause
-                                                : Icons.play_arrow,
-                                            color: Colors.green,
-                                          ),
-                                          onPressed: () async {
-                                            if (audioUrl.isNotEmpty) {
-                                              await controller.playAudio(
-                                                  audioUrl, index);
-                                            } else {
-                                              debugPrint(
-                                                  'Invalid audio URL for index $index');
-                                            }
-                                          },
-                                        );
-                                      }),
-                                      Text('Audio ${index + 1}'),
-                                    ],
-                                  );
-                                }).toList(),
-                              )
-                            : const SizedBox(),
-                        SB.h(20),
+                        SB.h(5),
+                        // DialougeComponents.detailWithBorder(
+                        //   context,
+                        //   ticket?.comment,
+                        // ),
                         Text(
-                          AppStrings.directory,
-                          textAlign: TextAlign.start,
-                          style: context.bodyLarge!.copyWith(
-                            color: AppColors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SB.h(15),
-                        Text(
-                          "${AppStrings.assignedTo}:",
+                          'Ticket:',
                           textAlign: TextAlign.start,
                           style: context.bodyLarge!.copyWith(
                             color: AppColors.gry,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SB.h(15),
-                        DialougeComponents.nameTile(
-                          context,
-                          name: ticket?.assignToName,
-                          image: '${Urls.domain}${ticket?.assignToImage}',
-                          //Image2
+                        SB.h(5),
+                        Container(
+                          width: MediaQuery.sizeOf(context).width,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.gry),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              ticket!.comment.toString(),
+                              style: context.bodyLarge!.copyWith(
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
-                        SB.h(15),
+                        SB.h(5),
+                        ticket?.isClosed == true
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Status :',
+                                    textAlign: TextAlign.start,
+                                    style: context.bodyLarge!.copyWith(
+                                      color: AppColors.gry,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      color:
+                                          Color(0xffFFC700).withOpacity(0.24),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      child: Text(
+                                        ticket?.status.toString() ?? '',
+                                        textAlign: TextAlign.start,
+                                        style: context.bodyLarge!.copyWith(
+                                          color: AppColors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : SizedBox(),
+                        SB.h(5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Urgent :',
+                              textAlign: TextAlign.start,
+                              style: context.bodyLarge!.copyWith(
+                                color: AppColors.gry,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.0),
+                                color: Color(0xff33FF00).withOpacity(0.24),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 5),
+                                child: Text(
+                                  ticket?.isUrgent == true ? 'Yes' : 'No',
+                                  textAlign: TextAlign.start,
+                                  style: context.bodyLarge!.copyWith(
+                                    color: AppColors.black,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        ticket?.isClosed == true
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Response to Your Ticket :',
+                                    textAlign: TextAlign.start,
+                                    style: context.bodyLarge!.copyWith(
+                                      color: AppColors.gry,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SB.h(5),
+                                  Container(
+                                    width: MediaQuery.sizeOf(context).width,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: AppColors.gry),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        ticket!.reply.toString(),
+                                        style: context.bodyLarge!.copyWith(
+                                          color: AppColors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : SizedBox(),
+                        SB.h(5),
                         DialougeComponents.dateTile(
                           context,
                           label: AppStrings.assignedDate,
                           date: date,
                           time: time,
                         ),
-                        SB.h(20),
-                        Text(
-                          AppStrings.urgent,
-                          textAlign: TextAlign.start,
-                          style: context.bodyLarge!.copyWith(
-                            color: AppColors.black,
-                            fontWeight: FontWeight.w600,
+                        SB.h(5),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: Color(0xffF1F1F1),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: DialougeComponents.nameTile(
+                              context,
+                              name: ticket?.assignToName,
+                              image: '${Urls.domain}${ticket?.assignToImage}',
+                              //Image2
+                            ),
                           ),
                         ),
-                        SB.h(15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            RoomMapComponents.radioButton<YesNo>(
-                              context,
-                              YesNo.yes,
-                              isUrgent ? YesNo.yes : YesNo.no,
-                              AppStrings.yes,
-                              (value) {},
-                              width: context.width * 0.35,
-                            ),
-                            RoomMapComponents.radioButton<YesNo>(
-                              context,
-                              YesNo.no,
-                              isUrgent ? YesNo.yes : YesNo.no,
-                              AppStrings.no,
-                              (value) {},
-                            ),
-                          ],
-                        ),
-                        SB.h(15),
+                        SB.h(8),
                       ],
                     ),
                   ),
-                  AppButton.primary(
-                    height: 40,
-                    title: AppStrings.done,
-                    onPressed: onDeleteTap,
+                  Row(
+                    children: [
+                      if ((ticket?.ticketMedia
+                              ?.where((media) =>
+                                  media.imagekey?.isNotEmpty ?? false)
+                              .isNotEmpty ??
+                          false))
+                        SizedBox(
+                          height: 80,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: ticket?.ticketMedia
+                                    ?.where((media) =>
+                                        media.imagekey?.isNotEmpty ?? false)
+                                    .length ??
+                                0,
+                            itemBuilder: (context, index) {
+                              final imageMedia = ticket!.ticketMedia!
+                                  .where((media) =>
+                                      media.imagekey?.isNotEmpty ?? false)
+                                  .toList()[index];
+                              final imageUrl =
+                                  '${Urls.domain}${imageMedia.imagekey}';
+
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FullScreenWidget(
+                                          disposeLevel: DisposeLevel.Low,
+                                          child: Hero(
+                                            tag: "",
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              child: CachedNetworkImage(
+                                                imageUrl: imageUrl,
+                                                fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: AppColors.black,
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(Icons.error),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: CachedNetworkImage(
+                                    imageUrl: imageUrl,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.black,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      else
+                        const SizedBox(),
+                    ],
                   ),
+                  ticket?.ticketMedia?.isNotEmpty ?? false
+                      ? Row(
+                          children:
+                              ticket!.ticketMedia!.asMap().entries.map((entry) {
+                            final media = entry.value;
+                            final index = entry.key;
+                            final audioUrl =
+                                'http://roomroundapis.rootpointers.net/${media.audioKey}';
+
+                            return Row(
+                              children: [
+                                Obx(() => IconButton(
+                                      icon: Icon(
+                                        controller.isPlaying.value &&
+                                                controller
+                                                        .currentlyPlayingIndex!
+                                                        .value ==
+                                                    index
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        color: Colors.green,
+                                      ),
+                                      onPressed: () async {
+                                        if (audioUrl.isNotEmpty) {
+                                          await controller.playAudio(
+                                              audioUrl, index);
+                                        } else {
+                                          debugPrint(
+                                              'Invalid audio URL for index $index');
+                                        }
+                                      },
+                                    )),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text('Audio ${index + 1}'),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        )
+                      : const SizedBox(),
+                  ticket?.isClosed == true
+                      ? AppButton.primary(
+                          height: 40,
+                          title: 'Complete Ticket',
+                          onPressed: onCompleteTap,
+                        )
+                      : AppButton.primary(
+                          height: 40,
+                          title: 'Done',
+                          onPressed: () {
+                            Get.back();
+                          },
+                        ),
                 ],
               ),
+
+              // Row(
+              //   children: [
+              //     if ((ticket?.ticketMedia
+              //             ?.where((media) =>
+              //                 media.imagekey?.isNotEmpty ?? false)
+              //             .isNotEmpty ??
+              //         false))
+              //       SizedBox(
+              //         height: 80,
+              //         child: ListView.builder(
+              //           shrinkWrap: true,
+              //           scrollDirection: Axis.horizontal,
+              //           itemCount: ticket?.ticketMedia
+              //                   ?.where((media) =>
+              //                       media.imagekey?.isNotEmpty ??
+              //                       false)
+              //                   .length ??
+              //               0,
+              //           itemBuilder: (context, index) {
+              //             final imageMedia = ticket!.ticketMedia!
+              //                 .where((media) =>
+              //                     media.imagekey?.isNotEmpty ?? false)
+              //                 .toList()[index];
+              //             final imageUrl =
+              //                 '${Urls.domain}${imageMedia.imagekey}';
+
+              //             return Padding(
+              //               padding: const EdgeInsets.all(8.0),
+              //               child: InkWell(
+              //                 onTap: () {
+              //                   Navigator.push(
+              //                     context,
+              //                     MaterialPageRoute(
+              //                       builder: (context) =>
+              //                           FullScreenWidget(
+              //                         disposeLevel: DisposeLevel.Low,
+              //                         child: Hero(
+              //                           tag: "",
+              //                           child: ClipRRect(
+              //                             borderRadius:
+              //                                 BorderRadius.circular(
+              //                                     16),
+              //                             child: CachedNetworkImage(
+              //                               imageUrl: imageUrl,
+              //                               fit: BoxFit.cover,
+              //                               placeholder:
+              //                                   (context, url) =>
+              //                                       Center(
+              //                                 child:
+              //                                     CircularProgressIndicator(
+              //                                   color:
+              //                                       AppColors.black,
+              //                                 ),
+              //                               ),
+              //                               errorWidget: (context,
+              //                                       url, error) =>
+              //                                   Icon(Icons.error),
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   );
+              //                 },
+              //                 child: CachedNetworkImage(
+              //                   imageUrl: imageUrl,
+              //                   fit: BoxFit.cover,
+              //                   placeholder: (context, url) => Center(
+              //                     child: CircularProgressIndicator(
+              //                       color: AppColors.black,
+              //                     ),
+              //                   ),
+              //                   errorWidget: (context, url, error) =>
+              //                       Icon(Icons.error),
+              //                 ),
+              //               ),
+              //             );
+              //           },
+              //         ),
+              //       )
+              //     else
+              //       const SizedBox(),
+              //   ],
+              // ),
+
+              // ticket?.ticketMedia?.isNotEmpty ?? false
+              //     ? Column(
+              //         children: ticket!.ticketMedia!
+              //             .asMap()
+              //             .entries
+              //             .map((entry) {
+              //           final media = entry.value;
+              //           final index = entry.key;
+              //           final audioUrl =
+              //               'http://roomroundapis.rootpointers.net/${media.audioKey}';
+
+              //           return Row(
+              //             children: [
+              //               Obx(() {
+              //                 if (controller.isLoading.value &&
+              //                     controller.currentlyPlayingIndex!
+              //                             .value ==
+              //                         index) {
+              //                   return Padding(
+              //                     padding: const EdgeInsets.only(
+              //                       right: 20,
+              //                       top: 5,
+              //                     ),
+              //                     child: SizedBox(
+              //                       width: 20,
+              //                       height: 20,
+              //                       child:
+              //                           const CircularProgressIndicator(
+              //                         color: AppColors.primary,
+              //                       ),
+              //                     ),
+              //                   );
+              //                 }
+              //                 return IconButton(
+              //                   icon: Icon(
+              //                     controller.isPlaying.value &&
+              //                             controller
+              //                                     .currentlyPlayingIndex!
+              //                                     .value ==
+              //                                 index
+              //                         ? Icons.pause
+              //                         : Icons.play_arrow,
+              //                     color: Colors.green,
+              //                   ),
+              //                   onPressed: () async {
+              //                     if (audioUrl.isNotEmpty) {
+              //                       await controller.playAudio(
+              //                           audioUrl, index);
+              //                     } else {
+              //                       debugPrint(
+              //                           'Invalid audio URL for index $index');
+              //                     }
+              //                   },
+              //                 );
+              //               }),
+              //               Text('Audio ${index + 1}'),
+              //             ],
+              //           );
+              //         }).toList(),
+              //       )
+              //     : const SizedBox(),
+              // SB.h(20),
+              // Text(
+              //   AppStrings.directory,
+              //   textAlign: TextAlign.start,
+              //   style: context.bodyLarge!.copyWith(
+              //     color: AppColors.black,
+              //     fontWeight: FontWeight.w600,
+              //   ),
+              // ),
+              // SB.h(15),
+              // Text(
+              //   "${AppStrings.assignedTo}:",
+              //   textAlign: TextAlign.start,
+              //   style: context.bodyLarge!.copyWith(
+              //     color: AppColors.gry,
+              //     fontWeight: FontWeight.w600,
+              //   ),
+              // ),
+              // SB.h(15),
+
+              // DialougeComponents.dateTile(
+              //   context,
+              //   label: AppStrings.assignedDate,
+              //   date: date,
+              //   time: time,
+              // ),
+              // DialougeComponents.nameTile(
+              //   context,
+              //   name: ticket?.assignToName,
+              //   image: '${Urls.domain}${ticket?.assignToImage}',
+              //   //Image2
+              // ),
+              // SB.h(20),
+              // Text(
+              //   AppStrings.urgent,
+              //   textAlign: TextAlign.start,
+              //   style: context.bodyLarge!.copyWith(
+              //     color: AppColors.black,
+              //     fontWeight: FontWeight.w600,
+              //   ),
+              // ),
+              // SB.h(15),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   children: [
+              //     RoomMapComponents.radioButton<YesNo>(
+              //       context,
+              //       YesNo.yes,
+              //       isUrgent ? YesNo.yes : YesNo.no,
+              //       AppStrings.yes,
+              //       (value) {},
+              //       width: context.width * 0.35,
+              //     ),
+              //     RoomMapComponents.radioButton<YesNo>(
+              //       context,
+              //       YesNo.no,
+              //       isUrgent ? YesNo.yes : YesNo.no,
+              //       AppStrings.no,
+              //       (value) {},
+              //     ),
+              //   ],
+              // ),
+              // SB.h(15),
             ),
           );
         });

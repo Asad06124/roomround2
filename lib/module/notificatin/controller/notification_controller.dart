@@ -1,53 +1,17 @@
-import 'dart:developer';
-
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/notifications/notification_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class NotificationController extends GetxController {
-  // bool _isClearAll = false;
-  // bool get isClearAll => _isClearAll;
-
-  // final List<String> notifList = [
-  //   'New task added in template',
-  //   'Task assigned to you',
-  //   'New task is removed',
-  //   'Template task is completed',
-  // ];
-
   bool hasData = false;
   bool hasUnreadNotifications = false;
-
-  /* List<NotificationModel> _notificationsList = [
-    NotificationModel(
-      notificationId: 21,
-      notificationTitle: 'New task added in template please update your task',
-    ),
-    NotificationModel(
-      notificationId: 22,
-      notificationTitle: 'Task assigned to you should complete it on time',
-    ),
-    NotificationModel(
-      notificationId: 23,
-      notificationTitle:
-          'New task is removed. Another Task will be assigned to you',
-    ),
-    NotificationModel(
-      notificationId: 24,
-      notificationTitle:
-          'Template task is completed. You can work on another task',
-    ),
-  ]; */
-
   List<NotificationModel> _notificationsList = [];
-
   List<NotificationModel> get notificationsList => _notificationsList;
 
   @override
   void onInit() {
     super.onInit();
     fetchNotificationsList();
-    log('xxxxxxxxxxxxxxxxxxxx');
   }
 
   void fetchNotificationsList() async {
@@ -58,6 +22,7 @@ class NotificationController extends GetxController {
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
+      "receiverId": profileController.userId,
     };
 
     var resp = await APIFunction.call(
@@ -73,7 +38,6 @@ class NotificationController extends GetxController {
       _notificationsList = List.from(resp);
       hasUnreadNotifications = _notificationsList.isNotEmpty;
     }
-
     _updateHasData(true);
   }
 
@@ -114,8 +78,6 @@ class NotificationController extends GetxController {
       _notificationsList.clear();
       update();
     }
-    // _isClearAll = true;
-    // update();
   }
 
   void _updateHasData(bool value) {
