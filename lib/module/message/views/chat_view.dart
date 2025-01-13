@@ -1,179 +1,214 @@
+import 'dart:developer';
+
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/message/components/message_components.dart';
-import 'package:roomrounds/module/message/controller/message_controller.dart';
+
+import '../../../core/components/app_image.dart';
+import '../controller/chat_controller.dart';
 
 // ignore: must_be_immutable
-class ChatView extends StatelessWidget {
+class ChatView extends StatefulWidget {
   ChatView({super.key});
+
+  @override
+  State<ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<ChatView> {
   LayerLink link = LayerLink();
+
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<MessageController>(
-        init: Get.put(MessageController()),
-        builder: (controller) {
-          return Scaffold(
-            appBar: CustomAppbar.simpleAppBar(
-              context,
-              height: 75,
-              backButtunColor: AppColors.textPrimary,
-              title: AppStrings.inbox,
-              showNotificationIcon: false,
-              notificationActive: true,
-              titleStyle:
-                  context.titleLarge!.copyWith(color: AppColors.textPrimary),
-              iconsClor: AppColors.textPrimary,
-              isHome: false,
-              showMailIcon: false,
-              isBackButtun: true,
-            ),
-            body: Column(
-              children: [
-                AnimatedContainer(
-                  height: controller.isKeyBoardOpen ? 0 : null,
-                  duration: const Duration(milliseconds: 500),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: MessageComponents.detailTile(context),
-                        ),
-                        SB.h(20),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                        top: 15, left: 15, right: 15, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(45),
-                        topRight: Radius.circular(45),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.gry.withOpacity(0.24),
-                          offset: const Offset(2, 0),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SB.w(context.width),
-                        Text(
-                          userData.type == UserType.manager
-                              ? 'Nancy / Cleaning Deapertment'
-                              : "Room #1A Manager",
-                          style: context.titleSmall!
-                              .copyWith(color: AppColors.textPrimary),
-                        ),
-                        SB.h(10),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.gry.withOpacity(0.24),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                              ),
-                            ),
-                            padding: const EdgeInsets.only(
-                                top: 5, left: 5, right: 5, bottom: 30),
-                            child: SingleChildScrollView(
-                              reverse: true,
-                              child: Column(
-                                children: [
-                                  SB.w(context.width),
-                                  Obx(
-                                    () {
-                                      return ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: controller.messages.length,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return MessageComponents.messageTile(
-                                            context,
-                                            sender: index % 1 == 1,
-                                            msg: controller
-                                                .messages[index].message,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            bottomSheet: Container(
-              // height: 50,
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              width: context.width,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
+    var controller = Get.put(ChatController());
+    final arguments = Get.arguments as Map<String, dynamic>;
+    final receiverId = arguments['receiverId'];
+    final receiverImgUrl = arguments['receiverImgUrl'];
+    final receiverDeviceToken = arguments['receiverDeviceToken'];
+    final name = arguments['name'];
+    final senderId = profileController.user!.userId
+        .toString(); // Assuming sender's ID is available
+
+    return SafeArea(
+      child: Obx(() {
+        return Scaffold(
+          body: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.only(
+                      top: 15, left: 25, right: 25, bottom: 20),
+                  decoration: BoxDecoration(
                     color: AppColors.white,
                     boxShadow: [
                       BoxShadow(
-                          color: AppColors.gry.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 9,
-                          offset: const Offset(2, 0))
-                    ]),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    _chatPrefeixIcons(context, controller),
-                    SizedBox(
-                      width: context.width -
-                          (context.width * 0.22 > 90
-                              ? 90
-                              : context.width * 0.22) -
-                          30,
-                      child: CustomTextField(
-                        controller: controller.messageController,
-                        validator: (value) => null,
-                        borderRadius: 30,
-                        hintText: AppStrings.typeeMessageHere,
-                        suffixIcon: AppImages.send,
-                        onSuffixTap: () {
-                          controller.sendMessages(
-                            userData.id,
-                            userData.id,
-                            controller.messageController.value.text.trim(),
-                            '${userData.type}',
-                          );
-                        },
-                        maxLines: 1,
+                        color: AppColors.gry.withOpacity(0.24),
+                        offset: const Offset(2, 0),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SB.w(context.width),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0, bottom: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () => Get.back(),
+                              icon: Icon(
+                                Icons.arrow_back,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            AppImage.network(
+                              imageUrl:
+                                  receiverImgUrl ?? AppImages.personPlaceholder,
+                              borderRadius: BorderRadius.circular(20),
+                              fit: BoxFit.cover,
+                              height: 40,
+                              width: 40,
+                            ),
+                            SizedBox(width: 20),
+                            Text(
+                              name ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.titleSmall!.copyWith(
+                                color: AppColors.darkGrey,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      SB.h(10),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.gry.withOpacity(0.24),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                            ),
+                          ),
+                          padding: const EdgeInsets.only(
+                              top: 5, left: 5, right: 5, bottom: 30),
+                          child: StreamBuilder<List<ChatMessage>>(
+                            stream:
+                                controller.getMessages(receiverId, senderId),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Center(
+                                    child: Text('Error: ${snapshot.error}'));
+                              }
+
+                              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                return const Center(child: Text("No messages"));
+                              }
+
+                              final messages = snapshot.data!;
+                              final chatRoomId = controller.getChatRoomId(
+                                  senderId, receiverId);
+                              controller.markMessagesAsSeen(
+                                  chatRoomId, receiverId);
+                              return ListView.builder(
+                                reverse: true,
+                                // This will show latest messages at the bottom
+                                itemCount: messages.length,
+                                itemBuilder: (context, index) {
+
+                                  final message = messages[index];
+                                  log('${message.imageUrl}');
+                                  return MessageComponents.messageTile(
+                                    context,
+                                    sender: message.receiverId ==
+                                        profileController.user!.userId
+                                            .toString(),
+                                    msg: message.content,
+                                    isDelivered: message.isDelivered,
+                                    isSeen: message.isSeen,
+                                    imageUrl: message.imageUrl,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+            ],
+          ),
+          bottomSheet: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            width: context.width,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: AppColors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppColors.gry.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 9,
+                        offset: const Offset(2, 0))
+                  ]),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _chatPrefeixIcons(context, controller),
+                  SizedBox(
+                    width: context.width -
+                        (context.width * 0.38 > 90
+                            ? 105
+                            : context.width * 0.38) -
+                        30,
+                    child: CustomTextField(
+                      controller: controller.messageController,
+                      validator: (value) => null,
+                      borderRadius: 30,
+                      hintText: AppStrings.typeeMessageHere,
+                      suffixIcon: controller.isLoading.value == true
+                          ?  AppImages.send:'',
+                      onSuffixTap: () {
+                        controller.update();
+                        controller.isLoading.value == true
+                            ? controller.sendMessage(
+                                receiverId: receiverId.toString(),
+                                senderId: senderId.toString(),
+                                content: controller.messageController.value.text
+                                    .trim(),
+                                type: 'text',
+
+                                senderName: profileController.user!.username!,
+                                receiverDeviceToken:
+                                    receiverDeviceToken, // Assuming sender's name is available
+                              )
+                            : null;
+                      },
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-        });
+          ),
+        );
+      }),
+    );
   }
 
-  Widget _chatPrefeixIcons(
-      BuildContext context, MessageController mController) {
+  Widget _chatPrefeixIcons(BuildContext context, ChatController mController) {
     return Container(
-        // color: Colors.red,
-        width: context.width * 0.22,
+        width: context.width * 0.20,
         constraints: const BoxConstraints(
           maxWidth: 90,
         ),
@@ -181,22 +216,39 @@ class ChatView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
           children: [
-            // MessageComponents.popMenue(context, (type) {}),
-
-            // overlayController.toggle();
             CustomePainterDialouge(
               controller: mController.overlayController,
               link: link,
               onTap: () {
+
                 mController.overlayController.toggle();
                 mController.update();
               },
               child: Assets.icons.add.svg(),
             ),
-            InkWell(
-              onTap: () {},
-              child: Assets.icons.mic.svg(),
-            ),
+            if (mController.selectedImageFile.value != null)
+              Badge(
+                label: InkWell(
+                  onTap: () {
+                    if (mController.selectedImageFile.value != null) {
+                      mController.selectedImageFile.value = null;
+                      mController.update();
+                      setState(() {});
+                    }
+                  },
+                  child: Icon(
+                    Icons.cancel_outlined,
+                    size: 20,
+                    color: AppColors.red,
+                  ),
+                ),
+                backgroundColor: Colors.transparent,
+                alignment: Alignment.topLeft,
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundImage: FileImage(mController.selectedImageFile.value!),
+                ),
+              ),
           ],
         ));
   }

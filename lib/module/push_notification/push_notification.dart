@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
+
+import '../../core/services/get_server_key.dart';
 
 class PushNotificationController {
   static final FirebaseMessaging fcmMessage = FirebaseMessaging.instance;
@@ -78,12 +81,53 @@ class PushNotificationController {
     });
   }
 
+  static Future<void> sendNotificationUsingApi({
+    required String? token,
+    required String? title,
+    required String? body,
+    required Map<String, dynamic>? data,
+  }) async
+  {
+    String serverKey = await GetServerKey().getServerKeyToken();
+    print("notification server key => ${serverKey}");
+    String url =
+        "https://fcm.googleapis.com/v1/projects/roomround-34b5f/messages:send";
+
+    var headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $serverKey',
+    };
+
+    //mesaage
+    Map<String, dynamic> message = {
+      "message": {
+        "token": token,
+        "notification": {"body": body, "title": title},
+        "data": data,
+      }
+    };
+
+    //hit api
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(message),
+    );
+
+    if (response.statusCode == 200) {
+      print("Notification Send Successfully!");
+    } else {
+      print("Notification not send! reason: ${response.body}\n ${response.statusCode}\n ${response.reasonPhrase}");
+    }
+  }
+
   static Future<void> showNotification({
     int? id,
     String? title,
     String? body,
     String? payload,
-  }) async {
+  }) async
+  {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
       'your_channel_id',

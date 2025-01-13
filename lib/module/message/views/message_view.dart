@@ -1,11 +1,14 @@
 import 'package:roomrounds/core/constants/app_globals.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
-class MessageView extends StatelessWidget {
+import '../../emloyee_directory/controller/employee_directory_controller.dart';
+
+class MessageView extends GetView<EmployeeDirectoryController> {
   const MessageView({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: CustomAppbar.simpleAppBar(
         context,

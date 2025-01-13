@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
 class EmployeeDirectoryView extends StatelessWidget {
   EmployeeDirectoryView({super.key});
+
   final Debouncer _debouncer = Debouncer();
+
   @override
   Widget build(BuildContext context) {
     User? user = profileController.user;
@@ -145,14 +149,13 @@ class EmployeeDirectoryView extends StatelessWidget {
             subtile: employee.departmentName,
             roleColor: roleColor,
             onPressed: () {
-              Get.toNamed(AppRoutes.CHAT);
-              // Get.toNamed(
-              //   AppRoutes.CREATE_TICKET,
-              //   arguments: {
-              //     "initialEmployee": employee,
-              //     "initialDepartmentId": employee.departmentId,
-              //   },
-              // );
+              log('Fcm Token For Push Notification: ${employee.fcmToken}');
+              Get.toNamed(AppRoutes.CHAT, arguments: {
+                'receiverId': employee.userId.toString(),
+                'receiverImgUrl': employee.employeeImage,
+                'receiverDeviceToken': employee.fcmToken,
+                'name': '${employee.firstName}${employee.lastName}',
+              });
             },
           );
         },
