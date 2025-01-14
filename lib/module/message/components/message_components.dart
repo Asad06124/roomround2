@@ -79,7 +79,7 @@ class MessageComponents {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment:
             sender ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
@@ -118,6 +118,7 @@ class MessageComponents {
                 ),
                 padding: const EdgeInsets.all(10),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (imageUrl != null && imageUrl.isNotEmpty)
                       Container(
