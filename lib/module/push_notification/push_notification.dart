@@ -153,17 +153,30 @@ class PushNotificationController {
     final action = notification['Screen'];
     switch (action) {
       case 'Chat':
+        //  Get.toNamed(AppRoutes.SPLASH_SCREEN);
+        //  Get.toNamed(AppRoutes.DASHBOARD);
+        // Get.toNamed(AppRoutes.HOME, preventDuplicates: false);
+        // Get.toNamed(AppRoutes.MESSAGE, preventDuplicates: false);
+        Get.toNamed(AppRoutes.DASHBOARD);
 
-        Get.toNamed(
-          AppRoutes.CHAT,
-          preventDuplicates: false,
-          arguments: {
-            'receiverId': notification['senderId'],
-            'receiverImgUrl': notification['receiverImgUrl'],
-            'receiverDeviceToken': notification['receiverDeviceToken'],
-            'name': notification['senderName'],
-          },
-        );
+        // After a short delay, navigate to /msgview (without passing arguments)
+        Future.delayed(Duration(milliseconds: 500), () {
+          Get.toNamed(AppRoutes.MESSAGE);
+        });
+
+        // After another short delay, navigate to /chat with arguments
+        Future.delayed(Duration(milliseconds: 1000), () {
+          Get.toNamed(
+            AppRoutes.CHAT,
+            preventDuplicates: false,
+            arguments: {
+              'receiverId': notification['senderId'],
+              'receiverImgUrl': notification['receiverImgUrl'],
+              'receiverDeviceToken': notification['receiverDeviceToken'],
+              'name': notification['senderName'],
+            },
+          );
+        });
 
         break;
 
