@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -86,8 +87,7 @@ class PushNotificationController {
     required String? title,
     required String? body,
     required Map<String, dynamic>? data,
-  }) async
-  {
+  }) async {
     String serverKey = await GetServerKey().getServerKeyToken();
     print("notification server key => ${serverKey}");
     String url =
@@ -117,7 +117,8 @@ class PushNotificationController {
     if (response.statusCode == 200) {
       print("Notification Send Successfully!");
     } else {
-      print("Notification not send! reason: ${response.body}\n ${response.statusCode}\n ${response.reasonPhrase}");
+      print(
+          "Notification not send! reason: ${response.body}\n ${response.statusCode}\n ${response.reasonPhrase}");
     }
   }
 
@@ -126,8 +127,7 @@ class PushNotificationController {
     String? title,
     String? body,
     String? payload,
-  }) async
-  {
+  }) async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
       'your_channel_id',
@@ -148,19 +148,38 @@ class PushNotificationController {
     );
   }
 
-  static void clicksForNotification(Map<String, dynamic> notification) {
+  static Future<void> clicksForNotification(Map<String, dynamic> notification,
+      {bool fromTerminationState = false}) async {
     final action = notification['Screen'];
     switch (action) {
+      case 'Chat':
+
+        Get.toNamed(
+          AppRoutes.CHAT,
+          preventDuplicates: false,
+          arguments: {
+            'receiverId': notification['senderId'],
+            'receiverImgUrl': notification['receiverImgUrl'],
+            'receiverDeviceToken': notification['receiverDeviceToken'],
+            'name': notification['senderName'],
+          },
+        );
+
+        break;
+
       case 'TicketCreate':
         Get.find<NotificationController>().fetchNotificationsList();
         Get.toNamed(AppRoutes.NOTIFICATION);
         break;
+
       case 'TicketStatus':
         Get.toNamed(AppRoutes.NOTIFICATION);
         break;
+
       case 'AssignedTemplate':
         Get.toNamed(AppRoutes.ASSIGNED_TASKS);
         break;
+
       default:
         break;
     }

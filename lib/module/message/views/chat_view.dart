@@ -4,6 +4,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/message/components/message_components.dart';
 
 import '../../../core/components/app_image.dart';
+import '../../../core/extensions/datetime_extension.dart';
 import '../controller/chat_controller.dart';
 
 // ignore: must_be_immutable
@@ -122,7 +123,6 @@ class _ChatViewState extends State<ChatView> {
                                 // This will show latest messages at the bottom
                                 itemCount: messages.length,
                                 itemBuilder: (context, index) {
-
                                   final message = messages[index];
                                   log('${message.imageUrl}');
                                   return MessageComponents.messageTile(
@@ -131,9 +131,12 @@ class _ChatViewState extends State<ChatView> {
                                         profileController.user!.userId
                                             .toString(),
                                     msg: message.content,
+                                    time: DateTimeExtension.formatTimeOnly(
+                                        message.updatedAt.toString()),
                                     isDelivered: message.isDelivered,
                                     isSeen: message.isSeen,
                                     imageUrl: message.imageUrl,
+                                    recieverImageUrl: receiverImgUrl,
                                   );
                                 },
                               );
@@ -176,11 +179,10 @@ class _ChatViewState extends State<ChatView> {
                       validator: (value) => null,
                       borderRadius: 30,
                       hintText: AppStrings.typeeMessageHere,
-                      suffixIcon: controller.isLoading.value == true
-                          ?  AppImages.send:'',
+                      suffixIcon: AppImages.send,
                       onSuffixTap: () {
                         controller.update();
-                        controller.isLoading.value == true
+                        controller.isLoading.value != true
                             ? controller.sendMessage(
                                 receiverId: receiverId.toString(),
                                 senderId: senderId.toString(),
@@ -189,8 +191,9 @@ class _ChatViewState extends State<ChatView> {
                                 type: 'text',
 
                                 senderName: profileController.user!.username!,
-                                receiverDeviceToken:
-                                    receiverDeviceToken, // Assuming sender's name is available
+                                receiverDeviceToken: receiverDeviceToken,
+                                receiverImgUrl:
+                                    receiverImgUrl, // Assuming sender's name is available
                               )
                             : null;
                       },
@@ -220,7 +223,6 @@ class _ChatViewState extends State<ChatView> {
               controller: mController.overlayController,
               link: link,
               onTap: () {
-
                 mController.overlayController.toggle();
                 mController.update();
               },
@@ -246,7 +248,8 @@ class _ChatViewState extends State<ChatView> {
                 alignment: Alignment.topLeft,
                 child: CircleAvatar(
                   radius: 18,
-                  backgroundImage: FileImage(mController.selectedImageFile.value!),
+                  backgroundImage:
+                      FileImage(mController.selectedImageFile.value!),
                 ),
               ),
           ],

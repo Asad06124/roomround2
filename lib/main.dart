@@ -8,18 +8,12 @@ import 'package:roomrounds/module/push_notification/push_notification.dart';
 
 import 'firebase_options.dart';
 
-@pragma('vm:entry-point')
-Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
   _initControllers();
-  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
-
-  await PushNotificationController.initialize();
+;
   runApp(MyApp());
 }
 

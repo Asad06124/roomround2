@@ -152,7 +152,7 @@ class EmployeeDirectoryView extends StatelessWidget {
               log('Fcm Token For Push Notification: ${employee.fcmToken}');
               Get.toNamed(AppRoutes.CHAT, arguments: {
                 'receiverId': employee.userId.toString(),
-                'receiverImgUrl': employee.employeeImage,
+                'receiverImgUrl': imageUrl,
                 'receiverDeviceToken': employee.fcmToken,
                 'name': '${employee.firstName}${employee.lastName}',
               });

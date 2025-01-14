@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:roomrounds/core/constants/imports.dart';
 
 import '../../../core/components/app_image.dart';
@@ -70,7 +72,10 @@ class MessageComponents {
       bool sender = true,
       String? imageUrl,
       bool? isDelivered,
-      bool? isSeen}) {
+      bool? isSeen,
+        String? recieverImageUrl
+      }) {
+    log("profileController Image: ${recieverImageUrl}");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -80,8 +85,9 @@ class MessageComponents {
         children: [
           if (sender) ...{
             AppImage.network(
-              imageUrl:
-                  profileController.user?.image ?? AppImages.personPlaceholder,
+              imageUrl: recieverImageUrl!=null
+                  ? (recieverImageUrl)
+                  : AppImages.personPlaceholder,
               borderRadius: BorderRadius.circular(20),
               fit: BoxFit.cover,
               height: 40,
@@ -94,7 +100,11 @@ class MessageComponents {
                 sender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
             children: [
               Container(
-                width: context.width * 0.60,
+                // width: ,
+                constraints: BoxConstraints(
+                  maxWidth: context.width * 0.45, // Maximum width constraint
+                  // minWidth: context.width * 0.30, // Minimum width constraint
+                ),
                 decoration: BoxDecoration(
                   color: sender
                       ? AppColors.gry.withOpacity(0.24)
@@ -111,26 +121,28 @@ class MessageComponents {
                   children: [
                     if (imageUrl != null && imageUrl.isNotEmpty)
                       Container(
-                        height: context.width * 0.50,
-                        width: context.width * 0.60,
+                        height: context.width * 0.40,
+                        width: context.width * 0.50,
                         decoration: BoxDecoration(
                           color: sender
                               ? AppColors.gry.withOpacity(0.24)
                               : AppColors.primary,
-
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(15),
                             topRight: const Radius.circular(15),
-                            bottomLeft: Radius.circular( 15),
-                            bottomRight: Radius.circular( 15),
+                            bottomLeft: Radius.circular(15),
+                            bottomRight: Radius.circular(15),
                           ),
                           child: CachedNetworkImage(
                             imageUrl: imageUrl,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Optional placeholder
-                            errorWidget: (context, url, error) => Icon(Icons.error), // Optional error widget
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator()),
+                            // Optional placeholder
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error), // Optional error widget
                           ),
                         ),
                       ),
@@ -173,8 +185,17 @@ class MessageComponents {
           ),
           if (!sender) ...{
             SB.w(5),
-            CircleAvatar(
-              child: Assets.images.person.image(height: 40, width: 40),
+            AppImage.network(
+              imageUrl: profileController.user?.image != null
+                  ? ('${Urls.domain}${profileController.user?.image}')
+                  : AppImages.personPlaceholder,
+              // imageUrl: recieverImageUrl.isNotEmpty
+              //     ? ('${Urls.domain}$recieverImageUrl')
+              //     : AppImages.personPlaceholder,
+              borderRadius: BorderRadius.circular(20),
+              fit: BoxFit.cover,
+              height: 40,
+              width: 40,
             ),
           },
         ],

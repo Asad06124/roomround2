@@ -16,8 +16,32 @@ import 'package:image_picker/image_picker.dart';
 
 // import 'dart:io';
 
+import '../../../core/apis/models/employee/employee_model.dart';
 import '../../push_notification/push_notification.dart';
 
+
+
+
+class ChatViewModel {
+  final String lastMessage;
+  final int unreadCount;
+
+  ChatViewModel({
+    required this.lastMessage,
+    required this.unreadCount,
+  });
+}
+class EmployeeWithLiveChat {
+  final Employee employee;
+  final Stream<String> lastMessageStream;
+  final Stream<int> unreadCountStream;
+
+  EmployeeWithLiveChat({
+    required this.employee,
+    required this.lastMessageStream,
+    required this.unreadCountStream,
+  });
+}
 class ChatMessage {
   // Core message fields
   final String id; // Unique message ID (Firestore Doc ID or UUID)
@@ -95,7 +119,7 @@ class ChatController extends GetxController {
 
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
   TextEditingController messageController = TextEditingController();
-  RxBool isLoading = true.obs;
+  RxBool isLoading = false.obs;
   Rx<File?> selectedImageFile = Rx<File?>(null); // RxFile that holds a nullable File
 
   // Function to pick an image from the gallery
@@ -193,6 +217,7 @@ class ChatController extends GetxController {
     }
   }
 
+
   // Function to update message status (delivered or seen)
   Future<void> updateMessageStatus(
       String messageId, bool isDelivered, bool isSeen) async {
@@ -206,6 +231,55 @@ class ChatController extends GetxController {
     } catch (e) {
       print("Error updating message status: $e");
     }
+  }
+
+  Stream<String> getLastMessageStream(String chatRoomId) {
+    return _firestore
+        .collection('chatrooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) return 'No messages yet';
+      return snapshot.docs.first['content'] ?? '';
+    });
+  }
+
+  Stream<int> getUnreadMessageCountStream(String chatRoomId, String currentUserId) {
+    return _firestore
+        .collection('chatrooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .where('receiverId', isEqualTo: currentUserId)
+        .where('isSeen', isEqualTo: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
+  Future<List<EmployeeWithLiveChat>> setupLiveChats(
+      List<Employee> usersList, String currentUserId) async {
+    List<EmployeeWithLiveChat> usersWithLiveChats = [];
+
+    for (Employee employee in usersList) {
+      String chatRoomId = getChatRoomId(currentUserId, employee.userId.toString());
+
+      // Check if chat exists
+      final chatDoc = await _firestore.collection('chatrooms').doc(chatRoomId).get();
+
+      if (chatDoc.exists) {
+        usersWithLiveChats.add(
+          EmployeeWithLiveChat(
+            employee: employee,
+            lastMessageStream: getLastMessageStream(chatRoomId),
+            unreadCountStream: getUnreadMessageCountStream(chatRoomId, currentUserId),
+          ),
+        );
+      }
+    }
+
+    return usersWithLiveChats;
   }
 
   // Get all messages in the chat room
@@ -269,6 +343,7 @@ class ChatController extends GetxController {
     required String type,
     required String senderName,
     required String receiverDeviceToken,
+    required String receiverImgUrl,
   }) async {
     if (content.trim().isEmpty && selectedImageFile.value == null) return;
 
@@ -277,12 +352,12 @@ class ChatController extends GetxController {
 
     try {
       // update();
-      // isLoading.value = true;
+      isLoading.value = true;
       await startNewChat(receiverId, senderId);
       String? url = selectedImageFile.value != null
           ? await uploadImage(selectedImageFile.value!)
           : "";
-      // isLoading.value = false;
+      isLoading.value = false;
       // update();
       ChatMessage message = ChatMessage(
         id: messageId,
@@ -319,11 +394,13 @@ class ChatController extends GetxController {
         title: "New message from $senderName",
         body: content,
         data: {
-          "screen": "notification",
+          "Screen": "Chat", // Changed to match the case structure
           "senderId": senderId,
           "chatRoomId": chatRoomId,
           "senderName": senderName,
           "msgId": messageId,
+          "receiverImgUrl": receiverImgUrl, // Add these fields
+          "receiverDeviceToken": receiverDeviceToken,
         },
       ).catchError((e) {
         print('Error sending notification: $e');

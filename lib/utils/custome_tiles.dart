@@ -74,6 +74,8 @@ class CustomeTiles {
                       ),
                       Text(
                         subtile ?? '',
+                        maxLines: 1, // Limit to one line
+                        overflow: TextOverflow.ellipsis,
                         style: context.bodySmall!.copyWith(
                           color: AppColors.darkGrey,
                           fontWeight: FontWeight.w500,
