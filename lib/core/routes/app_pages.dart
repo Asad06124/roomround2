@@ -8,6 +8,7 @@ import 'package:roomrounds/module/settings/views/help_view.dart';
 import 'package:roomrounds/module/settings/views/notification_setting_view.dart';
 import 'package:roomrounds/module/settings/views/privacy_policy.dart';
 
+import '../../module/dashboard/controller/dashboard_controller.dart';
 import '../../module/emloyee_directory/controller/employee_directory_controller.dart';
 import '../../module/message/controller/chat_controller.dart';
 
@@ -56,7 +57,12 @@ class AppPages {
       page: () => const DashboardView(),
       transition: transitionType,
       binding: BindingsBuilder(
-        () {},
+        () {
+          Get.lazyPut<DashBoardController>(
+                () => DashBoardController(),
+          );
+
+        },
       ),
     ),
     GetPage(
@@ -102,6 +108,7 @@ class AppPages {
           );
           Get.lazyPut<ChatController>(
             () => ChatController(),
+            fenix: true
           );
         },
       ),
@@ -154,7 +161,9 @@ class AppPages {
         () {
           Get.lazyPut<ChatController>(
             () => ChatController(),
+            fenix: true
           );
+
         },
       ),
     ),

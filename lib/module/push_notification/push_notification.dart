@@ -154,7 +154,7 @@ class PushNotificationController {
     switch (action) {
       case 'Chat':
 
-        Get.toNamed(AppRoutes.DASHBOARD);
+        Get.offAndToNamed(AppRoutes.DASHBOARD);
 
         Future.delayed(Duration(milliseconds: 500), () {
           Get.toNamed(AppRoutes.MESSAGE);

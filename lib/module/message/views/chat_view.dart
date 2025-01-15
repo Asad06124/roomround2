@@ -20,7 +20,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(ChatController());
+    var controller = Get.put(ChatController(), permanent: true);
     final arguments = Get.arguments as Map<String, dynamic>;
     final receiverId = arguments['receiverId'];
     final receiverImgUrl = arguments['receiverImgUrl'];

@@ -1,19 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/routes/app_pages.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
-import 'package:roomrounds/module/push_notification/push_notification.dart';
 
 import 'firebase_options.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
   _initControllers();
-;
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
