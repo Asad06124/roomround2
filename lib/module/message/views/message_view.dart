@@ -121,7 +121,7 @@ class MessageView extends GetView<EmployeeDirectoryController> {
                                                 'receiverDeviceToken':
                                                     employee.fcmToken,
                                                 'name':
-                                                    '${employee.firstName}${employee.lastName}',
+                                                    '${employee.firstName} ${employee.lastName}',
                                               });
                                         },
                                       );

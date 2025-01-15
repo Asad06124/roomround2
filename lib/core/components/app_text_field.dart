@@ -129,6 +129,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 (value) => value!.toString().trim().isEmpty
                     ? "${widget.hintText ?? ''} ${AppStrings.cannotBeEmpty}"
                     : null,
+            style: TextStyle(color: widget.textColor),
             obscureText:
                 widget.isPasswordField ? _hidePassword : widget.isPasswordField,
             autovalidateMode: AutovalidateMode.onUserInteraction,

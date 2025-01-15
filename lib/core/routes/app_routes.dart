@@ -2,6 +2,7 @@
 
 abstract class AppRoutes {
   static const SPLASH_SCREEN = "/";
+  // static const Chat_Image_Preview = "/image_preview_screen";
   static const LOGIN = "/login";
   static const FORGET = "/forget";
   static const HOME = "/home";

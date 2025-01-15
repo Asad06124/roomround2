@@ -10,17 +10,14 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-
 // import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:roomrounds/module/message/views/image_previewscreen.dart';
 
 // import 'dart:io';
 
 import '../../../core/apis/models/employee/employee_model.dart';
 import '../../push_notification/push_notification.dart';
-
-
-
 
 class ChatViewModel {
   final String lastMessage;
@@ -31,6 +28,7 @@ class ChatViewModel {
     required this.unreadCount,
   });
 }
+
 class EmployeeWithLiveChat {
   final Employee employee;
   final Stream<String> lastMessageStream;
@@ -42,6 +40,7 @@ class EmployeeWithLiveChat {
     required this.unreadCountStream,
   });
 }
+
 class ChatMessage {
   // Core message fields
   final String id; // Unique message ID (Firestore Doc ID or UUID)
@@ -120,29 +119,56 @@ class ChatController extends GetxController {
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
   TextEditingController messageController = TextEditingController();
   RxBool isLoading = false.obs;
-  Rx<File?> selectedImageFile = Rx<File?>(null); // RxFile that holds a nullable File
+  Rx<File?> selectedImageFile =
+      Rx<File?>(null); // RxFile that holds a nullable File
 
   // Function to pick an image from the gallery
-  Future<void> pickImageFromGallery() async {
+  Future<void> pickImageFromGallery(
+      {required receiverId,
+      required receiverImgUrl,
+      required receiverDeviceToken,
+      required name}) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      selectedImageFile.value = File(image.path); // Store the image file
-      update(); // Update the controller to reflect the changes
+      selectedImageFile.value = File(image.path);
+      update();
+      Get.to(ImagePreviewScreen( receiverId: receiverId,
+        receiverImgUrl: receiverImgUrl,
+        receiverDeviceToken: receiverDeviceToken,
+        name: name,), arguments: {
+        receiverId: receiverId,
+        receiverImgUrl: receiverImgUrl,
+        receiverDeviceToken: receiverDeviceToken,
+        name: name,
+      });
     } else {
       print("No image selected.");
     }
   }
 
-  // Function to pick an image from the camera
-  Future<void> pickImageFromCamera() async {
+  Future<void> pickImageFromCamera(
+      {required receiverId,
+      required receiverImgUrl,
+      required receiverDeviceToken,
+      required name}) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.camera);
 
     if (image != null) {
-      selectedImageFile.value = File(image.path); // Store the image file
-      update(); // Update the controller to reflect the changes
+      selectedImageFile.value = File(image.path);
+
+      update();
+      Get.to(ImagePreviewScreen( receiverId: receiverId,
+        receiverImgUrl: receiverImgUrl,
+        receiverDeviceToken: receiverDeviceToken,
+        name: name,), arguments: {
+        receiverId: receiverId,
+        receiverImgUrl: receiverImgUrl,
+        receiverDeviceToken: receiverDeviceToken,
+        name: name,
+      });
     } else {
       print("No image captured.");
     }
@@ -217,7 +243,6 @@ class ChatController extends GetxController {
     }
   }
 
-
   // Function to update message status (delivered or seen)
   Future<void> updateMessageStatus(
       String messageId, bool isDelivered, bool isSeen) async {
@@ -247,7 +272,8 @@ class ChatController extends GetxController {
     });
   }
 
-  Stream<int> getUnreadMessageCountStream(String chatRoomId, String currentUserId) {
+  Stream<int> getUnreadMessageCountStream(
+      String chatRoomId, String currentUserId) {
     return _firestore
         .collection('chatrooms')
         .doc(chatRoomId)
@@ -263,17 +289,20 @@ class ChatController extends GetxController {
     List<EmployeeWithLiveChat> usersWithLiveChats = [];
 
     for (Employee employee in usersList) {
-      String chatRoomId = getChatRoomId(currentUserId, employee.userId.toString());
+      String chatRoomId =
+          getChatRoomId(currentUserId, employee.userId.toString());
 
       // Check if chat exists
-      final chatDoc = await _firestore.collection('chatrooms').doc(chatRoomId).get();
+      final chatDoc =
+          await _firestore.collection('chatrooms').doc(chatRoomId).get();
 
       if (chatDoc.exists) {
         usersWithLiveChats.add(
           EmployeeWithLiveChat(
             employee: employee,
             lastMessageStream: getLastMessageStream(chatRoomId),
-            unreadCountStream: getUnreadMessageCountStream(chatRoomId, currentUserId),
+            unreadCountStream:
+                getUnreadMessageCountStream(chatRoomId, currentUserId),
           ),
         );
       }

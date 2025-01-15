@@ -73,8 +73,7 @@ class MessageComponents {
       String? imageUrl,
       bool? isDelivered,
       bool? isSeen,
-        String? recieverImageUrl
-      }) {
+      String? recieverImageUrl}) {
     log("profileController Image: ${recieverImageUrl}");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -85,7 +84,7 @@ class MessageComponents {
         children: [
           if (sender) ...{
             AppImage.network(
-              imageUrl: recieverImageUrl!=null
+              imageUrl: recieverImageUrl != null
                   ? (recieverImageUrl)
                   : AppImages.personPlaceholder,
               borderRadius: BorderRadius.circular(20),
@@ -211,13 +210,18 @@ class CustomePainterDialouge extends StatefulWidget {
   OverlayPortalController controller;
   GestureTapCallback? onTap;
   Widget child;
+  String receiverId, receiverImgUrl, receiverDeviceToken, name;
 
   CustomePainterDialouge(
       {super.key,
       required this.link,
       required this.controller,
       this.onTap,
-      required this.child});
+      required this.child,
+      required this.receiverDeviceToken,
+      required this.receiverImgUrl,
+      required this.receiverId,
+      required this.name});
 
   @override
   State<CustomePainterDialouge> createState() => _CustomePainterDialougeState();
@@ -263,7 +267,12 @@ class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                await chatController.pickImageFromGallery();
+                                await chatController.pickImageFromGallery(
+                                    receiverId: widget.receiverId,
+                                    receiverImgUrl: widget.receiverImgUrl,
+                                    receiverDeviceToken:
+                                        widget.receiverDeviceToken,
+                                    name: widget.name);
                                 chatController.overlayController.toggle();
                               },
                               child: Row(children: [
@@ -285,7 +294,12 @@ class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
                             GestureDetector(
                               onTap: () async {
                                 // Call the pickImage function
-                                await chatController.pickImageFromCamera();
+                                await chatController.pickImageFromCamera(
+                                    receiverId: widget.receiverId,
+                                    receiverImgUrl: widget.receiverImgUrl,
+                                    receiverDeviceToken:
+                                        widget.receiverDeviceToken,
+                                    name: widget.name);
                                 chatController.overlayController.toggle();
                               },
                               child: Row(children: [

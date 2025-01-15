@@ -12,6 +12,7 @@ import '../../module/dashboard/controller/dashboard_controller.dart';
 import '../../module/emloyee_directory/controller/employee_directory_controller.dart';
 import '../../module/message/binding/chat_controller_binding.dart';
 import '../../module/message/controller/chat_controller.dart';
+import '../../module/message/views/image_previewscreen.dart';
 
 class AppPages {
   static Transition? transitionType;
@@ -60,9 +61,8 @@ class AppPages {
       binding: BindingsBuilder(
         () {
           Get.lazyPut<DashBoardController>(
-                () => DashBoardController(),
+            () => DashBoardController(),
           );
-
         },
       ),
     ),
@@ -107,10 +107,7 @@ class AppPages {
           Get.lazyPut<EmployeeDirectoryController>(
             () => EmployeeDirectoryController(),
           );
-          Get.lazyPut<ChatController>(
-            () => ChatController(),
-            fenix: true
-          );
+          Get.lazyPut<ChatController>(() => ChatController(), fenix: true);
         },
       ),
     ),
@@ -176,6 +173,14 @@ class AppPages {
         () {},
       ),
     ),
+    // GetPage(
+    //   name: AppRoutes.Chat_Image_Preview,
+    //   page: () => const ImagePreviewScreen(),
+    //   transition: transitionType,
+    //   binding: BindingsBuilder(
+    //     () {},
+    //   ),
+    // ),
     GetPage(
       name: AppRoutes.ROOM_MAP_MANAGER,
       page: () => const RoomMapManagerView(),
