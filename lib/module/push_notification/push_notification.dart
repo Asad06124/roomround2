@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -10,137 +9,109 @@ import 'package:roomrounds/module/notificatin/controller/notification_controller
 import '../../core/services/get_server_key.dart';
 
 class PushNotificationController {
-  static final FirebaseMessaging fcmMessage = FirebaseMessaging.instance;
+  static final FirebaseMessaging fcm = FirebaseMessaging.instance;
   static String fcmToken = '';
   static bool isPermissionGranted = false;
-  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+
+  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
+    // Initialize Firebase
     await Firebase.initializeApp();
+
+    // Configure local notifications
     const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: androidSettings);
-    await flutterLocalNotificationsPlugin.initialize(
+    InitializationSettings(android: androidSettings);
+    await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
+      onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
     );
-    await grantNotificationPermission();
-    await setupFirebaseMessagingListeners();
+
+    // Request notification permissions
+    await _grantNotificationPermission();
+
+    // Handle notifications from terminated state
+    await _handleTerminatedState();
+
+    // Set up listeners for foreground and background states
+    await _setupFirebaseMessagingListeners();
   }
 
-  static onDidReceiveNotificationResponse(
-      NotificationResponse notificationResponse) {
-    if (notificationResponse.notificationResponseType ==
-        NotificationResponseType.selectedNotification) {
-      if (notificationResponse.payload != null) {
-        final payload = jsonDecode(notificationResponse.payload!);
-        clicksForNotification(payload);
-      }
+  static Future<void> _grantNotificationPermission() async {
+    NotificationSettings settings = await fcm.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    await fcm.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    isPermissionGranted =
+        settings.authorizationStatus == AuthorizationStatus.authorized;
+    debugPrint('Notification permission granted: $isPermissionGranted');
+  }
+
+  static Future<void> _handleTerminatedState() async {
+    final RemoteMessage? initialMessage = await fcm.getInitialMessage();
+    if (initialMessage != null) {
+      debugPrint('App opened from terminated state with notification');
+      _handleNotificationClick(initialMessage.data, fromTerminationState: true);
     }
   }
 
-  static Future<void> grantNotificationPermission() async {
-    NotificationSettings settings = await fcmMessage.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    await fcmMessage.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    await fcmMessage.setAutoInitEnabled(true);
-    debugPrint('User granted permission: ${settings.authorizationStatus}');
-    isPermissionGranted =
-        settings.authorizationStatus == AuthorizationStatus.authorized;
-  }
-
-  static Future<void> setupFirebaseMessagingListeners() async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage? message) async {
-      if (message != null) {
-        showNotification(
+  static Future<void> _setupFirebaseMessagingListeners() async {
+    // Listen for notifications in the foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        _showNotification(
           title: message.notification?.title ?? '',
-          body: message.notification?.body,
+          body: message.notification?.body ?? '',
           payload: jsonEncode(message.data),
         );
       }
     });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) async {
-      if (message != null) {
-        clicksForNotification(message.data);
-      }
+    // Listen for notifications when the app is in the background
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotificationClick(message.data);
     });
   }
 
-  static Future<void> sendNotificationUsingApi({
-    required String? token,
-    required String? title,
-    required String? body,
-    required Map<String, dynamic>? data,
-  }) async {
-    String serverKey = await GetServerKey().getServerKeyToken();
-    print("notification server key => ${serverKey}");
-    String url =
-        "https://fcm.googleapis.com/v1/projects/roomround-34b5f/messages:send";
-
-    var headers = <String, String>{
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $serverKey',
-    };
-
-    //mesaage
-    Map<String, dynamic> message = {
-      "message": {
-        "token": token,
-        "notification": {"body": body, "title": title},
-        "data": data,
+  static void _onDidReceiveNotificationResponse(
+      NotificationResponse notificationResponse) {
+    if (notificationResponse.notificationResponseType ==
+        NotificationResponseType.selectedNotification) {
+      if (notificationResponse.payload != null) {
+        final payload = jsonDecode(notificationResponse.payload!);
+        _handleNotificationClick(payload);
       }
-    };
-
-    //hit api
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(message),
-    );
-
-    if (response.statusCode == 200) {
-      print("Notification Send Successfully!");
-    } else {
-      print(
-          "Notification not send! reason: ${response.body}\n ${response.statusCode}\n ${response.reasonPhrase}");
     }
   }
 
-  static Future<void> showNotification({
-    int? id,
-    String? title,
-    String? body,
-    String? payload,
+  static Future<void> _showNotification({
+    required String title,
+    required String body,
+    required String payload,
   }) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'your_channel_id',
-      'your_channel_name',
-      channelDescription: 'your_channel_description',
+      'Your Channel Name',
+      channelDescription: 'Your Channel Description',
       importance: Importance.max,
       priority: Priority.high,
     );
     const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
+    NotificationDetails(android: androidDetails);
 
-    await flutterLocalNotificationsPlugin.show(
-      id ?? 0,
+    await _flutterLocalNotificationsPlugin.show(
+      0,
       title,
       body,
       notificationDetails,
@@ -148,32 +119,27 @@ class PushNotificationController {
     );
   }
 
-  static Future<void> clicksForNotification(Map<String, dynamic> notification,
+  static Future<void> _handleNotificationClick(Map<String, dynamic> data,
       {bool fromTerminationState = false}) async {
-    final action = notification['Screen'];
+    final action = data['Screen'];
     switch (action) {
       case 'Chat':
-
         Get.offAndToNamed(AppRoutes.DASHBOARD);
-
-        Future.delayed(Duration(milliseconds: 500), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
           Get.toNamed(AppRoutes.MESSAGE);
         });
-
-
-        Future.delayed(Duration(milliseconds: 500), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
           Get.toNamed(
             AppRoutes.CHAT,
             preventDuplicates: false,
             arguments: {
-              'receiverId': notification['senderId'],
-              'receiverImgUrl': notification['receiverImgUrl'],
-              'receiverDeviceToken': notification['receiverDeviceToken'],
-              'name': notification['senderName'],
+              'receiverId': data['senderId'],
+              'receiverImgUrl': data['receiverImgUrl'],
+              'receiverDeviceToken': data['receiverDeviceToken'],
+              'name': data['senderName'],
             },
           );
         });
-
         break;
 
       case 'TicketCreate':
@@ -190,7 +156,56 @@ class PushNotificationController {
         break;
 
       default:
+        debugPrint('Unhandled notification action: $action');
         break;
+    }
+  }
+
+  static Future<void> sendNotificationUsingApi({
+    required String? token,
+    required String? title,
+    required String? body,
+    required Map<String, dynamic>? data,
+  }) async {
+    // Fetch the server key for sending FCM messages
+    String serverKey = await GetServerKey().getServerKeyToken();
+    debugPrint("FCM Server Key: $serverKey");
+
+    const String url =
+        "https://fcm.googleapis.com/v1/projects/roomround-34b5f/messages:send";
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $serverKey',
+    };
+
+    // Prepare the message payload
+    final Map<String, dynamic> message = {
+      "message": {
+        "token": token,
+        "notification": {
+          "title": title,
+          "body": body,
+        },
+        "data": data,
+      }
+    };
+
+    try {
+      final http.Response response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(message),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint("Notification sent successfully!");
+      } else {
+        debugPrint(
+            "Failed to send notification: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("Error sending notification: $e");
     }
   }
 }

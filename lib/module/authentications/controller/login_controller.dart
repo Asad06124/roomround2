@@ -33,7 +33,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> saveFcmToken() async {
-    String? token = await PushNotificationController.fcmMessage.getToken();
+    String? token = await PushNotificationController.fcm.getToken();
     if (token != null && token.isNotEmpty) {
       var response = await APIFunction.call(
         APIMethods.post,
@@ -46,9 +46,11 @@ class LoginController extends GetxController {
         Get.offNamed(AppRoutes.HOME);
         log('Fcm Token=$token');
       } else {
+        Get.offNamed(AppRoutes.HOME);
         debugPrint('Failed to save FCM token');
       }
     } else {
+      Get.offNamed(AppRoutes.HOME);
       debugPrint('No FCM token available');
     }
   }
