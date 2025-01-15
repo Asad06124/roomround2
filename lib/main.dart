@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeDark().theme,
       initialRoute: AppRoutes.SPLASH_SCREEN,
       getPages: AppPages.routes,
+
       builder: (context, child) {
         final scale = MediaQuery.of(context).textScaler.clamp(
               minScaleFactor: 0.6,

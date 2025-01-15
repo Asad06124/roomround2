@@ -224,7 +224,7 @@ class CustomePainterDialouge extends StatefulWidget {
 }
 
 class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
-  var chatController = Get.put(ChatController());
+  var chatController = Get.find<ChatController>();
 
   @override
   Widget build(BuildContext context) {

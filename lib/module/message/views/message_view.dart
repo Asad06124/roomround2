@@ -12,7 +12,7 @@ class MessageView extends GetView<EmployeeDirectoryController> {
 
   @override
   Widget build(BuildContext context) {
-    var chatController = Get.put(ChatController());
+    var chatController = Get.find<ChatController>();
     return Scaffold(
       appBar: CustomAppbar.simpleAppBar(
         context,

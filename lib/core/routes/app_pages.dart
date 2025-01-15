@@ -10,6 +10,7 @@ import 'package:roomrounds/module/settings/views/privacy_policy.dart';
 
 import '../../module/dashboard/controller/dashboard_controller.dart';
 import '../../module/emloyee_directory/controller/employee_directory_controller.dart';
+import '../../module/message/binding/chat_controller_binding.dart';
 import '../../module/message/controller/chat_controller.dart';
 
 class AppPages {
@@ -157,15 +158,7 @@ class AppPages {
       name: AppRoutes.CHAT,
       page: () => ChatView(),
       transition: transitionType,
-      binding: BindingsBuilder(
-        () {
-          Get.lazyPut<ChatController>(
-            () => ChatController(),
-            fenix: true
-          );
-
-        },
-      ),
+      binding: ChatControllerBinding(),
     ),
     GetPage(
       name: AppRoutes.ROOMS_LIST,
