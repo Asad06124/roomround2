@@ -8,6 +8,9 @@ import 'package:roomrounds/module/settings/views/help_view.dart';
 import 'package:roomrounds/module/settings/views/notification_setting_view.dart';
 import 'package:roomrounds/module/settings/views/privacy_policy.dart';
 
+import '../../module/emloyee_directory/controller/employee_directory_controller.dart';
+import '../../module/message/controller/chat_controller.dart';
+
 class AppPages {
   static Transition? transitionType;
 
@@ -93,7 +96,14 @@ class AppPages {
       page: () => const MessageView(),
       transition: transitionType,
       binding: BindingsBuilder(
-        () {},
+        () {
+          Get.lazyPut<EmployeeDirectoryController>(
+            () => EmployeeDirectoryController(),
+          );
+          Get.lazyPut<ChatController>(
+            () => ChatController(),
+          );
+        },
       ),
     ),
     GetPage(
@@ -141,7 +151,11 @@ class AppPages {
       page: () => ChatView(),
       transition: transitionType,
       binding: BindingsBuilder(
-        () {},
+        () {
+          Get.lazyPut<ChatController>(
+            () => ChatController(),
+          );
+        },
       ),
     ),
     GetPage(
