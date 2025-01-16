@@ -23,11 +23,11 @@ class CustomAppbar {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     Stream<int> getTotalUnreadMessageCount(String currentUserId) {
       // Get all chat rooms where the user is a participant
-      return _firestore
+      return firestore
           .collection('chatrooms')
           .where('participants', arrayContains: currentUserId)
           .snapshots()
@@ -35,7 +35,7 @@ class CustomAppbar {
         // For each chat room, get unread message counts
         List<Stream<int>> unreadCountStreams = chatRoomSnapshot.docs.map((chatRoom) {
           String chatRoomId = chatRoom.id;
-          return _firestore
+          return firestore
               .collection('chatrooms')
               .doc(chatRoomId)
               .collection('messages')

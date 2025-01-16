@@ -37,7 +37,7 @@ class ImagePreviewScreen extends StatelessWidget {
               // Image Preview - Takes most of the screen
               Expanded(
                 child: InteractiveViewer(
-                  child: Container(
+                  child: SizedBox(
                     width: double.infinity,
                     child: Image.file(
                       mController.selectedImageFile.value!,

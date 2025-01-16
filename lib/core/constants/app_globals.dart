@@ -1,7 +1,5 @@
 // ignore_for_file: unused_field
 
-import 'package:roomrounds/core/apis/models/user_data/user_model.dart';
-import 'package:roomrounds/core/constants/app_enum.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class AppGlobals {

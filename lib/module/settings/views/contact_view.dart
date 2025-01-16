@@ -80,7 +80,7 @@ class ContactUsScreen extends StatelessWidget {
   }
 
   Widget _buildMessageForm(BuildContext context) {
-    final TextEditingController _messageController = TextEditingController();
+    final TextEditingController messageController = TextEditingController();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +91,7 @@ class ContactUsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextField(
-          controller: _messageController,
+          controller: messageController,
           maxLines: 6,
           decoration: InputDecoration(
             hintText: 'Enter your message here...',
@@ -105,7 +105,7 @@ class ContactUsScreen extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             // Logic to send the message, e.g., API call or email client
-            final message = _messageController.text;
+            final message = messageController.text;
             if (message.isNotEmpty) {
               // Handle sending message, for example, display a confirmation or submit it to an API
               showDialog(

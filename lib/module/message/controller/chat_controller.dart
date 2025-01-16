@@ -177,7 +177,7 @@ class ChatController extends GetxController {
   Future<String?> uploadImage(File imageFile) async {
     try {
       final String fileName =
-          DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
+          '${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       var request = http.MultipartRequest(
         'POST',
@@ -324,7 +324,7 @@ class ChatController extends GetxController {
         .map((snapshot) {
       return snapshot.docs
           .map((doc) {
-            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+            Map<String, dynamic> data = doc.data();
             return ChatMessage(
               id: doc.id,
               // Firestore document ID
@@ -359,9 +359,9 @@ class ChatController extends GetxController {
     final snapshot = await messagesRef.get();
 
     // Using forEach without awaiting the updates
-    snapshot.docs.forEach((doc) {
+    for (var doc in snapshot.docs) {
       doc.reference.update({'isSeen': true, 'isDelivered': true});
-    });
+    }
   }
 
   // Send a new message
@@ -449,15 +449,15 @@ class ChatController extends GetxController {
 
   String getChatRoomId(String user1, String user2) {
     // Check cache first
-    final cacheKey = '${user1}_${user2}';
+    final cacheKey = '${user1}_$user2';
     if (_chatRoomIdCache.containsKey(cacheKey)) {
       return _chatRoomIdCache[cacheKey]!;
     }
 
     // Calculate and cache the result
     final chatRoomId = user1.hashCode <= user2.hashCode
-        ? '${user1}_${user2}'
-        : '${user2}_${user1}';
+        ? '${user1}_$user2'
+        : '${user2}_$user1';
     _chatRoomIdCache[cacheKey] = chatRoomId;
     return chatRoomId;
   }

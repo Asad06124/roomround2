@@ -74,7 +74,7 @@ class MessageComponents {
       bool? isDelivered,
       bool? isSeen,
       String? recieverImageUrl}) {
-    log("profileController Image: ${recieverImageUrl}");
+    log("profileController Image: $recieverImageUrl");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
