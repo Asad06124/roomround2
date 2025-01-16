@@ -23,6 +23,8 @@ class AppStrings {
   static const String assignedMe = "Assigned Me";
   static const String assignedTasks = "Assigned Tasks";
   static const String assignedTo = "Assigned to";
+  static const String completedFirst = "Completed First";
+  static const String pendingFirst = "Pending First";
   static const String assignment = "Assignment";
   static const String auditTemplete = "Audit Template";
   static const String auditTempleteTasks = "Audit Template Tasks";
@@ -74,7 +76,7 @@ class AppStrings {
   static const String enterRoomLocation = "Enter Room / Location";
   static const String enterRoomNo = "Enter Room No.";
   static const String error = "Error";
-  static const String facilitiesView = "Facilities View";
+  static const String facilitiesView = "Report An Issue";
   static const String female = "Female";
   static const String forgotPassword = "Forgot Password";
   static const String forgotYourPassword = "Forgot your password?";

@@ -1,7 +1,7 @@
 import 'package:roomrounds/core/constants/app_enum.dart';
 
 class RoomTask {
-  int? assignTemplateRoomId;
+  // int? assignTemplateRoomId;
   int? assignTemplateTaskId;
   int? roomId;
   int? managerId;
@@ -10,12 +10,13 @@ class RoomTask {
   String? roomName;
   String? taskName;
   bool? roomStatus;
+  bool? isNA;
   bool? taskStatus;
 
   YesNo? userSelection;
 
   RoomTask({
-    this.assignTemplateRoomId,
+    // this.assignTemplateRoomId,
     this.assignTemplateTaskId,
     this.roomId,
     this.managerId,
@@ -24,12 +25,13 @@ class RoomTask {
     this.roomName,
     this.taskName,
     this.roomStatus,
+    this.isNA,
     this.taskStatus,
     this.userSelection,
   });
 
   RoomTask.fromJson(Map<String, dynamic> json) {
-    assignTemplateRoomId = json['assignTemplateRoomId'];
+    // assignTemplateRoomId = json['assignTemplateRoomId'];
     assignTemplateTaskId = json['assignTemplateTaskId'];
     roomId = json['roomId'];
     managerId = json['managerId'];
@@ -38,12 +40,13 @@ class RoomTask {
     roomName = json['roomName'];
     taskName = json['taskName'];
     roomStatus = json['roomStatus'];
+    isNA = json['isNA'];
     taskStatus = json['taskStatus'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['assignTemplateRoomId'] = assignTemplateRoomId;
+    // data['assignTemplateRoomId'] = assignTemplateRoomId;
     data['assignTemplateTaskId'] = assignTemplateTaskId;
     data['roomId'] = roomId;
     data['managerId'] = managerId;
@@ -52,6 +55,7 @@ class RoomTask {
     data['roomName'] = roomName;
     data['taskName'] = taskName;
     data['roomStatus'] = roomStatus;
+    data['isNA'] = isNA;
     data['taskStatus'] = taskStatus;
     return data;
   }

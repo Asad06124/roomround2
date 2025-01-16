@@ -53,20 +53,36 @@ class TasksList extends StatelessWidget {
                         SB.w(context.width),
                         SB.h(10),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const SizedBox(),
-                            Text(
-                              templateName ?? AppStrings.template,
-                              style: context.titleMedium!.copyWith(
-                                color: AppColors.textPrimary,
-                              ),
+                            Row(
+                              children: [
+                                const SizedBox(),
+                                Text(
+                                  templateName ?? AppStrings.template,
+                                  style: context.titleMedium!.copyWith(
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                Text(
+                                  roomName?.isNotEmpty == true
+                                      ? '($roomName)'
+                                      : '',
+                                  style: context.bodyLarge!.copyWith(
+                                    color: AppColors.gry,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              roomName?.isNotEmpty == true ? '($roomName)' : '',
-                              style: context.bodyLarge!.copyWith(
-                                color: AppColors.gry,
-                              ),
+                            CustomeDropDown.simple<String>(
+                              context,
+                              list: controller.sortBy,
+                              initialItem: controller.sortBy[0],
+                              onSelect: controller.changeSortBy,
+                              closedFillColor: AppColors.lightWhite,
+                              borderRadius: 20,
+                              showShadow: true,
+                              closedShadow: false,
                             ),
                           ],
                         ),
@@ -115,20 +131,32 @@ class TasksList extends StatelessWidget {
               ),
             ),
             subtitleWidget: task.taskStatus == true
-                ? IgnorePointer(
-                    ignoring: isTaskCompleted,
-                    child: RoomListComponents.yesNoWidget(
-                      context,
-                      YesNo.no,
-                      (newVal) => controller.changeTaskStatus(index, newVal),
-                    ),
-                  )
+                ? task.isNA != true
+                    ? IgnorePointer(
+                        ignoring: isTaskCompleted,
+                        child: RoomListComponents.yesNoWidget(
+                          context,
+                          YesNo.no,
+                          (newVal) =>
+                              controller.changeTaskStatus(index, newVal, ),
+                        ),
+                      )
+                    : IgnorePointer(
+                        ignoring: isTaskCompleted,
+                        child: RoomListComponents.yesNoWidget(
+                          context,
+                          YesNo.na,
+                          (newVal) =>
+                              controller.changeTaskStatus(index, newVal, ),
+                        ),
+                      )
                 : IgnorePointer(
                     ignoring: isTaskCompleted,
                     child: RoomListComponents.yesNoWidget(
                       context,
                       task.userSelection,
-                      (newVal) => controller.changeTaskStatus(index, newVal),
+                      (newVal) =>
+                          controller.changeTaskStatus(index, newVal, ),
                     ),
                   ),
           );
@@ -141,7 +169,7 @@ class TasksList extends StatelessWidget {
     }
   }
 
-  /*  void _showYesNoDialog() {
+/*  void _showYesNoDialog() {
     Get.dialog(
       Dialog(
         child: YesNoDialog(

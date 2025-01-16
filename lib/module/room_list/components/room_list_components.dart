@@ -24,14 +24,14 @@ class RoomListComponents {
             (value) => onTaskValueChanged(value),
             width: 0,
           ),
-          // RoomMapComponents.radioButton<YesNo>(
-          //   context,
-          //   YesNo.na, // AssignedValue
-          //   selectedValue, // SelectedValue
-          //   AppStrings.na, // Title
-          //   (value) => onTaskValueChanged(value),
-          //   width: 0,
-          // ),
+          RoomMapComponents.radioButton<YesNo>(
+            context,
+            YesNo.na, // AssignedValue
+            selectedValue, // SelectedValue
+            AppStrings.na, // Title
+            (value) => onTaskValueChanged(value),
+            width: 0,
+          ),
         ],
       ),
     );
