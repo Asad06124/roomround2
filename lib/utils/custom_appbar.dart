@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/extensions/datetime_extension.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
+import 'package:rxdart/rxdart.dart';
 
 class CustomAppbar {
   static PreferredSize simpleAppBar(BuildContext context,
@@ -21,6 +23,34 @@ class CustomAppbar {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    Stream<int> getTotalUnreadMessageCount(String currentUserId) {
+      // Get all chat rooms where the user is a participant
+      return _firestore
+          .collection('chatrooms')
+          .where('participants', arrayContains: currentUserId)
+          .snapshots()
+          .asyncExpand((chatRoomSnapshot) {
+        // For each chat room, get unread message counts
+        List<Stream<int>> unreadCountStreams = chatRoomSnapshot.docs.map((chatRoom) {
+          String chatRoomId = chatRoom.id;
+          return _firestore
+              .collection('chatrooms')
+              .doc(chatRoomId)
+              .collection('messages')
+              .where('receiverId', isEqualTo: currentUserId)
+              .where('isSeen', isEqualTo: false)
+              .snapshots()
+              .map((messageSnapshot) => messageSnapshot.docs.length);
+        }).toList();
+
+        // Combine all streams to get the total unread count
+        return CombineLatestStream.list(unreadCountStreams)
+            .map((unreadCounts) => unreadCounts.fold(0, (sum, count) => sum + count));
+      });
+    }
+
     return PreferredSize(
       preferredSize: Size.fromHeight(height),
       child: Padding(
@@ -110,19 +140,41 @@ class CustomAppbar {
                     if (showMailIcon) ...{
                       SB.w(10),
                       GetBuilder<ProfileController>(
-                        builder: (controller) {
-                          return GestureDetector(
-                            onTap: () {
-                              controller.fetchUserProfile();
-                              Get.offNamed(AppRoutes.MESSAGE);
-                            },
-                            child: Assets.icons.mail.svg(
-                              colorFilter: iconsClor != null
-                                  ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
-                                  : null,
-                              height: iconHeight,
-                              width: iconWeight,
-                            ),
+                        builder: (profileController) {
+                          return Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    profileController.fetchUserProfile();
+                                    Get.offNamed(AppRoutes.MESSAGE);
+                                  },
+                                  child: Assets.icons.mail.svg(
+                                    colorFilter: iconsClor != null
+                                        ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
+                                        : null,
+                                    height: iconHeight,
+                                    width: iconWeight,
+                                  ),
+                                ),
+                              ),
+                              StreamBuilder<int>(
+                                stream: getTotalUnreadMessageCount(profileController.userId.toString()), // Assuming userId is available in ProfileController
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData || snapshot.data == 0) return const SizedBox();
+
+                                  return  Positioned(
+                                    right: 1.5,
+                                    top: 1.5,
+                                    child: CircleAvatar(
+                                      radius: iconWeight * 0.24,
+                                      backgroundColor: AppColors.orange,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           );
                         },
                       ),
