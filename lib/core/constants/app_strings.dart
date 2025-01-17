@@ -23,8 +23,8 @@ class AppStrings {
   static const String assignedMe = "Assigned Me";
   static const String assignedTasks = "Assigned Tasks";
   static const String assignedTo = "Assigned to";
-  static const String completedFirst = "Completed First";
-  static const String pendingFirst = "Pending First";
+  static const String completedFirst = "Completed";
+  static const String pendingFirst = "Pending";
   static const String assignment = "Assignment";
   static const String auditTemplete = "Audit Template";
   static const String auditTempleteTasks = "Audit Template Tasks";

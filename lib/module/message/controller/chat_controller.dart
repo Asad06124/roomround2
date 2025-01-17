@@ -8,11 +8,14 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+
 // import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:roomrounds/module/message/views/image_previewscreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'dart:io';
 
@@ -45,7 +48,7 @@ class ChatMessage {
   // Core message fields
   final String id; // Unique message ID (Firestore Doc ID or UUID)
   final String
-      chatId; // ID of the conversation (unique for sender and receiver)
+  chatId; // ID of the conversation (unique for sender and receiver)
   final String senderId; // Sender's user ID
   final String receiverId; // Receiver's user ID
   final String type; // Message type: 'text' or 'image'
@@ -120,21 +123,41 @@ class ChatController extends GetxController {
   TextEditingController messageController = TextEditingController();
   RxBool isLoading = false.obs;
   Rx<File?> selectedImageFile =
-      Rx<File?>(null); // RxFile that holds a nullable File
+  Rx<File?>(null); // RxFile that holds a nullable File
+  static const String FONT_SIZE_KEY = 'chat_font_size';
+  final storage = GetStorage();
+  double chatFontSize = 14.0; // Default size
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Initialize GetStorage before loading
+    loadFontSize();
+  }
+
+  void loadFontSize() {
+    chatFontSize = storage.read(FONT_SIZE_KEY) ?? 16.0;
+    update();
+  }
+
+  Future<void> updateFontSize(double newSize) async {
+    chatFontSize = newSize;
+    await storage.write(FONT_SIZE_KEY, newSize);
+    update();
+  }
 
   // Function to pick an image from the gallery
-  Future<void> pickImageFromGallery(
-      {required receiverId,
-      required receiverImgUrl,
-      required receiverDeviceToken,
-      required name}) async {
+  Future<void> pickImageFromGallery({required receiverId,
+    required receiverImgUrl,
+    required receiverDeviceToken,
+    required name}) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       selectedImageFile.value = File(image.path);
       update();
-      Get.to(ImagePreviewScreen( receiverId: receiverId,
+      Get.to(ImagePreviewScreen(receiverId: receiverId,
         receiverImgUrl: receiverImgUrl,
         receiverDeviceToken: receiverDeviceToken,
         name: name,), arguments: {
@@ -148,11 +171,10 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<void> pickImageFromCamera(
-      {required receiverId,
-      required receiverImgUrl,
-      required receiverDeviceToken,
-      required name}) async {
+  Future<void> pickImageFromCamera({required receiverId,
+    required receiverImgUrl,
+    required receiverDeviceToken,
+    required name}) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.camera);
 
@@ -160,7 +182,7 @@ class ChatController extends GetxController {
       selectedImageFile.value = File(image.path);
 
       update();
-      Get.to(ImagePreviewScreen( receiverId: receiverId,
+      Get.to(ImagePreviewScreen(receiverId: receiverId,
         receiverImgUrl: receiverImgUrl,
         receiverDeviceToken: receiverDeviceToken,
         name: name,), arguments: {
@@ -177,7 +199,9 @@ class ChatController extends GetxController {
   Future<String?> uploadImage(File imageFile) async {
     try {
       final String fileName =
-          '${DateTime.now().millisecondsSinceEpoch}.jpg';
+          '${DateTime
+          .now()
+          .millisecondsSinceEpoch}.jpg';
 
       var request = http.MultipartRequest(
         'POST',
@@ -230,7 +254,7 @@ class ChatController extends GetxController {
 
     // Check if chat already exists
     final chatDoc =
-        await _firestore.collection('chatrooms').doc(chatRoomId).get();
+    await _firestore.collection('chatrooms').doc(chatRoomId).get();
 
     if (!chatDoc.exists) {
       // Create new chat room
@@ -244,8 +268,8 @@ class ChatController extends GetxController {
   }
 
   // Function to update message status (delivered or seen)
-  Future<void> updateMessageStatus(
-      String messageId, bool isDelivered, bool isSeen) async {
+  Future<void> updateMessageStatus(String messageId, bool isDelivered,
+      bool isSeen) async {
     try {
       // Update message status in Firestore
       await _firestore.collection('chatrooms').doc(messageId).update({
@@ -272,8 +296,8 @@ class ChatController extends GetxController {
     });
   }
 
-  Stream<int> getUnreadMessageCountStream(
-      String chatRoomId, String currentUserId) {
+  Stream<int> getUnreadMessageCountStream(String chatRoomId,
+      String currentUserId) {
     return _firestore
         .collection('chatrooms')
         .doc(chatRoomId)
@@ -284,17 +308,17 @@ class ChatController extends GetxController {
         .map((snapshot) => snapshot.docs.length);
   }
 
-  Future<List<EmployeeWithLiveChat>> setupLiveChats(
-      List<Employee> usersList, String currentUserId) async {
+  Future<List<EmployeeWithLiveChat>> setupLiveChats(List<Employee> usersList,
+      String currentUserId) async {
     List<EmployeeWithLiveChat> usersWithLiveChats = [];
 
     for (Employee employee in usersList) {
       String chatRoomId =
-          getChatRoomId(currentUserId, employee.userId.toString());
+      getChatRoomId(currentUserId, employee.userId.toString());
 
       // Check if chat exists
       final chatDoc =
-          await _firestore.collection('chatrooms').doc(chatRoomId).get();
+      await _firestore.collection('chatrooms').doc(chatRoomId).get();
 
       if (chatDoc.exists) {
         usersWithLiveChats.add(
@@ -302,7 +326,7 @@ class ChatController extends GetxController {
             employee: employee,
             lastMessageStream: getLastMessageStream(chatRoomId),
             unreadCountStream:
-                getUnreadMessageCountStream(chatRoomId, currentUserId),
+            getUnreadMessageCountStream(chatRoomId, currentUserId),
           ),
         );
       }
@@ -324,24 +348,24 @@ class ChatController extends GetxController {
         .map((snapshot) {
       return snapshot.docs
           .map((doc) {
-            Map<String, dynamic> data = doc.data();
-            return ChatMessage(
-              id: doc.id,
-              // Firestore document ID
-              chatId: data['chatId'],
-              senderId: data['senderId'],
-              receiverId: data['receiverId'],
-              type: data['type'],
-              content: data['content'],
-              imageUrl: data['imageUrl'],
-              isDelivered: data['isDelivered'] ?? false,
-              // Default to false if not set
-              isSeen: data['isSeen'] ?? false,
-              // Default to false if not set
-              createdAt: DateTime.parse(data['createdAt']),
-              updatedAt: DateTime.parse(data['updatedAt']),
-            );
-          })
+        Map<String, dynamic> data = doc.data();
+        return ChatMessage(
+          id: doc.id,
+          // Firestore document ID
+          chatId: data['chatId'],
+          senderId: data['senderId'],
+          receiverId: data['receiverId'],
+          type: data['type'],
+          content: data['content'],
+          imageUrl: data['imageUrl'],
+          isDelivered: data['isDelivered'] ?? false,
+          // Default to false if not set
+          isSeen: data['isSeen'] ?? false,
+          // Default to false if not set
+          createdAt: DateTime.parse(data['createdAt']),
+          updatedAt: DateTime.parse(data['updatedAt']),
+        );
+      })
           .toList()
           .reversed // Reverse the list before returning it
           .toList(); // Convert the reversed iterable back to a list
@@ -374,10 +398,15 @@ class ChatController extends GetxController {
     required String receiverDeviceToken,
     required String receiverImgUrl,
   }) async {
-    if (content.trim().isEmpty && selectedImageFile.value == null) return;
+    if (content
+        .trim()
+        .isEmpty && selectedImageFile.value == null) return;
 
     final String chatRoomId = getChatRoomId(senderId, receiverId);
-    final String messageId = DateTime.now().millisecondsSinceEpoch.toString();
+    final String messageId = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
 
     try {
       // update();

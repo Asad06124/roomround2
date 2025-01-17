@@ -101,14 +101,28 @@ class NotificationView extends StatelessWidget {
         itemBuilder: (context, index) {
           NotificationModel notification = list[index];
 
-          return CustomeTiles.notificationTileSimple(
-            context,
-            title: notification.notificationTitle,
-            description: notification.notificationDescription,
-            onCloseTap: onCloseTap != null
-                ? () => onCloseTap(notification.notificationId)
-                : null,
-          );
+          return CustomeTiles.notificationTileSimple(context,
+              title: notification.notificationTitle,
+              description: notification.notificationDescription,
+              onCloseTap: onCloseTap != null
+                  ? () => onCloseTap(notification.notificationId)
+                  : null, onPressed: () {
+            if (notification.notificationTitle
+                    ?.toLowerCase()
+                    .contains('template') ==
+                true) {
+              Get.toNamed(AppRoutes.ROOMS_LIST);
+            }
+            if (notification.notificationDescription
+                    ?.toLowerCase()
+                    .contains('ticket') ==
+                true||notification.notificationTitle
+                ?.toLowerCase()
+                .contains('ticket') ==
+                true) {
+              Get.toNamed(AppRoutes.ASSIGNED_TASKS);
+            }
+          });
         },
       );
     } else {

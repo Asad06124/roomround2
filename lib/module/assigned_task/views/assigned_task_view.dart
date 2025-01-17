@@ -241,15 +241,34 @@ class AssignedTasksView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isClosedTickets)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text(
-                AppStrings.closed,
-                style: context.titleSmall!.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                   controller.selectedDropdownValue,
+                    style: context.titleSmall!.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
+                CustomeDropDown.simple<String>(
+                  context,
+                  list: ['Closed', 'Completed'],
+                  initialItem: controller.selectedDropdownValue,
+                  onSelect: (String value) {
+                    controller.changeClosedCompletedType(value);
+                    controller.selectedDropdownValue = value;
+                    controller.update();
+                  },
+                  closedFillColor: AppColors.white,
+                  borderRadius: 20,
+                  showShadow: true,
+                  closedShadow: false,
+                ),
+              ],
             ),
           _buildList(
             list: isClosedTickets

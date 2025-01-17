@@ -73,7 +73,8 @@ class MessageComponents {
       String? imageUrl,
       bool? isDelivered,
       bool? isSeen,
-      String? recieverImageUrl}) {
+      String? recieverImageUrl,
+      required ChatController controller}) {
     log("profileController Image: $recieverImageUrl");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -117,7 +118,10 @@ class MessageComponents {
                 ),
                 padding: const EdgeInsets.all(10),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: sender
+                      ? CrossAxisAlignment.start
+                      : CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (imageUrl != null && imageUrl.isNotEmpty)
                       Container(
@@ -150,6 +154,7 @@ class MessageComponents {
                       msg,
                       textAlign: TextAlign.justify,
                       style: context.bodySmall!.copyWith(
+                        fontSize: controller.chatFontSize,
                         color:
                             sender ? AppColors.textGrey : AppColors.lightWhite,
                         fontWeight: sender ? FontWeight.w600 : null,
@@ -163,6 +168,7 @@ class MessageComponents {
                   Text(
                     time,
                     style: context.bodySmall!.copyWith(
+                      fontSize: controller.chatFontSize * 0.85,
                       color: AppColors.textGrey,
                       fontWeight: FontWeight.w600,
                     ),

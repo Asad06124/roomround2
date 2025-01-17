@@ -63,6 +63,7 @@ dependencies:
   path_provider: ^2.1.5
   googleapis_auth: ^1.6.0
   dio: ^5.7.0
+  shared_preferences: ^2.3.5
   # overlay_notification: ^23.5.12
   # record: ^5.2.0
   # record: ^5.2.0

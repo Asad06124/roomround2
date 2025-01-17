@@ -62,6 +62,7 @@ class AppPages {
           Get.lazyPut<DashBoardController>(
             () => DashBoardController(),
           );
+          Get.lazyPut<ChatController>(() => ChatController(), fenix: true);
         },
       ),
     ),

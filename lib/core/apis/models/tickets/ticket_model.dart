@@ -247,6 +247,7 @@ class Ticket {
   String? assignTemplateName;
   String? completionDate;
   int? assignBy;
+  bool? isCompleted;
   String? assignByName;
   String? assignByImage;
   String? assignToName;
@@ -266,6 +267,7 @@ class Ticket {
       this.assignTo,
       this.isClosed,
       this.reply,
+        this.isCompleted,
       this.assignTemplateRoomId,
       this.assignTemplateName,
       this.completionDate,
@@ -295,6 +297,7 @@ class Ticket {
     assignBy = json['assignBy'];
     assignByName = json['assignByName'];
     assignByImage = json['assignByImage'];
+    isCompleted = json['isCompleted'];
     assignToName = json['assignToName'];
     assignToImage = json['assignToImage'];
     status = json['status'];
@@ -323,6 +326,7 @@ class Ticket {
     data['assignTemplateName'] = this.assignTemplateName;
     data['completionDate'] = this.completionDate;
     data['assignBy'] = this.assignBy;
+    data['isCompleted'] = this.isCompleted;
     data['assignByName'] = this.assignByName;
     data['assignByImage'] = this.assignByImage;
     data['assignToName'] = this.assignToName;

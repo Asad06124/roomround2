@@ -14,8 +14,10 @@ class AssignedTaskController extends GetxController {
 
   List<Ticket> _openTicketsList = [];
   List<Ticket> _closedTicketsList = [];
+  String selectedDropdownValue = 'Closed';
 
   List<Ticket> get openTicketsList => _openTicketsList;
+
   List<Ticket> get closedTicketsList => _closedTicketsList;
   List<TicketStatusModel>? _ticketStatusList;
 
@@ -27,6 +29,7 @@ class AssignedTaskController extends GetxController {
 
   TicketsType get ticketsType => _ticketsType;
   TextEditingController replyController = TextEditingController();
+
   @override
   void onInit() {
     super.onInit();
@@ -50,7 +53,8 @@ class AssignedTaskController extends GetxController {
     _fetchAssignedTickets(isClosed: true);
   }
 
-  void _fetchAssignedTickets({bool isClosed = false}) async {
+  void _fetchAssignedTickets(
+      {bool isClosed = false, bool isCompleted = false}) async {
     totalTicketsCount = 0;
     urgentTicketsCount = 0;
     if (isClosed) {
@@ -84,6 +88,7 @@ class AssignedTaskController extends GetxController {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
       "isClosed": isClosed ? true : false,
       "assignBy": managerId,
+      "isCompleted": isCompleted,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
@@ -190,6 +195,14 @@ class AssignedTaskController extends GetxController {
   //   }
   // }
 
+  void changeClosedCompletedType(String? value) {
+    if (value == 'Completed') {
+      _fetchAssignedTickets(isClosed: true, isCompleted: true);
+    } else {
+      _fetchAssignedTickets(isClosed: true, isCompleted: false);
+    }
+  }
+
   void changeTicketsType(String? value) {
     if (value != null && value.trim().isNotEmpty) {
       if (value == AppStrings.assignedMe) {
@@ -205,7 +218,7 @@ class AssignedTaskController extends GetxController {
       _fetchAssignedTickets();
       if (_ticketsType == TicketsType.assignedMe ||
           _ticketsType == TicketsType.assignedTo) {
-        _fetchAssignedTickets(isClosed: true);
+        _fetchAssignedTickets(isClosed: true, isCompleted: false);
       }
     }
   }
