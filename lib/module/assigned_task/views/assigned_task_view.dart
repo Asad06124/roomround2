@@ -79,7 +79,8 @@ class AssignedTasksView extends StatelessWidget {
                         : CustomLoader(),
                   ),
                   SB.h(10),
-                  if (controller.ticketsType == TicketsType.assignedMe) ...[
+                  if (controller.ticketsType == TicketsType.assignedMe ||
+                      controller.ticketsType == TicketsType.assignedTo) ...[
                     // Show Closed Tickets List Container
                     Expanded(
                       child: controller.hasClosedTickets
@@ -240,15 +241,34 @@ class AssignedTasksView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isClosedTickets)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text(
-                AppStrings.closed,
-                style: context.titleSmall!.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                   controller.selectedDropdownValue,
+                    style: context.titleSmall!.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
+                CustomeDropDown.simple<String>(
+                  context,
+                  list: ['Closed', 'Completed'],
+                  initialItem: controller.selectedDropdownValue,
+                  onSelect: (String value) {
+                    controller.changeClosedCompletedType(value);
+                    controller.selectedDropdownValue = value;
+                    controller.update();
+                  },
+                  closedFillColor: AppColors.white,
+                  borderRadius: 20,
+                  showShadow: true,
+                  closedShadow: false,
+                ),
+              ],
             ),
           _buildList(
             list: isClosedTickets
@@ -280,16 +300,15 @@ class AssignedTasksView extends StatelessWidget {
               itemBuilder: (context, index) {
                 Ticket ticket = list[index];
 
-                String? status = isClosedTickets
-                    ? AppStrings.closed
-                    : type == TicketsType.assignedMe
-                        ? isManager
-                            ? AppStrings.seeThread
-                            : AppStrings.close
-                        : type == TicketsType.assignedTo
-                            ? AppStrings.assigned
-                            : AppStrings.openThread;
-
+//                 String? status = isClosedTickets
+//                     ? AppStrings.closed
+//                     : type == TicketsType.assignedMe
+//                         ? isManager
+//                             ? AppStrings.seeThread
+//                             : AppStrings.close
+//                         : type == TicketsType.assignedTo
+//                             ? AppStrings.assigned
+//                             : AppStrings.openThread;
                 bool showUnderline =
                     !isClosedTickets && type != TicketsType.assignedTo;
 
@@ -300,7 +319,7 @@ class AssignedTasksView extends StatelessWidget {
                       ticket.assignToName,
                   // showIsActiveDot:
                   //     type == TicketsType.assignedMe ? index % 2 == 0 : false,
-                  status: status,
+                  status: ticket.isClosed == false ? 'Open' : 'Close',
                   isUnderline: showUnderline,
                   onStatusPressed: showUnderline
                       ? () {

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:roomrounds/core/constants/app_colors.dart';
 import 'package:roomrounds/core/extensions/build_context_extension.dart';

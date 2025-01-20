@@ -3,6 +3,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 class AppStrings {
   static const String about = "About";
   static const String account = "Account";
+  static const String all = "Employee";
   static const String allEmployees = "All Employees";
   static const String allManagers = "All Managers";
   static const String allRooms = "All Rooms";
@@ -22,6 +23,8 @@ class AppStrings {
   static const String assignedMe = "Assigned Me";
   static const String assignedTasks = "Assigned Tasks";
   static const String assignedTo = "Assigned to";
+  static const String completedFirst = "Completed";
+  static const String pendingFirst = "Pending";
   static const String assignment = "Assignment";
   static const String auditTemplete = "Audit Template";
   static const String auditTempleteTasks = "Audit Template Tasks";
@@ -73,7 +76,7 @@ class AppStrings {
   static const String enterRoomLocation = "Enter Room / Location";
   static const String enterRoomNo = "Enter Room No.";
   static const String error = "Error";
-  static const String facilitiesView = "Facilities View";
+  static const String facilitiesView = "Report An Issue";
   static const String female = "Female";
   static const String forgotPassword = "Forgot Password";
   static const String forgotYourPassword = "Forgot your password?";
@@ -108,6 +111,7 @@ class AppStrings {
   static const String newPassword = 'New password';
   static const String next = 'Next';
   static const String no = "No";
+  static const String na = "N/A";
   static const String noEmployeesFound = "No employees found";
   static const String noInternetConnection = "No Internet Connection!";
   static const String noMembersFound = "No members found";

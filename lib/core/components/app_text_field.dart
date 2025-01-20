@@ -4,7 +4,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
-    Key? key,
+    super.key,
     this.title,
     // required this.hint,
     this.controller,
@@ -28,13 +28,14 @@ class CustomTextField extends StatefulWidget {
     this.showBorder = false,
     this.maxLines = 1,
     this.prefixIcon,
+    this.border,
     this.onTap,
     this.isShadow = false,
     this.isRequiredField = true,
     this.hintText,
     this.sufficIconBackgroundColor = AppColors.primary,
     this.borderRadius = 9.0,
-  }) : super(key: key);
+  });
 
   final String? title, hintText;
   final TextEditingController? controller;
@@ -45,6 +46,7 @@ class CustomTextField extends StatefulWidget {
   final bool isShadow;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final Color? border;
   final Color textColor, fillColor, borderColor;
   final Color hintTextColor, sufficIconBackgroundColor;
   final Widget? prefixIcon;
@@ -127,6 +129,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 (value) => value!.toString().trim().isEmpty
                     ? "${widget.hintText ?? ''} ${AppStrings.cannotBeEmpty}"
                     : null,
+            style: TextStyle(color: widget.textColor),
             obscureText:
                 widget.isPasswordField ? _hidePassword : widget.isPasswordField,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -185,7 +188,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   InputBorder _inputBorder() {
     return OutlineInputBorder(
-      borderSide: BorderSide(color: widget.borderColor),
+      borderSide: BorderSide(color: widget.border ?? widget.borderColor),
       borderRadius: BorderRadius.all(
         Radius.circular(widget.borderRadius),
       ),

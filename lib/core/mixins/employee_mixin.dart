@@ -8,7 +8,7 @@ mixin EmployeeMixin {
     String? search,
     int? managerId,
     int? departmentId,
-    bool managersOnly = false,
+    bool? managersOnly,
   }) async {
     List<Employee> list = [];
 
@@ -19,7 +19,7 @@ mixin EmployeeMixin {
       "managerId": managerId,
       "pageNo": 1,
       "size": 20,
-      "isPagination": false,
+      "isPagination": true,
     };
 
     var resp = await APIFunction.call(

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:roomrounds/core/extensions/app_theme_extension.dart';
@@ -190,7 +192,7 @@ extension BuildContextEntension<T> on BuildContext {
 }
 
 class ExperimentOfContext extends StatelessWidget {
-  const ExperimentOfContext({Key? key}) : super(key: key);
+  const ExperimentOfContext({super.key});
 
   @override
   Widget build(BuildContext context) {

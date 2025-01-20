@@ -2,14 +2,17 @@ import 'package:roomrounds/core/components/app_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class CustomeTiles {
-  static Widget employeeTile(BuildContext context,
-      {String? title,
-      String? subtile,
-      String? subHeading,
-      String? image,
-      GestureTapCallback? onPressed,
-      GestureTapCallback? onRemoveTap,
-      int? notificationCount}) {
+  static Widget employeeTile(
+    BuildContext context, {
+    String? title,
+    String? subtile,
+    String? subHeading,
+    String? image,
+    GestureTapCallback? onPressed,
+    GestureTapCallback? onRemoveTap,
+    int? notificationCount,
+    Color? roleColor,
+  }) {
     return Column(
       children: [
         InkWell(
@@ -62,7 +65,7 @@ class CustomeTiles {
                               child: Text(
                                 '($subHeading)',
                                 style: context.bodyMedium!.copyWith(
-                                  color: AppColors.darkGrey,
+                                  color: roleColor ?? AppColors.darkGrey,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -71,6 +74,8 @@ class CustomeTiles {
                       ),
                       Text(
                         subtile ?? '',
+                        maxLines: 1, // Limit to one line
+                        overflow: TextOverflow.ellipsis,
                         style: context.bodySmall!.copyWith(
                           color: AppColors.darkGrey,
                           fontWeight: FontWeight.w500,
@@ -93,21 +98,21 @@ class CustomeTiles {
                       ),
                     ),
                   ),
-                if (onRemoveTap != null)
-                  InkWell(
-                    onTap: onRemoveTap,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(35),
-                        border: Border.all(color: AppColors.gry),
-                      ),
-                      child: const Icon(
-                        Icons.remove,
-                        color: AppColors.gry,
-                        size: 16,
-                      ),
-                    ),
-                  ),
+                // if (onRemoveTap != null)
+                //   InkWell(
+                //     onTap: onRemoveTap,
+                //     child: Container(
+                //       decoration: BoxDecoration(
+                //         borderRadius: BorderRadius.circular(35),
+                //         border: Border.all(color: AppColors.gry),
+                //       ),
+                //       child: const Icon(
+                //         Icons.remove,
+                //         color: AppColors.gry,
+                //         size: 16,
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
           ),

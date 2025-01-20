@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/extensions/datetime_extension.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
+import 'package:roomrounds/module/profile/controller/profile_controller.dart';
+import 'package:rxdart/rxdart.dart';
 
 class CustomAppbar {
   static PreferredSize simpleAppBar(BuildContext context,
@@ -20,6 +23,34 @@ class CustomAppbar {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    Stream<int> getTotalUnreadMessageCount(String currentUserId) {
+      // Get all chat rooms where the user is a participant
+      return firestore
+          .collection('chatrooms')
+          .where('participants', arrayContains: currentUserId)
+          .snapshots()
+          .asyncExpand((chatRoomSnapshot) {
+        // For each chat room, get unread message counts
+        List<Stream<int>> unreadCountStreams = chatRoomSnapshot.docs.map((chatRoom) {
+          String chatRoomId = chatRoom.id;
+          return firestore
+              .collection('chatrooms')
+              .doc(chatRoomId)
+              .collection('messages')
+              .where('receiverId', isEqualTo: currentUserId)
+              .where('isSeen', isEqualTo: false)
+              .snapshots()
+              .map((messageSnapshot) => messageSnapshot.docs.length);
+        }).toList();
+
+        // Combine all streams to get the total unread count
+        return CombineLatestStream.list(unreadCountStreams)
+            .map((unreadCounts) => unreadCounts.fold(0, (sum, count) => sum + count));
+      });
+    }
+
     return PreferredSize(
       preferredSize: Size.fromHeight(height),
       child: Padding(
@@ -79,16 +110,20 @@ class CustomAppbar {
                           return Stack(
                             children: [
                               GestureDetector(
-                                  onTap: () =>
-                                      Get.toNamed(AppRoutes.NOTIFICATION),
-                                  child: Assets.icons.bell.svg(
-                                    colorFilter: iconsClor != null
-                                        ? ColorFilter.mode(
-                                            iconsClor, BlendMode.srcIn)
-                                        : null,
-                                    height: iconHeight + 4,
-                                    width: iconWeight + 4,
-                                  )),
+                                onTap: () {
+                                  Get.find<NotificationController>()
+                                      .fetchNotificationsList();
+                                  Get.toNamed(AppRoutes.NOTIFICATION);
+                                },
+                                child: Assets.icons.bell.svg(
+                                  colorFilter: iconsClor != null
+                                      ? ColorFilter.mode(
+                                          iconsClor, BlendMode.srcIn)
+                                      : null,
+                                  height: iconHeight + 4,
+                                  width: iconWeight + 4,
+                                ),
+                              ),
                               if (hasNotifications)
                                 Positioned(
                                   right: 3,
@@ -104,16 +139,45 @@ class CustomAppbar {
                       ),
                     if (showMailIcon) ...{
                       SB.w(10),
-                      GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.MESSAGE),
-                        child: Assets.icons.mail.svg(
-                          colorFilter: iconsClor != null
-                              ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
-                              : null,
-                          height: iconHeight,
-                          width: iconWeight,
-                        ),
-                      )
+                      GetBuilder<ProfileController>(
+                        builder: (profileController) {
+                          return Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    profileController.fetchUserProfile();
+                                    Get.offNamed(AppRoutes.MESSAGE);
+                                  },
+                                  child: Assets.icons.mail.svg(
+                                    colorFilter: iconsClor != null
+                                        ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
+                                        : null,
+                                    height: iconHeight,
+                                    width: iconWeight,
+                                  ),
+                                ),
+                              ),
+                              StreamBuilder<int>(
+                                stream: getTotalUnreadMessageCount(profileController.userId.toString()), // Assuming userId is available in ProfileController
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData || snapshot.data == 0) return const SizedBox();
+
+                                  return  Positioned(
+                                    right: 1.5,
+                                    top: 1.5,
+                                    child: CircleAvatar(
+                                      radius: iconWeight * 0.24,
+                                      backgroundColor: AppColors.orange,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     },
                     if (actionWidget != null) actionWidget,
                   ],

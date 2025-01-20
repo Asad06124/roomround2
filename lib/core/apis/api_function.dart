@@ -1,7 +1,8 @@
-import 'dart:convert';
-// import 'package:logger/logger.dart';
-import 'dart:io';
+// ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
@@ -12,14 +13,18 @@ class APIFunction {
     APIMethods method,
     String endPoint, {
     var dataMap,
-    // var model,
     File? file,
     String? fileKey,
+    String? audioKey,
+    String? imageKey,
+    List<File>? imageListFile,
+    List<File>? audioListFile,
     bool showLoader = true,
     bool showErrorMessage = true,
     bool showSuccessMessage = false,
     bool getOnlyStatusCode = false,
     bool getStatusOnly = false,
+    bool isGoBack = true,
     Map<String, String>? customHeaders,
     Function(Map<String, dynamic>)? fromJson,
   }) async {
@@ -27,9 +32,7 @@ class APIFunction {
       final String url = Urls.apiBaseUrl + endPoint;
       final Uri uri = Uri.parse(url);
       final String apiMethod = method.name.toUpperCase();
-
       if (showLoader) CustomOverlays.showLoader();
-
       // log(userData.token);
       bool isConnected = await Utilities.hasConnection();
 
@@ -48,6 +51,7 @@ class APIFunction {
 
       http.BaseRequest request;
       String encodedData = jsonEncode(dataMap);
+      log("datamap Data $encodedData");
 
       if (file != null) {
         // Multipart request for file upload
@@ -57,8 +61,28 @@ class APIFunction {
           await http.MultipartFile.fromPath(fileKey ?? "", file.path),
         );
         request = multipartRequest;
+      } else if (imageListFile != null || audioListFile != null) {
+        // Multipart request for file upload
+        var multipartRequest = http.MultipartRequest(apiMethod, uri);
+        multipartRequest.fields.addAll(dataMap);
+        if (imageListFile != null) {
+          for (var element in imageListFile) {
+            multipartRequest.files.add(
+              await http.MultipartFile.fromPath(imageKey ?? "", element.path),
+            );
+          }
+        }
+        if (audioListFile != null) {
+          for (var element in audioListFile) {
+            multipartRequest.files.add(
+              await http.MultipartFile.fromPath(audioKey ?? "", element.path),
+            );
+          }
+        }
+        request = multipartRequest;
       } else {
         // Standard request for non-file data
+
         var normalRequest = http.Request(apiMethod, uri);
         normalRequest.body = encodedData;
         request = normalRequest;
@@ -78,14 +102,17 @@ class APIFunction {
       }
 
       String? data = await response.stream.bytesToString();
-      // log("Response Data $data");
 
       customLogger(
         "Url: $url \nResponse (${response.statusCode}): $data",
         type: LoggerType.info,
       );
 
-      if (showLoader) CustomOverlays.dismissLoader();
+      if (showLoader) {
+        isGoBack
+            ? CustomOverlays.dismissLoader()
+            : CustomOverlays.showLoaderOnScreen();
+      }
 
       String? errorMessage;
 
@@ -161,6 +188,7 @@ class APIFunction {
     if (customHeaders != null && customHeaders.isNotEmpty) {
       headers.addAll(customHeaders);
     }
+    log('$token');
     // customLogger("Headers: $headers");
     return headers;
   }

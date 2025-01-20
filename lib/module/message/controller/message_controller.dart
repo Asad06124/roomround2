@@ -1,30 +1,17 @@
 import 'package:roomrounds/core/constants/imports.dart';
 
-class MessageController extends GetxController with WidgetsBindingObserver {
-  bool _isKeyBoardOpen = false;
-  bool get isKeyBoardOpen => _isKeyBoardOpen;
-  OverlayPortalController overlayController = OverlayPortalController();
+import '../../../core/apis/models/employee/employee_model.dart';
+import '../../emloyee_directory/controller/employee_directory_controller.dart';
+
+class MessageViewController extends GetxController {
+  var employeeDirectoryController = Get.put(EmployeeDirectoryController());
+
+  List<Employee> userlist = [];
 
   @override
-  void onReady() {
-    super.onReady();
-    startListningKeyBoard();
-  }
+  void onInit() {
+    super.onInit();
 
-  startListningKeyBoard() {
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void onClose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.onClose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    final double bottomInset = MediaQuery.of(Get.context!).viewInsets.bottom;
-    _isKeyBoardOpen = bottomInset > 0;
-    update();
+    userlist = employeeDirectoryController.searchResults;
   }
 }

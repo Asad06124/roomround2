@@ -1,4 +1,4 @@
-enum YesNo { yes, no }
+enum YesNo { yes, no, na }
 
 enum UserType {
   superAdmin,
@@ -20,6 +20,8 @@ enum APIMethods {
 enum RoomType { allRooms, complete, inProgress }
 
 enum TicketsType { assignedMe, assignedTo, sendTo }
+
+enum SortByType { ASC, DESC }
 
 enum TicketStatus { open, inProgress, closed }
 

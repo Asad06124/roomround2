@@ -28,6 +28,14 @@ extension DateTimeExtension on DateTime {
   String get dateOnly {
     return toString().substring(0, 10);
   }
+  static String formatTimeOnly(String createdAt) {
+    // Parse the ISO 8601 string into DateTime object
+    DateTime dateTime = DateTime.parse(createdAt);
+
+    // Format the time using the DateFormat class
+    return DateFormat('hh:mm a').format(dateTime); // 12:33 PM format
+  }
+
 }
 
 extension GreetingExtension on DateTime {

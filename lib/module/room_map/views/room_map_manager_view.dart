@@ -2,7 +2,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_map/controller/room_map_controller.dart';
 
 class RoomMapManagerView extends StatelessWidget {
-  const RoomMapManagerView({Key? key}) : super(key: key);
+  const RoomMapManagerView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -102,11 +102,8 @@ class RoomMapManagerView extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        RoomMapComponents.radioButton<YesNo>(
-                            context,
-                            YesNo.yes,
-                            controller.isUrgent,
-                            AppStrings.yes, (value) {
+                        RoomMapComponents.radioButton<YesNo>(context, YesNo.yes,
+                            controller.isUrgent, AppStrings.yes, (value) {
                           controller.onUrgentChange(value);
                         }),
                         RoomMapComponents.radioButton<YesNo>(context, YesNo.no,

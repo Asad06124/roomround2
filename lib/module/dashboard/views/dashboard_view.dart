@@ -1,11 +1,25 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/dashboard/controller/dashboard_controller.dart';
 
+import '../../../firebase_options.dart';
+import '../../push_notification/push_notification.dart';
+@pragma('vm:entry-point')
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+}
+Future<void> initnotification() async {
+  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+
+  await PushNotificationController.initialize();
+}
 class DashboardView extends StatelessWidget {
-  const DashboardView({Key? key}) : super(key: key);
+  const DashboardView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    initnotification();
     return GetBuilder<DashBoardController>(
       init: DashBoardController(),
       builder: (controller) {

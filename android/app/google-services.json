@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "341571332062",
+    "project_id": "roomround-34b5f",
+    "storage_bucket": "roomround-34b5f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:341571332062:android:550ee1fd4b4ef459199f4f",
+        "android_client_info": {
+          "package_name": "com.roomrounds.llc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwebguXKIzQbiq5L9W4TlM3q7yy8W6GEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

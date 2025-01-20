@@ -4,9 +4,10 @@ mixin Validators {
   String? validatePassword(value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
-    } else if (value.length < 8) {
-      return 'Password must be at least 8 characters';
     }
+    // else if (value.length < 8) {
+    //   return 'Password must be at least 8 characters';
+    // }
     return null;
   }
 
@@ -58,8 +59,6 @@ mixin Validators {
   String? validateName(value) {
     if (value == null || value.isEmpty) {
       return 'Name cannot be empty';
-    } else if (value.length < 3) {
-      return 'Name must be at least 3 characters';
     }
     return null;
   }

@@ -49,40 +49,56 @@ class LoginView extends StatelessWidget with Validators {
                       isPasswordField: true,
                       validator: validatePassword,
                     ),
+                    SB.h(10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.FORGET);
+                          },
+                          child: Text(
+                            'Forget Password?',
+                            style: context.bodyLarge!
+                                .copyWith(color: AppColors.white),
+                          ),
+                        ),
+                      ],
+                    ),
                     SB.h(30),
                     AppButton.primary(
                       title: AppStrings.login,
                       onPressed: controller.login,
                     ),
                     SB.h(25),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          AppStrings.unableToLogin,
-                          style: context.bodyLarge!
-                              .copyWith(color: AppColors.white),
-                        ),
-                        Text(
-                          AppStrings.clickHere,
-                          style: context.bodyLarge!.copyWith(
-                            color: Colors.transparent,
-                            decoration: TextDecoration.underline,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            decorationThickness: 2,
-                            decorationColor: AppColors.white,
-                            shadows: [
-                              const Shadow(
-                                color: Colors.white,
-                                offset: Offset(0, -2),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   mainAxisSize: MainAxisSize.min,
+                    //   children: [
+                    //     // Text(
+                    //     //   AppStrings.unableToLogin,
+                    //     //   style: context.bodyLarge!
+                    //     //       .copyWith(color: AppColors.white),
+                    //     // ),
+                    //     // Text(
+                    //     //   AppStrings.clickHere,
+                    //     //   style: context.bodyLarge!.copyWith(
+                    //     //     color: Colors.transparent,
+                    //     //     decoration: TextDecoration.underline,
+                    //     //     fontSize: 16,
+                    //     //     fontWeight: FontWeight.w600,
+                    //     //     decorationThickness: 2,
+                    //     //     decorationColor: AppColors.white,
+                    //     //     shadows: [
+                    //     //       const Shadow(
+                    //     //         color: Colors.white,
+                    //     //         offset: Offset(0, -2),
+                    //     //       ),
+                    //     //     ],
+                    //     //   ),
+                    //     // ),
+                    //   ],
+                    // )
                   ],
                 ),
               ),

@@ -1,16 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/routes/app_pages.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
-import 'core/constants/controllers.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
+  await GetStorage.init();
+
   _initControllers();
-  
-  runApp(const MyApp());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(MyApp());
 }
 
 void _initControllers() {
@@ -28,6 +32,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeDark().theme,
       initialRoute: AppRoutes.SPLASH_SCREEN,
       getPages: AppPages.routes,
+
       builder: (context, child) {
         final scale = MediaQuery.of(context).textScaler.clamp(
               minScaleFactor: 0.6,

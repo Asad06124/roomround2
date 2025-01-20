@@ -12,6 +12,12 @@ class CustomOverlays {
     if (isDialogOpen == true) Get.back(closeOverlays: true);
   }
 
+  static void showLoaderOnScreen() {
+    if (Get.isDialogOpen == true) {
+      Get.until((route) => !Get.isDialogOpen!);
+    }
+  }
+
   static void dismissToast() {
     if (Get.isSnackbarOpen) Get.closeAllSnackbars();
   }

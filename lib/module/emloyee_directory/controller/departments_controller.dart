@@ -20,7 +20,12 @@ class DepartmentsController extends GetxController {
   //   getDepartments();
   // }
 
-  Future<List<Department>> getDepartments({int? departmentId}) async {
+  Future<List<Department>> getDepartments({
+    int? departmentId,
+    bool? unassigned,
+    bool? isMyEmpDepartment,
+    bool? isAssignedEmployee,
+  }) async {
     _updateHasData(false);
 
     Map<String, dynamic> data = {
@@ -30,6 +35,9 @@ class DepartmentsController extends GetxController {
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
+      "unassigned": unassigned,
+      "isMyEmpDepartment": isMyEmpDepartment,
+      "isAssignedEmployee": isAssignedEmployee,
     };
 
     var resp = await APIFunction.call(
@@ -49,7 +57,7 @@ class DepartmentsController extends GetxController {
   }
 
   List<String> getDepartmentsNames() {
-    List<String> names = [];
+    List<String> names = ['Department'];
 
     if (_departments.isNotEmpty) {
       for (var dep in _departments) {
@@ -75,7 +83,9 @@ class DepartmentsController extends GetxController {
 
   void onDepartmentSelect(String? name) {
     if (name != null && name.trim().isNotEmpty) {
-      if (_departments.isNotEmpty) {
+      if (name == 'Select') {
+        _selectedDepartment = null;
+      } else if (_departments.isNotEmpty) {
         Department? department = _departments
             .firstWhereOrNull((dep) => dep.departmentName?.trim() == name);
         if (department != null) {

@@ -1,4 +1,9 @@
+import 'dart:developer';
+
 import 'package:roomrounds/core/constants/imports.dart';
+
+import '../../../core/components/app_image.dart';
+import '../controller/chat_controller.dart';
 
 class MessageComponents {
   static Widget detailTile(
@@ -59,24 +64,34 @@ class MessageComponents {
     );
   }
 
-  static Widget messageTile(
-    BuildContext context, {
-    String msg =
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.',
-    String time = '1:03 PM',
-    String date = '11/23/2023',
-    bool sender = true,
-  }) {
+  static Widget messageTile(BuildContext context,
+      {String msg =
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.',
+      String time = '1:03 PM',
+      String date = '11/23/2023',
+      bool sender = true,
+      String? imageUrl,
+      bool? isDelivered,
+      bool? isSeen,
+      String? recieverImageUrl,
+      required ChatController controller}) {
+    log("profileController Image: $recieverImageUrl");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment:
             sender ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
           if (sender) ...{
-            CircleAvatar(
-              child: Assets.images.person.image(height: 40, width: 40),
+            AppImage.network(
+              imageUrl: recieverImageUrl != null
+                  ? (recieverImageUrl)
+                  : AppImages.personPlaceholder,
+              borderRadius: BorderRadius.circular(20),
+              fit: BoxFit.cover,
+              height: 40,
+              width: 40,
             ),
             SB.w(5),
           },
@@ -85,7 +100,11 @@ class MessageComponents {
                 sender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
             children: [
               Container(
-                width: context.width * 0.60,
+                // width: ,
+                constraints: BoxConstraints(
+                  maxWidth: context.width * 0.45, // Maximum width constraint
+                  // minWidth: context.width * 0.30, // Minimum width constraint
+                ),
                 decoration: BoxDecoration(
                   color: sender
                       ? AppColors.gry.withOpacity(0.24)
@@ -98,28 +117,91 @@ class MessageComponents {
                   ),
                 ),
                 padding: const EdgeInsets.all(10),
-                child: Text(
-                  msg,
-                  textAlign: TextAlign.justify,
-                  style: context.bodySmall!.copyWith(
-                    color: sender ? AppColors.textGrey : AppColors.lightWhite,
-                    fontWeight: sender ? FontWeight.w600 : null,
-                  ),
+                child: Column(
+                  crossAxisAlignment: sender
+                      ? CrossAxisAlignment.start
+                      : CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (imageUrl != null && imageUrl.isNotEmpty)
+                      Container(
+                        height: context.width * 0.40,
+                        width: context.width * 0.50,
+                        decoration: BoxDecoration(
+                          color: sender
+                              ? AppColors.gry.withOpacity(0.24)
+                              : AppColors.primary,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(15),
+                            topRight: const Radius.circular(15),
+                            bottomLeft: Radius.circular(15),
+                            bottomRight: Radius.circular(15),
+                          ),
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator()),
+                            // Optional placeholder
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error), // Optional error widget
+                          ),
+                        ),
+                      ),
+                    Text(
+                      msg,
+                      textAlign: TextAlign.justify,
+                      style: context.bodySmall!.copyWith(
+                        fontSize: controller.chatFontSize,
+                        color:
+                            sender ? AppColors.textGrey : AppColors.lightWhite,
+                        fontWeight: sender ? FontWeight.w600 : null,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Text(
-                time,
-                style: context.bodySmall!.copyWith(
-                  color: AppColors.textGrey,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                children: [
+                  Text(
+                    time,
+                    style: context.bodySmall!.copyWith(
+                      fontSize: controller.chatFontSize * 0.85,
+                      color: AppColors.textGrey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (!sender) ...[
+                    // Show different ticks based on message delivery and seen status
+                    // if (isDelivered == false) // Not Delivered - Single tick
+                    //   Icon(Icons.check, size: 16),
+                    // Single tick
+                    if (isSeen != true) // Delivered - Double tick
+                      Icon(Icons.check_circle_outline, size: 16),
+                    // Single tick
+                    if (isSeen == true) // Seen - Double Blue tick
+                      Icon(Icons.check_circle, color: Colors.blue, size: 16),
+                    // Blue tick
+                  ],
+                ],
               )
             ],
           ),
           if (!sender) ...{
             SB.w(5),
-            CircleAvatar(
-              child: Assets.images.person.image(height: 40, width: 40),
+            AppImage.network(
+              imageUrl: profileController.user?.image != null
+                  ? ('${Urls.domain}${profileController.user?.image}')
+                  : AppImages.personPlaceholder,
+              // imageUrl: recieverImageUrl.isNotEmpty
+              //     ? ('${Urls.domain}$recieverImageUrl')
+              //     : AppImages.personPlaceholder,
+              borderRadius: BorderRadius.circular(20),
+              fit: BoxFit.cover,
+              height: 40,
+              width: 40,
             ),
           },
         ],
@@ -129,40 +211,52 @@ class MessageComponents {
 }
 
 // ignore: must_be_immutable
-class CustomePainterDialouge extends StatelessWidget {
+class CustomePainterDialouge extends StatefulWidget {
   LayerLink link;
   OverlayPortalController controller;
   GestureTapCallback? onTap;
   Widget child;
+  String receiverId, receiverImgUrl, receiverDeviceToken, name;
+
   CustomePainterDialouge(
-      {Key? key,
+      {super.key,
       required this.link,
       required this.controller,
       this.onTap,
-      required this.child})
-      : super(key: key);
+      required this.child,
+      required this.receiverDeviceToken,
+      required this.receiverImgUrl,
+      required this.receiverId,
+      required this.name});
+
+  @override
+  State<CustomePainterDialouge> createState() => _CustomePainterDialougeState();
+}
+
+class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
+  var chatController = Get.find<ChatController>();
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: CompositedTransformTarget(
-        link: link,
+        link: widget.link,
         child: OverlayPortal(
-          controller: controller,
+          controller: widget.controller,
           overlayChildBuilder: (BuildContext context) {
             return Stack(
               children: [
                 Positioned.fill(
                   child: InkWell(
-                    onTap: onTap,
+                    onTap: widget.onTap,
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     hoverColor: Colors.transparent,
                   ),
                 ),
                 CompositedTransformFollower(
-                  link: link,
+                  link: widget.link,
                   offset: const Offset(-7, -20),
                   targetAnchor: Alignment.topLeft,
                   followerAnchor: Alignment.bottomLeft,
@@ -177,33 +271,56 @@ class CustomePainterDialouge extends StatelessWidget {
                             vertical: 20, horizontal: 10),
                         child: Column(
                           children: [
-                            Row(children: [
-                              Assets.icons.upload.svg(
-                                  height: 25, width: 25, fit: BoxFit.cover),
-                              SB.w(8),
-                              Text(
-                                AppStrings.uploadfromDevice,
-                                style: context.bodyLarge!.copyWith(
-                                  color: AppColors.gry,
-                                  fontWeight: FontWeight.w600,
+                            GestureDetector(
+                              onTap: () async {
+                                await chatController.pickImageFromGallery(
+                                    receiverId: widget.receiverId,
+                                    receiverImgUrl: widget.receiverImgUrl,
+                                    receiverDeviceToken:
+                                        widget.receiverDeviceToken,
+                                    name: widget.name);
+                                chatController.overlayController.toggle();
+                              },
+                              child: Row(children: [
+                                Assets.icons.upload.svg(
+                                    height: 25, width: 25, fit: BoxFit.cover),
+                                SB.w(8),
+                                Text(
+                                  AppStrings.uploadfromDevice,
+                                  style: context.bodyLarge!.copyWith(
+                                    color: AppColors.gry,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ]),
+                              ]),
+                            ),
                             Divider(
                               color: AppColors.gry.withOpacity(0.24),
                             ),
-                            Row(children: [
-                              Assets.icons.cameraAlt.svg(
-                                  height: 20, width: 25, fit: BoxFit.cover),
-                              SB.w(8),
-                              Text(
-                                AppStrings.takePhoto,
-                                style: context.bodyLarge!.copyWith(
-                                  color: AppColors.gry,
-                                  fontWeight: FontWeight.w600,
+                            GestureDetector(
+                              onTap: () async {
+                                // Call the pickImage function
+                                await chatController.pickImageFromCamera(
+                                    receiverId: widget.receiverId,
+                                    receiverImgUrl: widget.receiverImgUrl,
+                                    receiverDeviceToken:
+                                        widget.receiverDeviceToken,
+                                    name: widget.name);
+                                chatController.overlayController.toggle();
+                              },
+                              child: Row(children: [
+                                Assets.icons.cameraAlt.svg(
+                                    height: 20, width: 25, fit: BoxFit.cover),
+                                SB.w(8),
+                                Text(
+                                  AppStrings.takePhoto,
+                                  style: context.bodyLarge!.copyWith(
+                                    color: AppColors.gry,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ]),
+                              ]),
+                            ),
                             Divider(
                               color: AppColors.gry.withOpacity(0.24),
                             ),
@@ -216,7 +333,7 @@ class CustomePainterDialouge extends StatelessWidget {
               ],
             );
           },
-          child: child,
+          child: widget.child,
         ),
       ),
     );

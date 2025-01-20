@@ -4,18 +4,17 @@ class RoomListComponents {
   static Widget yesNoWidget(BuildContext context, YesNo? selectedValue,
       Function(YesNo) onTaskValueChanged) {
     return Container(
-      margin: EdgeInsets.only(top: 15, left: 25),
+      margin: EdgeInsets.only(top: 15),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // SB.w(25),
           RoomMapComponents.radioButton<YesNo>(
             context,
-            YesNo.yes, // AssignedValue
-            selectedValue, // SelectedValue
-            AppStrings.yes, // Title
+            YesNo.yes,
+            selectedValue,
+            AppStrings.yes,
             (value) => onTaskValueChanged(value),
-            width: context.width * 0.4,
+            width: 0,
           ),
           RoomMapComponents.radioButton<YesNo>(
             context,
@@ -25,25 +24,40 @@ class RoomListComponents {
             (value) => onTaskValueChanged(value),
             width: 0,
           ),
+          RoomMapComponents.radioButton<YesNo>(
+            context,
+            YesNo.na, // AssignedValue
+            selectedValue, // SelectedValue
+            AppStrings.na, // Title
+            (value) => onTaskValueChanged(value),
+            width: 0,
+          ),
         ],
       ),
     );
   }
 
-  static Widget statusWidget(BuildContext context, {bool isComplete = false}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: isComplete
-            ? AppColors.green.withOpacity(0.5)
-            : AppColors.yellowLight.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        isComplete ? "Completed" : "Incomplete",
-        style: context.bodyLarge!.copyWith(
-          color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
-          fontWeight: FontWeight.w600,
+  static Widget statusWidget(
+    BuildContext context, {
+    bool isComplete = false,
+    VoidCallback? onToggle,
+  }) {
+    return InkWell(
+      onTap: isComplete == true ? onToggle : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isComplete
+              ? AppColors.green.withOpacity(0.5)
+              : AppColors.yellowLight.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Text(
+          isComplete ? "Completed" : "Incomplete",
+          style: context.bodyLarge!.copyWith(
+            color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
