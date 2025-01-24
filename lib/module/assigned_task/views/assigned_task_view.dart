@@ -240,14 +240,14 @@ class AssignedTasksView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isClosedTickets)
+          if (isClosedTickets && profileController.isManager)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Text(
-                   controller.selectedDropdownValue,
+                    controller.selectedDropdownValue,
                     style: context.titleSmall!.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
