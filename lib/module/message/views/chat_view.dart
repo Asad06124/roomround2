@@ -18,7 +18,7 @@ class ChatView extends StatelessWidget {
       : receiverId = Get.arguments['receiverId'],
         receiverImgUrl =
             Get.arguments['receiverImgUrl'] ?? AppImages.personPlaceholder,
-        receiverDeviceToken = Get.arguments['receiverDeviceToken'],
+        receiverDeviceToken = Get.arguments['receiverDeviceToken']??"",
         name = Get.arguments['name'] ?? '',
         senderId = profileController.user!.userId.toString();
 
