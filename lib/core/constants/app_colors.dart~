@@ -39,7 +39,7 @@ class AppColors {
   static final Color vendorColor = Color(0xFFFDF0FF);
   static final Color purchasesColor = Color(0xFFFFDFE4);
   static final Color unableColor = Color(0xFFFFEDDD);
-  static final Color openColor = Color(0xFFDCF6FF);
+  static final Color openColor = Color(0xFFC1F0FF);
 
   // Get color based on status
   static Color getStatusColor(String status) {

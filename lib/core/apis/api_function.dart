@@ -24,7 +24,7 @@ class APIFunction {
     bool showSuccessMessage = false,
     bool getOnlyStatusCode = false,
     bool getStatusOnly = false,
-    bool isGoBack = true,
+    bool isGoBack = false,
     Map<String, String>? customHeaders,
     Function(Map<String, dynamic>)? fromJson,
   }) async {

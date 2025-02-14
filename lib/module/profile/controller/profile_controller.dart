@@ -80,7 +80,7 @@ class ProfileController extends GetxController {
         var resp = await APIFunction.call(
           APIMethods.post,
           Urls.updateUser,
-          dataMap: {"userName": userName, "email": email},
+          dataMap: {"userName": userName, "email": email, "image":user?.image??""},
           showLoader: true,
           showErrorMessage: true,
           showSuccessMessage: true,

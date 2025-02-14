@@ -51,6 +51,7 @@ class CustomeDropDown {
           listItemDecoration: ListItemDecoration(
             selectedColor: expandFillColor,
           ),
+
           closedFillColor: closedFillColor,
           expandedFillColor: expandFillColor,
           closedBorderRadius: BorderRadius.circular(borderRadius),

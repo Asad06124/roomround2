@@ -5,7 +5,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/assigned_task/controller/assigned_task_controller.dart';
 
 class AssignedTasksView extends StatefulWidget {
-  const AssignedTasksView({super.key});
+  const AssignedTasksView({Key? key}) : super(key: key);
 
   @override
   _AssignedTasksViewState createState() => _AssignedTasksViewState();
@@ -171,7 +171,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
             controller.ticketsType != TicketsType.assignedTo;
         return AssignedTaskComponents.tile(
           context,
-          title: ticket.ticketName ?? ticket.floorName ?? ticket.assignToName,
+          title: ticket.roomName ?? ticket.floorName ?? ticket.assignToName,
           status: ticket.isClosed == false || ticket.isClosed == null
               ? 'Open'
               : ticket.status!,

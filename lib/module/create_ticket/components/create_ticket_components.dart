@@ -26,7 +26,7 @@ class CreateTicketComponents {
               context,
               list: list,
               closedShadow: false,
-              width: context.width * 0.5,
+              width: context.width * 0.42,
               initialItem: selectedItem,
               onSelect: onSelect,
               controller: controller,

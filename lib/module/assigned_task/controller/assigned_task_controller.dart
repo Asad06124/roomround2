@@ -11,12 +11,25 @@ class AssignedTaskController extends GetxController {
   bool isAssignedToMe = true;
   int? totalTicketsCount;
   int? urgentTicketsCount;
+  String? selectedStatusValue;
 
-  List<Ticket> _openTicketsList = [];
-  List<Ticket> _closedTicketsList = [];
+  List<TicketStatusModel> get ticketStatusList =>
+      _ticketStatusList?.isNotEmpty == true
+          ? [
+                TicketStatusModel(lookupId: null, value: "All"),
+                TicketStatusModel(lookupId: null, value: "Open")
+              ] +
+              _ticketStatusList!
+          : [
+              TicketStatusModel(lookupId: null, value: "All"),
+              TicketStatusModel(lookupId: null, value: "Open")
+            ];
+
+  List<Ticket> _TicketsList = [];
+  final List<Ticket> _closedTicketsList = [];
   String selectedDropdownValue = 'Closed';
 
-  List<Ticket> get openTicketsList => _openTicketsList;
+  List<Ticket> get TicketsList => _TicketsList;
 
   List<Ticket> get closedTicketsList => _closedTicketsList;
   List<TicketStatusModel>? _ticketStatusList;
@@ -33,6 +46,7 @@ class AssignedTaskController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    fetchTicketStatusList();
     _addTicketsTypes();
     _fetchAssignedTickets();
     _fetchAssignedTickets(isClosed: true);
@@ -53,15 +67,19 @@ class AssignedTaskController extends GetxController {
     _fetchAssignedTickets(isClosed: true);
   }
 
-  void _fetchAssignedTickets(
-      {bool isClosed = false, bool isCompleted = false}) async {
+  void _fetchAssignedTickets({
+    bool isClosed = false,
+    bool isCompleted = false,
+    int? statusId,
+    bool sendIsClosedParam = false,
+  }) async {
     totalTicketsCount = 0;
     urgentTicketsCount = 0;
     if (isClosed) {
       _closedTicketsList.clear();
       _updateHasClosedTickets(false);
     } else {
-      _openTicketsList.clear();
+      _TicketsList.clear();
       _updateHasOpenTickets(false);
     }
 
@@ -86,14 +104,19 @@ class AssignedTaskController extends GetxController {
 
     Map<String, dynamic> data = {
       "isAssignedMe": _ticketsType == TicketsType.assignedMe,
-      "isClosed": isClosed ? true : false,
+      // "isClosed": isClosed ? true : false,
       "assignBy": managerId,
       "isCompleted": isCompleted,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
     };
-
+    if (sendIsClosedParam) {
+      data["isClosed"] = false;
+    }
+    if (statusId != null) {
+      data["statusId"] = statusId;
+    }
     var resp = await APIFunction.call(
       APIMethods.post,
       Urls.getAllTickets,
@@ -110,11 +133,7 @@ class AssignedTaskController extends GetxController {
       urgentTicketsCount = resp.urgentTicketCount;
 
       if (tickets != null && tickets.isNotEmpty) {
-        if (isClosed) {
-          _closedTicketsList = List.from(tickets);
-        } else {
-          _openTicketsList = List.from(tickets);
-        }
+        _TicketsList = List.from(tickets);
       }
     }
 
@@ -223,6 +242,21 @@ class AssignedTaskController extends GetxController {
     }
   }
 
+  void changeStatusFilter(String? value) {
+    selectedStatusValue = value;
+    if (value == 'Open') {
+      // For the "Open" selection, we explicitly include isClosed: false.
+      _fetchAssignedTickets(sendIsClosedParam: true);
+    } else {
+      final selectedStatus = _ticketStatusList?.firstWhere(
+        (status) => status.value == value,
+        orElse: () => TicketStatusModel(lookupId: null, value: "All"),
+      );
+      _fetchAssignedTickets(statusId: selectedStatus?.lookupId);
+    }
+    update();
+  }
+
   Future<List<TicketStatusModel>> fetchTicketStatusList() async {
     if (_ticketStatusList != null && _ticketStatusList!.isNotEmpty) {
       return _ticketStatusList!;
@@ -241,8 +275,10 @@ class AssignedTaskController extends GetxController {
     );
 
     if (resp != null && resp is List) {
-      _ticketStatusList =
-          resp.map((item) => TicketStatusModel.fromJson(item)).toList();
+      _ticketStatusList = [];
+
+      _ticketStatusList?.addAll(
+          resp.map((item) => TicketStatusModel.fromJson(item)).toList());
       return _ticketStatusList!;
     }
     return [];
