@@ -1,8 +1,9 @@
-import 'dart:developer';
-
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/assigned_task/controller/assigned_task_controller.dart';
+import 'package:roomrounds/module/assigned_task/views/ticket_chat_view.dart';
+
+import '../controller/ticket_chat_controller.dart';
 
 class AssignedTasksView extends StatefulWidget {
   const AssignedTasksView({super.key});
@@ -14,6 +15,7 @@ class AssignedTasksView extends StatefulWidget {
 class _AssignedTasksViewState extends State<AssignedTasksView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  TicketChatController ticketChatController = Get.put(TicketChatController());
 
   @override
   void initState() {
@@ -149,10 +151,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
     if (profileController.isManager) {
       dataLoaded = dataLoaded && controller.hasClosedTickets;
     }
-    final formattedTickets =
-        controller.TicketsList.map((ticket) => 'Ticket( ${ticket.toJson()},)')
-            .join('\n');
-    log('All Tickets Size: ${controller.TicketsList.length}\n All Tickets: $formattedTickets');
+
     return dataLoaded ? _buildTicketsList(context, controller) : CustomLoader();
   }
 
@@ -194,6 +193,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
             );
           },
           fillColor: AppColors.getStatusColor(ticket.status ?? 'Open'),
+          ticket: ticket,
         );
       },
     );

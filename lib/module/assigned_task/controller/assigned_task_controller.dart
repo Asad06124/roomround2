@@ -14,16 +14,10 @@ class AssignedTaskController extends GetxController {
   String? selectedStatusValue;
 
   List<TicketStatusModel> get ticketStatusList =>
-      _ticketStatusList?.isNotEmpty == true
-          ? [
-                TicketStatusModel(lookupId: null, value: "All"),
-                TicketStatusModel(lookupId: null, value: "Open")
-              ] +
-              _ticketStatusList!
-          : [
-              TicketStatusModel(lookupId: null, value: "All"),
-              TicketStatusModel(lookupId: null, value: "Open")
-            ];
+      [
+        TicketStatusModel(lookupId: null, value: "All"),
+        TicketStatusModel(lookupId: null, value: "Open"),
+        ...?_ticketStatusList];
 
   List<Ticket> _TicketsList = [];
   final List<Ticket> _closedTicketsList = [];

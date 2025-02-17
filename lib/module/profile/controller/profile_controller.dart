@@ -1,28 +1,38 @@
 import 'dart:convert';
 import 'dart:developer';
+
+import 'package:image_picker/image_picker.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/user_update/user_update_model.dart';
 import 'package:roomrounds/core/constants/app_keys.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ProfileController extends GetxController {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final GlobalKey<FormState> _formKey = GlobalKey();
+
   GlobalKey<FormState> get formKey => _formKey;
 
   User? _user;
+
   User? get user => _user;
+
   int? get userId => _user?.userId;
+
   String? get userRole => _user?.role;
+
   String? get userToken => _user?.token;
+
   String? get userName => _user?.username;
+
   String? get email => _user?.email;
+
   int? get departmentId => _user?.departmentId;
+
   String? get userImage => _user?.image;
 
   UserType get userType {
@@ -80,7 +90,11 @@ class ProfileController extends GetxController {
         var resp = await APIFunction.call(
           APIMethods.post,
           Urls.updateUser,
-          dataMap: {"userName": userName, "email": email, "image":user?.image??""},
+          dataMap: {
+            "userName": userName,
+            "email": email,
+            "image": user?.image ?? ""
+          },
           showLoader: true,
           showErrorMessage: true,
           showSuccessMessage: true,
@@ -188,6 +202,7 @@ class ProfileController extends GetxController {
       );
     }
   }
+
   // void updateUserImage() async {
   //   final XFile? pickedFile =
   //       await _picker.pickImage(source: ImageSource.gallery);
@@ -253,13 +268,11 @@ class ProfileController extends GetxController {
 
   void fetchUserProfile() async {
     try {
-      var resp = await APIFunction.call(
-        APIMethods.post,
-        Urls.getUserProfile,
-        fromJson: (json) => UserUpdate.fromJson(json),
-        showLoader: true,
-        showErrorMessage: true,
-      );
+      var resp = await APIFunction.call(APIMethods.post, Urls.getUserProfile,
+          fromJson: (json) => UserUpdate.fromJson(json),
+          showLoader: true,
+          showErrorMessage: true,
+          isGoBack: false);
 
       if (resp != null && resp is UserUpdate) {
         User updatedUser = User(

@@ -1,11 +1,12 @@
 import 'dart:developer';
 
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/assigned_task/controller/ticket_chat_controller.dart';
 
 import '../../../core/components/app_image.dart';
-import '../controller/chat_controller.dart';
+import '../../message/components/message_components.dart';
 
-class MessageComponents {
+class TicketMessageComponents {
   static Widget detailTile(
     BuildContext context, {
     String title = "Room No 1A",
@@ -74,7 +75,7 @@ class MessageComponents {
       bool? isDelivered,
       bool? isSeen,
       String? recieverImageUrl,
-      required ChatController controller}) {
+      required TicketChatController controller}) {
     log("profileController Image: $recieverImageUrl");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -102,8 +103,8 @@ class MessageComponents {
               Container(
                 // width: ,
                 constraints: BoxConstraints(
-                  maxWidth: context.width * 0.45,
-                  // minWidth: context.width * 0.30,
+                  maxWidth: context.width * 0.45, // Maximum width constraint
+                  // minWidth: context.width * 0.30, // Minimum width constraint
                 ),
                 decoration: BoxDecoration(
                   color: sender
@@ -211,30 +212,36 @@ class MessageComponents {
 }
 
 // ignore: must_be_immutable
-class CustomePainterDialouge extends StatefulWidget {
+class TicketCustomePainterDialouge extends StatefulWidget {
   LayerLink link;
   OverlayPortalController controller;
   GestureTapCallback? onTap;
   Widget child;
-  String receiverId, receiverImgUrl, receiverDeviceToken, name;
+  final String ticketId;
+  final String receiverId;
+  final String senderId;
 
-  CustomePainterDialouge(
-      {super.key,
-      required this.link,
-      required this.controller,
-      this.onTap,
-      required this.child,
-      required this.receiverDeviceToken,
-      required this.receiverImgUrl,
-      required this.receiverId,
-      required this.name});
+  TicketCustomePainterDialouge({
+    super.key,
+    required this.link,
+    required this.controller,
+    this.onTap,
+    required this.child,
+    required this.ticketId,
+    required this.receiverId,
+    required this.senderId,
+    // required this.receiverDeviceToken,
+    // required this.receiverImgUrl,
+  });
 
   @override
-  State<CustomePainterDialouge> createState() => _CustomePainterDialougeState();
+  State<TicketCustomePainterDialouge> createState() =>
+      _TicketCustomePainterDialougeState();
 }
 
-class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
-  var chatController = Get.find<ChatController>();
+class _TicketCustomePainterDialougeState
+    extends State<TicketCustomePainterDialouge> {
+  var chatController = Get.find<TicketChatController>();
 
   @override
   Widget build(BuildContext context) {
@@ -274,11 +281,10 @@ class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
                             GestureDetector(
                               onTap: () async {
                                 await chatController.pickImageFromGallery(
-                                    receiverId: widget.receiverId,
-                                    receiverImgUrl: widget.receiverImgUrl,
-                                    receiverDeviceToken:
-                                        widget.receiverDeviceToken,
-                                    name: widget.name);
+                                  ticketId: widget.ticketId,
+                                  receiverId: widget.receiverId,
+                                  senderId: widget.senderId,
+                                );
                                 chatController.overlayController.toggle();
                               },
                               child: Row(children: [
@@ -301,11 +307,10 @@ class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
                               onTap: () async {
                                 // Call the pickImage function
                                 await chatController.pickImageFromCamera(
-                                    receiverId: widget.receiverId,
-                                    receiverImgUrl: widget.receiverImgUrl,
-                                    receiverDeviceToken:
-                                        widget.receiverDeviceToken,
-                                    name: widget.name);
+                                  ticketId: widget.ticketId,
+                                  receiverId: widget.receiverId,
+                                  senderId: widget.senderId,
+                                );
                                 chatController.overlayController.toggle();
                               },
                               child: Row(children: [
@@ -337,39 +342,5 @@ class _CustomePainterDialougeState extends State<CustomePainterDialouge> {
         ),
       ),
     );
-  }
-}
-
-class MessageIconPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
-    Path path = Path()
-      ..moveTo(8, 8)
-      ..lineTo(size.width - 8, 8)
-      ..quadraticBezierTo(size.width, 8, size.width, 16)
-      ..lineTo(size.width, size.height - 16)
-      ..quadraticBezierTo(
-          size.width, size.height - 8, size.width - 8, size.height - 8)
-      ..lineTo(8, size.height - 8)
-      ..lineTo(28, size.height - 8)
-      ..lineTo(20, size.height - 0)
-      ..lineTo(12, size.height - 8)
-      ..lineTo(8, size.height - 8)
-      ..quadraticBezierTo(0, size.height - 8, 0, size.height - 16)
-      ..lineTo(0, 16)
-      ..quadraticBezierTo(0, 8, 8, 8)
-      ..close();
-    canvas.drawShadow(path, Colors.black, 10.0, true);
-    canvas.translate(2, 2);
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }

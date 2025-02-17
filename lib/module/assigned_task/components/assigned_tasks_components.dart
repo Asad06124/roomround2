@@ -1,9 +1,13 @@
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/assigned_task/views/ticket_chat_view.dart';
+
+import '../../../core/apis/models/tickets/ticket_model.dart';
 
 class AssignedTaskComponents {
   static Widget tile(BuildContext context,
       {String? title,
       String? status,
+      required Ticket ticket,
       bool showIsActiveDot = false,
       bool showPrefixDropdown = false,
       bool titleActive = true,
@@ -110,8 +114,23 @@ class AssignedTaskComponents {
                   ),
                 GestureDetector(
                   onTap: () {
-                    profileController.fetchUserProfile();
-                    Get.offNamed(AppRoutes.MESSAGE);
+                    // profileController.fetchUserProfile();
+                    String currentUserId =
+                        profileController.user!.userId.toString();
+                    String? image;
+                    int? receiverId;
+                    if (currentUserId == ticket.assignBy.toString()) {
+                      receiverId = ticket.assignTo;
+                      image = ticket.assignToImage;
+                    } else {
+                      receiverId = ticket.assignBy;
+                      image = ticket.assignByImage;
+                    }
+                    Get.to(TicketChatView(
+                        ticketId: ticket.ticketId.toString(),
+                        receiverId: '${receiverId ?? ''}',
+                        senderId: profileController.user!.userId.toString(),
+                        ticketTitle: ticket.ticketName ?? '', receiverImage: image,));
                   },
                   child: Container(
                     height: 25,
