@@ -48,7 +48,16 @@ class CloseTicketDialouge extends StatefulWidget {
 }
 
 class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
-  int _selectedIndex = -1;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.sendStatusList.indexOf(widget.ticket?.status ?? '');
+    if (_selectedIndex == -1) {
+      _selectedIndex = -1;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +87,12 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                         widget.showClose ? SB.h(15) : SizedBox(),
                         widget.showClose
                             ? DialougeComponents.labelTile(
-                          context,
-                          isUnderline: true,
-                          title: ticket?.ticketName,
-                          status: AppStrings.close,
-                          onStatusTap: widget.onCloseTap,
-                        )
+                                context,
+                                isUnderline: true,
+                                title: ticket?.ticketName,
+                                status: AppStrings.close,
+                                onStatusTap: widget.onCloseTap,
+                              )
                             : SizedBox(),
                         SB.h(20),
                         DialougeComponents.tile(
@@ -102,109 +111,110 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                         ),
                         SB.h(20),
                         DialougeComponents.detailWithBorder(
-                            context, ticket?.comment),
+                            context, ticket?.ticketName ?? ''),
                         ticket!.ticketMedia!.isNotEmpty
                             ? Row(
-                          children: [
-                            SizedBox(
-                              height: 80,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount:
-                                ticket.ticketMedia?.length ?? 0,
-                                itemBuilder: (context, index) {
-                                  final imageUrl =
-                                      '${Urls.domain}${ticket.ticketMedia![index].imagekey}';
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: CachedNetworkImage(
-                                      imageUrl: imageUrl,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          Center(
-                                            child: CircularProgressIndicator(
-                                              color: AppColors.black,
+                                children: [
+                                  SizedBox(
+                                    height: 80,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount:
+                                          ticket.ticketMedia?.length ?? 0,
+                                      itemBuilder: (context, index) {
+                                        final imageUrl =
+                                            '${Urls.domain}${ticket.ticketMedia![index].imagekey}';
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: CachedNetworkImage(
+                                            imageUrl: imageUrl,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Center(
+                                              child: CircularProgressIndicator(
+                                                color: AppColors.black,
+                                              ),
                                             ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
                                           ),
-                                      errorWidget:
-                                          (context, url, error) =>
-                                          Icon(Icons.error),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        )
+                                  ),
+                                ],
+                              )
                             : SizedBox(),
                         ticket.ticketMedia?.isNotEmpty ?? false
                             ? Row(
-                          children: ticket.ticketMedia!
-                              .asMap()
-                              .entries
-                              .map((entry) {
-                            final media = entry.value;
-                            final index = entry.key;
-                            final audioUrl =
-                                '${Urls.domain}/${media.audioKey}';
+                                children: ticket.ticketMedia!
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                  final media = entry.value;
+                                  final index = entry.key;
+                                  final audioUrl =
+                                      '${Urls.domain}/${media.audioKey}';
 
-                            return Row(
-                              children: [
-                                Obx(() {
-                                  if (controller.isLoading.value &&
-                                      controller.currentlyPlayingIndex!
-                                          .value ==
-                                          index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: 20,
-                                        top: 5,
-                                      ),
-                                      child: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child:
-                                        const CircularProgressIndicator(
-                                          color: AppColors.primary,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  return IconButton(
-                                    icon: Icon(
-                                      controller.isPlaying.value &&
-                                          controller
-                                              .currentlyPlayingIndex!
-                                              .value ==
-                                              index
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      color: Colors.green,
-                                    ),
-                                    onPressed: () async {
-                                      if (audioUrl.isNotEmpty) {
-                                        await controller.playAudio(
-                                            audioUrl, index);
-                                      } else {
-                                        debugPrint(
-                                            'Invalid audio URL for index $index');
-                                      }
-                                    },
+                                  return Row(
+                                    children: [
+                                      Obx(() {
+                                        if (controller.isLoading.value &&
+                                            controller.currentlyPlayingIndex!
+                                                    .value ==
+                                                index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 20,
+                                              top: 5,
+                                            ),
+                                            child: SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child:
+                                                  const CircularProgressIndicator(
+                                                color: AppColors.primary,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        return IconButton(
+                                          icon: Icon(
+                                            controller.isPlaying.value &&
+                                                    controller
+                                                            .currentlyPlayingIndex!
+                                                            .value ==
+                                                        index
+                                                ? Icons.pause
+                                                : Icons.play_arrow,
+                                            color: Colors.green,
+                                          ),
+                                          onPressed: () async {
+                                            if (audioUrl.isNotEmpty) {
+                                              await controller.playAudio(
+                                                  audioUrl, index);
+                                            } else {
+                                              debugPrint(
+                                                  'Invalid audio URL for index $index');
+                                            }
+                                          },
+                                        );
+                                      }),
+                                      Text('Audio ${index + 1}'),
+                                    ],
                                   );
-                                }),
-                                Text('Audio ${index + 1}'),
-                              ],
-                            );
-                          }).toList(),
-                        )
+                                }).toList(),
+                              )
                             : const SizedBox(),
                         SB.h(20),
                         DialougeComponents.reply(
                           context,
                           sendStatusList: widget.sendStatusList,
                           selectedIndex: _selectedIndex,
-                          textField: widget.textController,
+                          textField: widget.textController
+                            ?..text = ticket.reply ?? '',
                           onTap: (index) {
                             setState(() {
                               _selectedIndex = index;
@@ -504,11 +514,11 @@ class OpenThreadDialogueArgue extends StatelessWidget {
 class YesNoDialog extends StatelessWidget {
   const YesNoDialog(
       {super.key,
-        this.title,
-        this.yesText,
-        this.noText,
-        this.onNoPressed,
-        this.onYesPressed});
+      this.title,
+      this.yesText,
+      this.noText,
+      this.onNoPressed,
+      this.onYesPressed});
 
   final String? title, yesText, noText;
 
@@ -661,34 +671,36 @@ class CreateTicketDialog extends StatelessWidget {
                                     children: [
                                       controller.recorderController.isRecording
                                           ? AudioWaveforms(
-                                        size: Size(80, 50),
-                                        waveStyle: WaveStyle(
-                                          showMiddleLine: false,
-                                          extendWaveform: true,
-                                          durationTextPadding: 0.0,
-                                          waveThickness: 2.0,
-                                          waveColor: Colors.green,
-                                          waveCap: StrokeCap.round,
-                                        ),
-                                        recorderController:
-                                        controller.recorderController,
-                                      )
+                                              size: Size(80, 50),
+                                              waveStyle: WaveStyle(
+                                                showMiddleLine: false,
+                                                extendWaveform: true,
+                                                durationTextPadding: 0.0,
+                                                waveThickness: 2.0,
+                                                waveColor: Colors.green,
+                                                waveCap: StrokeCap.round,
+                                              ),
+                                              recorderController:
+                                                  controller.recorderController,
+                                            )
                                           : SizedBox(),
                                       IconButton(
                                         icon: Icon(
                                           controller.recorderController
-                                              .isRecording
+                                                  .isRecording
                                               ? Icons.stop
                                               : Icons.keyboard_voice_sharp,
                                           color: controller.recorderController
-                                              .isRecording
+                                                  .isRecording
                                               ? Colors.red
                                               : AppColors.gry,
                                         ),
-                                        onPressed: (){controller
-                                            .recorderController.isRecording
-                                            ? controller.stopRecording()
-                                            : controller.startRecording();},
+                                        onPressed: () {
+                                          controller.recorderController
+                                                  .isRecording
+                                              ? controller.stopRecording()
+                                              : controller.startRecording();
+                                        },
                                       ),
                                       SizedBox(
                                         width: 5.0,
@@ -732,77 +744,77 @@ class CreateTicketDialog extends StatelessWidget {
                             controller.selectedImages.isEmpty
                                 ? SizedBox()
                                 : Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: MediaQuery.sizeOf(context).width,
-                                child: Wrap(
-                                  spacing: 10.0,
-                                  runSpacing: 10.0,
-                                  children: controller.selectedImages
-                                      .map((image) {
-                                    int index = controller.selectedImages
-                                        .indexOf(image);
-                                    return Stack(
-                                      children: [
-                                        InkWell(
-                                          onTap: () {},
-                                          child: InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      FullScreenWidget(
-                                                        disposeLevel:
-                                                        DisposeLevel.Low,
-                                                        child: Hero(
-                                                          tag: "",
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                16),
-                                                            child: Image.file(
-                                                              image,
-                                                              fit: BoxFit
-                                                                  .contain,
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: MediaQuery.sizeOf(context).width,
+                                      child: Wrap(
+                                        spacing: 10.0,
+                                        runSpacing: 10.0,
+                                        children: controller.selectedImages
+                                            .map((image) {
+                                          int index = controller.selectedImages
+                                              .indexOf(image);
+                                          return Stack(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {},
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            FullScreenWidget(
+                                                          disposeLevel:
+                                                              DisposeLevel.Low,
+                                                          child: Hero(
+                                                            tag: "",
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          16),
+                                                              child: Image.file(
+                                                                image,
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
+                                                    );
+                                                  },
+                                                  child: Image.file(
+                                                    image,
+                                                    width: 92,
+                                                    height: 92,
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 ),
-                                              );
-                                            },
-                                            child: Image.file(
-                                              image,
-                                              width: 92,
-                                              height: 92,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          right: 0,
-                                          child: GestureDetector(
-                                            onTap: () => controller
-                                                .removeImage(index),
-                                            child: CircleAvatar(
-                                              radius: 8,
-                                              backgroundColor: Colors.red,
-                                              child: Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                                size: 12,
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ),
+                                              Positioned(
+                                                right: 0,
+                                                child: GestureDetector(
+                                                  onTap: () => controller
+                                                      .removeImage(index),
+                                                  child: CircleAvatar(
+                                                    radius: 8,
+                                                    backgroundColor: Colors.red,
+                                                    child: Icon(
+                                                      Icons.close,
+                                                      color: Colors.white,
+                                                      size: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
                           ],
                         ),
                       ),
@@ -830,12 +842,12 @@ class CreateTicketDialog extends StatelessWidget {
                                   children: [
                                     Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         IconButton(
                                           icon: Icon(
                                             controller.currentlyPlayingIndex ==
-                                                index
+                                                    index
                                                 ? Icons.pause
                                                 : Icons.play_arrow,
                                             color: Colors.green,
@@ -844,39 +856,39 @@ class CreateTicketDialog extends StatelessWidget {
                                               audioFile, index),
                                         ),
                                         controller.currentlyPlayingIndex !=
-                                            index
+                                                index
                                             ? Expanded(
-                                          child: Container(
-                                            width:
-                                            MediaQuery.sizeOf(context)
-                                                .width,
-                                            color: AppColors.primary,
-                                            height: 2.0,
-                                          ),
-                                        )
+                                                child: Container(
+                                                  width:
+                                                      MediaQuery.sizeOf(context)
+                                                          .width,
+                                                  color: AppColors.primary,
+                                                  height: 2.0,
+                                                ),
+                                              )
                                             : Expanded(
-                                          child: AudioFileWaveforms(
-                                            size:
-                                            const Size.fromHeight(40),
-                                            padding: EdgeInsets.zero,
-                                            margin: EdgeInsets.zero,
-                                            playerController: controller
-                                                .playerController,
-                                            enableSeekGesture: true,
-                                            waveformType:
-                                            WaveformType.long,
-                                            playerWaveStyle:
-                                            PlayerWaveStyle(
-                                              fixedWaveColor: Colors.grey,
-                                              waveCap: StrokeCap.square,
-                                              liveWaveColor:
-                                              AppColors.primary,
-                                              showSeekLine: true,
-                                              seekLineColor:
-                                              AppColors.red,
-                                            ),
-                                          ),
-                                        ),
+                                                child: AudioFileWaveforms(
+                                                  size:
+                                                      const Size.fromHeight(40),
+                                                  padding: EdgeInsets.zero,
+                                                  margin: EdgeInsets.zero,
+                                                  playerController: controller
+                                                      .playerController,
+                                                  enableSeekGesture: true,
+                                                  waveformType:
+                                                      WaveformType.long,
+                                                  playerWaveStyle:
+                                                      PlayerWaveStyle(
+                                                    fixedWaveColor: Colors.grey,
+                                                    waveCap: StrokeCap.square,
+                                                    liveWaveColor:
+                                                        AppColors.primary,
+                                                    showSeekLine: true,
+                                                    seekLineColor:
+                                                        AppColors.red,
+                                                  ),
+                                                ),
+                                              ),
                                         IconButton(
                                           icon: Icon(Icons.delete,
                                               color: Colors.red),
@@ -1282,6 +1294,7 @@ class AssignedThreadDialouge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('ticket....: ${ticket?.toJson()}');
     bool isUrgent = ticket?.isUrgent == true;
     DateTime? dateTime = ticket?.assignDate?.toDateTime();
     String? date, time;
@@ -1347,7 +1360,7 @@ class AssignedThreadDialouge extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              ticket!.roomName.toString(),
+                              ticket?.roomName ?? '',
                               textAlign: TextAlign.start,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1381,7 +1394,7 @@ class AssignedThreadDialouge extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              ticket!.comment.toString(),
+                              ticket?.ticketName ?? '',
                               style: context.bodyLarge!.copyWith(
                                 color: AppColors.black,
                                 fontWeight: FontWeight.w600,
@@ -1392,38 +1405,38 @@ class AssignedThreadDialouge extends StatelessWidget {
                         SB.h(5),
                         ticket?.isClosed == true
                             ? Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Status :',
-                              textAlign: TextAlign.start,
-                              style: context.bodyLarge!.copyWith(
-                                color: AppColors.gry,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.0),
-                                color:
-                                Color(0xffFFC700).withOpacity(0.24),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 5),
-                                child: Text(
-                                  ticket?.status.toString() ?? '',
-                                  textAlign: TextAlign.start,
-                                  style: context.bodyLarge!.copyWith(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w600,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Status :',
+                                    textAlign: TextAlign.start,
+                                    style: context.bodyLarge!.copyWith(
+                                      color: AppColors.gry,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      color:
+                                          Color(0xffFFC700).withOpacity(0.24),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      child: Text(
+                                        ticket?.status.toString() ?? '',
+                                        textAlign: TextAlign.start,
+                                        style: context.bodyLarge!.copyWith(
+                                          color: AppColors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
                             : SizedBox(),
                         SB.h(5),
                         Row(
@@ -1460,36 +1473,36 @@ class AssignedThreadDialouge extends StatelessWidget {
 
                         ticket?.isClosed == true
                             ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Response to Your Ticket :',
-                              textAlign: TextAlign.start,
-                              style: context.bodyLarge!.copyWith(
-                                color: AppColors.gry,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SB.h(5),
-                            Container(
-                              width: MediaQuery.sizeOf(context).width,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: AppColors.gry),
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  ticket!.reply.toString(),
-                                  style: context.bodyLarge!.copyWith(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w600,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Response to Your Ticket :',
+                                    textAlign: TextAlign.start,
+                                    style: context.bodyLarge!.copyWith(
+                                      color: AppColors.gry,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
+                                  SB.h(5),
+                                  Container(
+                                    width: MediaQuery.sizeOf(context).width,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: AppColors.gry),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        ticket!.reply.toString(),
+                                        style: context.bodyLarge!.copyWith(
+                                          color: AppColors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
                             : SizedBox(),
                         SB.h(5),
                         DialougeComponents.dateTile(
@@ -1521,9 +1534,9 @@ class AssignedThreadDialouge extends StatelessWidget {
                   Row(
                     children: [
                       if ((ticket?.ticketMedia
-                          ?.where((media) =>
-                      media.imagekey?.isNotEmpty ?? false)
-                          .isNotEmpty ??
+                              ?.where((media) =>
+                                  media.imagekey?.isNotEmpty ?? false)
+                              .isNotEmpty ??
                           false))
                         SizedBox(
                           height: 80,
@@ -1531,14 +1544,14 @@ class AssignedThreadDialouge extends StatelessWidget {
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             itemCount: ticket?.ticketMedia
-                                ?.where((media) =>
-                            media.imagekey?.isNotEmpty ?? false)
-                                .length ??
+                                    ?.where((media) =>
+                                        media.imagekey?.isNotEmpty ?? false)
+                                    .length ??
                                 0,
                             itemBuilder: (context, index) {
                               final imageMedia = ticket!.ticketMedia!
                                   .where((media) =>
-                              media.imagekey?.isNotEmpty ?? false)
+                                      media.imagekey?.isNotEmpty ?? false)
                                   .toList()[index];
                               final imageUrl =
                                   '${Urls.domain}${imageMedia.imagekey}';
@@ -1556,20 +1569,20 @@ class AssignedThreadDialouge extends StatelessWidget {
                                             tag: "",
                                             child: ClipRRect(
                                               borderRadius:
-                                              BorderRadius.circular(16),
+                                                  BorderRadius.circular(16),
                                               child: CachedNetworkImage(
                                                 imageUrl: imageUrl,
                                                 fit: BoxFit.cover,
                                                 placeholder: (context, url) =>
                                                     Center(
-                                                      child:
+                                                  child:
                                                       CircularProgressIndicator(
-                                                        color: AppColors.black,
-                                                      ),
-                                                    ),
+                                                    color: AppColors.black,
+                                                  ),
+                                                ),
                                                 errorWidget:
                                                     (context, url, error) =>
-                                                    Icon(Icons.error),
+                                                        Icon(Icons.error),
                                               ),
                                             ),
                                           ),
@@ -1599,58 +1612,58 @@ class AssignedThreadDialouge extends StatelessWidget {
                   ),
                   ticket?.ticketMedia?.isNotEmpty ?? false
                       ? Row(
-                    children:
-                    ticket!.ticketMedia!.asMap().entries.map((entry) {
-                      final media = entry.value;
-                      final index = entry.key;
-                      final audioUrl =
-                          'http://roomroundapis.rootpointers.net/${media.audioKey}';
+                          children:
+                              ticket!.ticketMedia!.asMap().entries.map((entry) {
+                            final media = entry.value;
+                            final index = entry.key;
+                            final audioUrl =
+                                'http://roomroundapis.rootpointers.net/${media.audioKey}';
 
-                      return Row(
-                        children: [
-                          Obx(() => IconButton(
-                            icon: Icon(
-                              controller.isPlaying.value &&
-                                  controller
-                                      .currentlyPlayingIndex!
-                                      .value ==
-                                      index
-                                  ? Icons.pause
-                                  : Icons.play_arrow,
-                              color: Colors.green,
-                            ),
-                            onPressed: () async {
-                              if (audioUrl.isNotEmpty) {
-                                await controller.playAudio(
-                                    audioUrl, index);
-                              } else {
-                                debugPrint(
-                                    'Invalid audio URL for index $index');
-                              }
-                            },
-                          )),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Text('Audio ${index + 1}'),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  )
+                            return Row(
+                              children: [
+                                Obx(() => IconButton(
+                                      icon: Icon(
+                                        controller.isPlaying.value &&
+                                                controller
+                                                        .currentlyPlayingIndex!
+                                                        .value ==
+                                                    index
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        color: Colors.green,
+                                      ),
+                                      onPressed: () async {
+                                        if (audioUrl.isNotEmpty) {
+                                          await controller.playAudio(
+                                              audioUrl, index);
+                                        } else {
+                                          debugPrint(
+                                              'Invalid audio URL for index $index');
+                                        }
+                                      },
+                                    )),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text('Audio ${index + 1}'),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        )
                       : const SizedBox(),
                   ticket?.isClosed == true
                       ? AppButton.primary(
-                    height: 40,
-                    title: 'Complete Ticket',
-                    onPressed: onCompleteTap,
-                  )
+                          height: 40,
+                          title: 'Complete Ticket',
+                          onPressed: onCompleteTap,
+                        )
                       : AppButton.primary(
-                    height: 40,
-                    title: 'Done',
-                    onPressed: () {
-                      Get.back();
-                    },
-                  ),
+                          height: 40,
+                          title: 'Done',
+                          onPressed: () {
+                            Get.back();
+                          },
+                        ),
                 ],
               ),
 
@@ -1871,14 +1884,14 @@ class AssignedThreadDialouge extends StatelessWidget {
 
 class DialougeComponents {
   static Widget labelTile(
-      BuildContext context, {
-        String? title,
-        String? status,
-        Color? statusColor,
-        TextStyle? titleStyle,
-        bool isUnderline = false,
-        GestureTapCallback? onStatusTap,
-      }) {
+    BuildContext context, {
+    String? title,
+    String? status,
+    Color? statusColor,
+    TextStyle? titleStyle,
+    bool isUnderline = false,
+    GestureTapCallback? onStatusTap,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1903,7 +1916,7 @@ class DialougeComponents {
                 color: Colors.transparent,
                 decoration: isUnderline ? TextDecoration.underline : null,
                 decorationColor:
-                isUnderline ? statusColor ?? AppColors.black : null,
+                    isUnderline ? statusColor ?? AppColors.black : null,
                 shadows: [
                   BoxShadow(
                     color: statusColor ?? AppColors.black,
@@ -1974,11 +1987,11 @@ class DialougeComponents {
           InkWell(
             onTap: onDelete,
             child: Assets.icons.bascket.svg(
-              // colorFilter: ColorFilter.mode(
-              //   AppColors.red,
-              //   BlendMode.srcIn,
-              // ),
-            ),
+                // colorFilter: ColorFilter.mode(
+                //   AppColors.red,
+                //   BlendMode.srcIn,
+                // ),
+                ),
           ),
           SB.w(15),
         },
@@ -2003,9 +2016,9 @@ class DialougeComponents {
 
   static Widget tile(BuildContext context,
       {String? title = 'Assigned by:',
-        String? value = "Urgent",
-        bool isDecoration = true,
-        Color decorationColor = AppColors.yellowDark}) {
+      String? value = "Urgent",
+      bool isDecoration = true,
+      Color decorationColor = AppColors.yellowDark}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2025,9 +2038,9 @@ class DialougeComponents {
                 : null,
             decoration: isDecoration
                 ? BoxDecoration(
-              color: decorationColor.withOpacity(0.24),
-              borderRadius: BorderRadius.circular(35),
-            )
+                    color: decorationColor.withOpacity(0.24),
+                    borderRadius: BorderRadius.circular(35),
+                  )
                 : null,
             child: Text(
               value,
@@ -2043,17 +2056,17 @@ class DialougeComponents {
 
   static Widget nameTile(BuildContext context,
       {String? name,
-        String? desc,
-        String? image,
-        Widget? trailing,
-        bool isFilled = false,
-        bool isSelected = false}) {
+      String? desc,
+      String? image,
+      Widget? trailing,
+      bool isFilled = false,
+      bool isSelected = false}) {
     return Container(
       decoration: isFilled
           ? BoxDecoration(
-        color: AppColors.gry.withOpacity(0.24),
-        borderRadius: BorderRadius.circular(35),
-      )
+              color: AppColors.gry.withOpacity(0.24),
+              borderRadius: BorderRadius.circular(35),
+            )
           : null,
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
       child: Row(
@@ -2108,9 +2121,9 @@ class DialougeComponents {
 
   static Widget detailWithBorder(BuildContext context, String? review,
       {Color? textColor,
-        double borderRadius = 10,
-        Color? bgColor,
-        GestureTapCallback? onTap}) {
+      double borderRadius = 10,
+      Color? bgColor,
+      GestureTapCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -2136,9 +2149,9 @@ class DialougeComponents {
 
   static Widget reply(BuildContext context,
       {List<String>? sendStatusList,
-        Function(int v)? onTap,
-        int? selectedIndex,
-        TextEditingController? textField}) {
+      Function(int v)? onTap,
+      int? selectedIndex,
+      TextEditingController? textField}) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -2183,13 +2196,13 @@ class DialougeComponents {
 
   static Widget sendStatusRadios(BuildContext context,
       {required int selectedIndex,
-        required List<String> sendStatusList,
-        required Function(int v) onTap}) {
+      required List<String> sendStatusList,
+      required Function(int v) onTap}) {
     return Wrap(
       children: [
         ...List.generate(
           sendStatusList.length,
-              (index) => Padding(
+          (index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: InkWell(
               onTap: () => onTap(index),
@@ -2228,17 +2241,17 @@ class DialougeComponents {
   }
 
   static Widget messageTile(
-      BuildContext context, {
-        String msg =
+    BuildContext context, {
+    String msg =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.',
-        String time = '1:03 PM',
-        String date = '11/23/2023',
-        bool sender = true,
-      }) {
+    String time = '1:03 PM',
+    String date = '11/23/2023',
+    bool sender = true,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment:
-      sender ? MainAxisAlignment.start : MainAxisAlignment.end,
+          sender ? MainAxisAlignment.start : MainAxisAlignment.end,
       children: [
         if (sender) ...{
           CircleAvatar(
@@ -2248,7 +2261,7 @@ class DialougeComponents {
         },
         Column(
           crossAxisAlignment:
-          sender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+              sender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: [
             SizedBox(
               width: context.width * 0.50,
@@ -2267,7 +2280,7 @@ class DialougeComponents {
               children: [
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: AppColors.gry.withOpacity(0.24),
                     borderRadius: BorderRadius.circular(35),
@@ -2283,7 +2296,7 @@ class DialougeComponents {
                 SB.w(5),
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: AppColors.gry.withOpacity(0.24),
                     borderRadius: BorderRadius.circular(35),

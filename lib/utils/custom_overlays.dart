@@ -9,7 +9,7 @@ class CustomOverlays {
     bool? isDialogOpen = Get.isDialogOpen;
 
     customLogger("IsDialogOpen: $isDialogOpen");
-    if (isDialogOpen == true) Get.back(closeOverlays: true);
+    // if (isDialogOpen == true) Get.back(closeOverlays: true);
   }
 
   static void showLoaderOnScreen() {

@@ -71,7 +71,9 @@ class TeamMembersView extends StatelessWidget {
 
           return CustomeTiles.employeeTile(
             context,
-            image: employee.employeeImage,
+            image: employee.imageKey != null && employee.imageKey!.isNotEmpty
+                ? '${Urls.domain}${employee.imageKey}'
+                : null,
             title: employee.employeeName,
             subHeading: employee.roleName,
             subtile: employee.departmentName,
@@ -91,7 +93,6 @@ class TeamMembersView extends StatelessWidget {
         },
       );
     } else {
-      // No Team Members found
       return SettingsComponents.noResultsFound(
           context, AppStrings.noMembersFound);
     }

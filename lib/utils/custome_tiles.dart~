@@ -27,7 +27,7 @@ class CustomeTiles {
               children: [
                 AppImage.network(
                   imageUrl: image != null && image.isNotEmpty
-                      ? image
+                      ? '${Urls.domain}$image'
                       : AppImages.personPlaceholder,
                   borderRadius: BorderRadius.circular(20),
                   fit: BoxFit.cover,

@@ -1,7 +1,6 @@
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/assigned_task/controller/assigned_task_controller.dart';
-import 'package:roomrounds/module/assigned_task/views/ticket_chat_view.dart';
 
 import '../controller/ticket_chat_controller.dart';
 
@@ -173,17 +172,19 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
           title: ticket.ticketName ?? ticket.floorName ?? ticket.assignToName,
           status: ticket.isClosed == false || ticket.isClosed == null
               ? 'Open'
-              : ticket.status!,
+              : ticket.isCompleted==true
+                  ? 'Completed'
+                  : ticket.status!,
           isUnderline: showUnderline,
-          onStatusPressed: showUnderline
-              ? () {
-                  controller.onTicketStatusTap(
-                    isManager: isManager,
-                    ticket: ticket,
-                    type: controller.ticketsType,
-                  );
-                }
-              : null,
+          // onStatusPressed: showUnderline
+          //     ? () {
+          //         controller.onTicketStatusTap(
+          //           isManager: isManager,
+          //           ticket: ticket,
+          //           type: controller.ticketsType,
+          //         );
+          //       }
+          //     : null,
           onTap: () {
             controller.onTicketTap(
               type: controller.ticketsType,
