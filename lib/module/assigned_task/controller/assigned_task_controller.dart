@@ -3,6 +3,9 @@ import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_status_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/create_ticket/controller/create_ticket_controller.dart';
+
+import '../../../core/apis/models/employee/employee_model.dart';
 
 class AssignedTaskController extends GetxController {
   bool hasOpenTickets = false;
@@ -147,6 +150,17 @@ class AssignedTaskController extends GetxController {
     }
   }
 
+  Employee? selectedEmployee;
+
+  // Method to set the selected employee
+  void setSelectedEmployee(Employee employee) {
+    selectedEmployee = employee;
+    update();
+  }
+
+  CreateTicketController createTicketController =
+      Get.put(CreateTicketController());
+
   void _closeTicketApi({
     int? ticketId,
     String? reply,
@@ -156,7 +170,9 @@ class AssignedTaskController extends GetxController {
     if (ticketId != null) {
       String params =
           '?ticketId=$ticketId&reply=$reply&statusId=$statusId&isClosed=$isClosed';
-
+      if (selectedEmployee?.userId != null) {
+        params += '&assignTo=${selectedEmployee!.userId}';
+      }
       var resp = await APIFunction.call(
           APIMethods.post, Urls.updateTicketStatus + params,
           showLoader: true,
@@ -166,6 +182,8 @@ class AssignedTaskController extends GetxController {
 
       if (resp != null && resp is bool && resp == true) {
         _refreshOpenAndClosedTickets();
+        selectedEmployee = null;
+        update();
       }
     }
   }

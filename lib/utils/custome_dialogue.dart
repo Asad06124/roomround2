@@ -13,6 +13,7 @@ import 'package:roomrounds/module/assigned_task/controller/assigned_task_control
 import 'package:roomrounds/module/create_ticket/controller/audio_controller.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
+import '../module/emloyee_directory/controller/departments_controller.dart';
 import '../module/room_list/controller/room_tasks_controller.dart';
 
 class CloseTicketDialouge extends StatefulWidget {
@@ -49,6 +50,7 @@ class CloseTicketDialouge extends StatefulWidget {
 
 class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
   late int _selectedIndex;
+  late EmployeeDirectoryController employeeDirectoryController;
 
   @override
   void initState() {
@@ -57,10 +59,20 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
     if (_selectedIndex == -1) {
       _selectedIndex = -1;
     }
+
+    // Initialize the controller with required parameters
+    employeeDirectoryController = Get.put(EmployeeDirectoryController(
+      fetchDepartments: true,
+      fetchEmployees: true,
+    ));
   }
+
+  // EmployeeDirectoryController employeeDirectoryController =
+  //     Get.put(EmployeeDirectoryController());
 
   @override
   Widget build(BuildContext context) {
+    String currentUserId = profileController.user!.userId.toString();
     Ticket? ticket = widget.ticket;
     bool isUrgent = ticket?.isUrgent == true;
     return GetBuilder<AudioController>(
@@ -81,7 +93,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                 children: [
                   DialougeComponents.closeBtn(),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Column(
                       children: [
                         widget.showClose ? SB.h(15) : SizedBox(),
@@ -109,6 +121,59 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                           image: '${Urls.domain}${ticket?.assignByImage}',
                           //Mohsin
                         ),
+                        SB.h(20),
+                        if (currentUserId == ticket?.assignBy.toString())
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GetBuilder<DepartmentsController>(
+                                builder: (deptController) =>
+                                    CustomeDropDown.simple(
+                                  context,
+                                  hintText: AppStrings.selectDepartment,
+                                  initialItem:
+                                      deptController.selectedDepartment == null
+                                          ? "Department"
+                                          : deptController.selectedDepartment
+                                              ?.departmentName
+                                              ?.trim(),
+                                  list: deptController.getDepartmentsNames(),
+                                  onSelect: employeeDirectoryController
+                                      .onChangeDepartment,
+                                ),
+                              ),
+                              GetBuilder<EmployeeDirectoryController>(
+                                builder: (empController) =>
+                                    CustomeDropDown.simple(
+                                  context,
+                                  list: empController.searchResults
+                                      .map((e) => e.employeeName ?? '')
+                                      .toList(),
+                                  hintText: AppStrings.selectAssignee,
+                                  onSelect: (value) {
+                                    // Find the selected employee object based on the selected name
+                                    final selectedEmployee =
+                                        empController.searchResults.firstWhere(
+                                      (e) => e.employeeName == value,
+                                      orElse: () => Employee(
+                                          employeeName: '',
+                                          userId: null),
+                                    );
+
+                                    if (selectedEmployee.userId != null) {
+                                      Get.find<AssignedTaskController>()
+                                          .setSelectedEmployee(
+                                              selectedEmployee);
+                                    } else {
+
+                                      print(
+                                          'No valid employee found for the selected name.');
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         SB.h(20),
                         DialougeComponents.detailWithBorder(
                             context, ticket?.ticketName ?? ''),

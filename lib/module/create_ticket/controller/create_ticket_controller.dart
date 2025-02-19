@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
+
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,9 +19,11 @@ import 'package:roomrounds/utils/custom_overlays.dart';
 
 class CreateTicketController extends GetxController with EmployeeMixin {
   YesNo? _urgent;
+
   YesNo? get isUrgent => _urgent;
   List<Employee> _employeeList = [];
   Employee? _selectedEmployee;
+
   Employee? get selectedEmployee => _selectedEmployee;
   Employee? _initialEmployee;
   int? _initialDepartmentId;
@@ -29,6 +32,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   final TextEditingController floorController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final employeeSelectController = SingleSelectController<String>(null);
+
   List<String> get employeesNamesList => getEmployeesNamesList(_employeeList);
   final Rxn<Offset> _markerPosition = Rxn<Offset>();
   final GlobalKey _boundaryKey = GlobalKey();
@@ -39,6 +43,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
   List<File> selectedAudio = <File>[];
   String? recordedFilePath;
   int? _currentlyPlayingIndex;
+
   int? get currentlyPlayingIndex => _currentlyPlayingIndex;
   final RecorderController recorderController = RecorderController();
   final PlayerController playerController = PlayerController();
@@ -286,15 +291,15 @@ class CreateTicketController extends GetxController with EmployeeMixin {
     int? myDepartmentId = profileController.departmentId;
     bool isManager = profileController.isManager;
     int? managerId = profileController.userId;
-    bool managersOnly = true;
-
-    if (isManager && departmentId != null && myDepartmentId != null) {
-      managersOnly = departmentId != myDepartmentId;
-    }
+    // bool managersOnly = true;
+    //
+    // if (departmentId != null && myDepartmentId != null) {
+    // managersOnly = departmentId != myDepartmentId;
+    // }
 
     List<Employee> resp = await getEmployeeList(
       departmentId: departmentId,
-      managersOnly: managersOnly,
+      // managersOnly: managersOnly,
     );
 
     if (resp.isNotEmpty) {

@@ -10,15 +10,16 @@ class DepartmentsController extends GetxController {
   Department? _selectedDepartment;
 
   Department? get selectedDepartment => _selectedDepartment;
+
   int? get selectedDepartmentId => _selectedDepartment?.departmentId;
 
   bool hasData = false;
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   getDepartments();
-  // }
+  @override
+  void onInit() {
+    super.onInit();
+    getDepartments();
+  }
 
   Future<List<Department>> getDepartments({
     int? departmentId,
@@ -31,13 +32,13 @@ class DepartmentsController extends GetxController {
     Map<String, dynamic> data = {
       // "managerId": managerId,
       // "managerId": 3, // Testing
-      "departmentId": departmentId,
+      // "departmentId": departmentId,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
-      "unassigned": unassigned,
-      "isMyEmpDepartment": isMyEmpDepartment,
-      "isAssignedEmployee": isAssignedEmployee,
+      "unassigned": false,
+      // "isMyEmpDepartment": isMyEmpDepartment,
+      // "isAssignedEmployee": true,
     };
 
     var resp = await APIFunction.call(
@@ -57,14 +58,13 @@ class DepartmentsController extends GetxController {
   }
 
   List<String> getDepartmentsNames() {
+    // getDepartments();
     List<String> names = ['Department'];
-
     if (_departments.isNotEmpty) {
       for (var dep in _departments) {
         String? name = dep.departmentName?.trim();
-        if (name != null && name.isNotEmpty) {
-          names.add(name);
-        }
+
+        names.add(name!);
       }
     }
 
@@ -83,7 +83,7 @@ class DepartmentsController extends GetxController {
 
   void onDepartmentSelect(String? name) {
     if (name != null && name.trim().isNotEmpty) {
-      if (name == 'Select') {
+      if (name == 'Department') {
         _selectedDepartment = null;
       } else if (_departments.isNotEmpty) {
         Department? department = _departments

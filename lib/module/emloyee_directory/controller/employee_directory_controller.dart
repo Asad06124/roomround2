@@ -7,6 +7,7 @@ import 'package:roomrounds/module/emloyee_directory/controller/departments_contr
 class EmployeeDirectoryController extends GetxController with EmployeeMixin {
   EmployeeDirectoryController(
       {this.fetchDepartments = true, this.fetchEmployees = false});
+
   final bool fetchDepartments;
   final bool fetchEmployees;
 

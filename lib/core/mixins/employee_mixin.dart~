@@ -6,7 +6,7 @@ import 'package:roomrounds/core/constants/urls.dart';
 mixin EmployeeMixin {
   Future<List<Employee>> getEmployeeList({
     String? search,
-    int? managerId,
+    // int? managerId,
     int? departmentId,
     bool? managersOnly,
   }) async {
@@ -17,7 +17,7 @@ mixin EmployeeMixin {
       "isManager": managersOnly,
       "departmentId": departmentId,
       'isExcludeCurrentUser': true,
-      "managerId": managerId,
+      // "managerId": managerId,
       // "pageNo": 1,
       // "size": 20,
       "isPagination": false,

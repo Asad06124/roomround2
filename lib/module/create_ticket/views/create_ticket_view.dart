@@ -3,10 +3,10 @@
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/create_ticket/components/create_ticket_components.dart';
 import 'package:roomrounds/module/create_ticket/controller/create_ticket_controller.dart';
-import 'package:full_screen_image/full_screen_image.dart';
 
 class CreateTicketView extends StatelessWidget with Validators {
   const CreateTicketView({super.key});
@@ -74,9 +74,11 @@ class CreateTicketView extends StatelessWidget with Validators {
                         ),
                         CreateTicketComponents.customDropdown(
                           context,
-                          title: isManager
-                              ? AppStrings.managerOrEmployee
-                              : AppStrings.manager,
+                          title:
+                          // isManager ?
+                          AppStrings.managerOrEmployee
+                              // : AppStrings.manager
+                          ,
                           list: controller.employeesNamesList,
                           hintText: AppStrings.selectAssignee,
                           controller: controller.employeeSelectController,
