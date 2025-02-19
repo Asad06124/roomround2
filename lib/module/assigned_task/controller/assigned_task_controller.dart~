@@ -99,7 +99,7 @@ class AssignedTaskController extends GetxController {
 
     if (selectedStatusValue != null && selectedStatusValue != "All") {
       final selectedStatus = _ticketStatusList?.firstWhere(
-        (status) => status.value == selectedStatusValue,
+            (status) => status.value == selectedStatusValue,
         orElse: () => TicketStatusModel(lookupId: null, value: "All"),
       );
       if (selectedStatus != null && selectedStatus.lookupId != null) {

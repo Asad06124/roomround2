@@ -126,11 +126,16 @@ class AssignedTaskComponents {
                       receiverId = ticket.assignBy;
                       image = ticket.assignByImage;
                     }
-                    Get.to(TicketChatView(
+                    Get.to(
+                      TicketChatView(
                         ticketId: ticket.ticketId.toString(),
                         receiverId: '${receiverId ?? ''}',
                         senderId: profileController.user!.userId.toString(),
-                        ticketTitle: ticket.ticketName ?? '', receiverImage: image,));
+                        ticketTitle: ticket.ticketName ?? '',
+                        receiverImage: image,
+                        ticket: ticket,
+                      ),
+                    );
                   },
                   child: Container(
                     height: 25,

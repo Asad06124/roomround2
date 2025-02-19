@@ -1,28 +1,32 @@
 import 'package:flutter/services.dart';
 
+import '../../../core/apis/models/tickets/ticket_model.dart';
 import '../../../core/constants/imports.dart';
 import '../../../core/extensions/datetime_extension.dart';
 
 // import '../../message/components/message_components.dart';
 import '../../message/controller/chat_controller.dart';
 import '../components/ticket_message_components.dart';
+import '../controller/assigned_task_controller.dart';
 import '../controller/ticket_chat_controller.dart';
 
 class TicketChatView extends StatelessWidget {
   final String ticketId;
   final String receiverId;
+  Ticket ticket;
   final String senderId;
   final String ticketTitle;
   final String? receiverImage;
 
-  TicketChatView(
-      {super.key,
-      required this.ticketId,
-      required this.receiverId,
-      required this.senderId,
-      required this.ticketTitle,
-      required this.receiverImage,
-      });
+  TicketChatView({
+    super.key,
+    required this.ticketId,
+    required this.receiverId,
+    required this.ticket,
+    required this.senderId,
+    required this.ticketTitle,
+    required this.receiverImage,
+  });
 
   final LayerLink link = LayerLink();
 
@@ -35,8 +39,10 @@ class TicketChatView extends StatelessWidget {
         statusBarBrightness: Brightness.dark,
       ),
     );
-    final controller = Get.find<TicketChatController>();
+    bool isManager = profileController.isManager;
 
+    final controller = Get.find<TicketChatController>();
+    AssignedTaskController assignedTaskController = Get.find();
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -80,23 +86,33 @@ class TicketChatView extends StatelessWidget {
                     ),
                     child: Center(
                       child: Icon(
-                        Icons.support_agent,
+                        Icons.task_sharp,
                         color: AppColors.primary,
                         size: controller.chatFontSize * 1.5,
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Text(
-                        ticketTitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.titleSmall!.copyWith(
-                          color: AppColors.darkGrey,
-                          fontWeight: FontWeight.w600,
-                          fontSize: controller.chatFontSize,
+                  GestureDetector(
+                    onTap: () {
+                      assignedTaskController.onTicketTap(
+                        type: assignedTaskController.ticketsType,
+                        ticket: ticket,
+                        isManager: isManager,
+                        isClosed: ticket.isClosed!,
+                      );
+                    },
+                    child: Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Text(
+                          ticketTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.titleSmall!.copyWith(
+                            color: AppColors.darkGrey,
+                            fontWeight: FontWeight.w600,
+                            fontSize: controller.chatFontSize,
+                          ),
                         ),
                       ),
                     ),
@@ -159,7 +175,7 @@ class TicketChatView extends StatelessWidget {
                     isDelivered: message.isDelivered,
                     isSeen: message.isSeen,
                     imageUrl: message.imageUrl,
-                    recieverImageUrl:receiverImage,
+                    recieverImageUrl: receiverImage,
                     controller: controller,
                   );
                 },
@@ -239,7 +255,6 @@ class TicketChatView extends StatelessWidget {
               mController.overlayController.toggle();
               mController.update();
             },
-
             ticketId: ticketId,
             receiverId: receiverId,
             senderId: senderId,
