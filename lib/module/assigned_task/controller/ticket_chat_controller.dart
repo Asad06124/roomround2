@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../message/controller/chat_controller.dart';
+import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../views/ticket_chat_image_preview.dart';
 
 class TicketChatController extends GetxController {

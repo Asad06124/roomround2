@@ -4,6 +4,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/message/controller/chat_controller.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/apis/models/employee/employee_model.dart';
 import '../../emloyee_directory/controller/employee_directory_controller.dart';
 

@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/message/components/message_components.dart';
 
+import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/components/app_image.dart';
 import '../../../core/extensions/datetime_extension.dart';
 import '../controller/chat_controller.dart';
@@ -17,7 +18,7 @@ class ChatView extends StatelessWidget {
       : receiverId = Get.arguments['receiverId'],
         receiverImgUrl =
             Get.arguments['receiverImgUrl'] ?? AppImages.personPlaceholder,
-        receiverDeviceToken = Get.arguments['receiverDeviceToken']??"",
+        receiverDeviceToken = Get.arguments['receiverDeviceToken'] ?? "",
         name = Get.arguments['name'] ?? '',
         senderId = profileController.user!.userId.toString();
 

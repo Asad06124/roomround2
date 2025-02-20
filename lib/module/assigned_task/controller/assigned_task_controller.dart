@@ -6,8 +6,8 @@ import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/create_ticket/controller/create_ticket_controller.dart';
 
+import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/apis/models/employee/employee_model.dart';
-import '../../message/controller/chat_controller.dart';
 
 class AssignedTaskController extends GetxController {
   List<Ticket> _openTickets = [];
@@ -315,13 +315,13 @@ class AssignedTaskController extends GetxController {
   }
 
   void _updateTicketInCache(
-      int ticketId,
-      String? reply,
-      int? statusId,
-      bool? isClosed,
-      Employee? newAssignee,
-      String? newStatusText,
-      ) {
+    int ticketId,
+    String? reply,
+    int? statusId,
+    bool? isClosed,
+    Employee? newAssignee,
+    String? newStatusText,
+  ) {
     for (var ticket in _openTickets) {
       if (ticket.ticketId == ticketId) {
         ticket.reply = reply;
@@ -431,7 +431,6 @@ class AssignedTaskController extends GetxController {
         showClose: false,
         sendStatusList: statusStrings,
         textController: replyController,
-
         onReplyButtonTap: (newStatusText) {
           _closeTicketApi(
             ticketId: ticket?.ticketId,

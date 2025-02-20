@@ -1,11 +1,9 @@
 import 'package:flutter/services.dart';
 
+import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/apis/models/tickets/ticket_model.dart';
 import '../../../core/constants/imports.dart';
 import '../../../core/extensions/datetime_extension.dart';
-
-// import '../../message/components/message_components.dart';
-import '../../message/controller/chat_controller.dart';
 import '../components/ticket_message_components.dart';
 import '../controller/assigned_task_controller.dart';
 import '../controller/ticket_chat_controller.dart';
