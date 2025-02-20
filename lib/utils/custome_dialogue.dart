@@ -96,30 +96,48 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Column(
                       children: [
-                        widget.showClose ? SB.h(15) : SizedBox(),
-                        widget.showClose
-                            ? DialougeComponents.labelTile(
+                        // widget.showClose ? SB.h(15) : SizedBox(),
+                        // widget.showClose
+                        //     ? DialougeComponents.labelTile(
+                        //         context,
+                        //         isUnderline: true,
+                        //         title: ticket?.ticketName,
+                        //         status: AppStrings.close,
+                        //         onStatusTap: widget.onCloseTap,
+                        //       )
+                        //     : SizedBox(),
+                        SB.h(20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: DialougeComponents.tile(
                                 context,
-                                isUnderline: true,
-                                title: ticket?.ticketName,
-                                status: AppStrings.close,
-                                onStatusTap: widget.onCloseTap,
-                              )
-                            : SizedBox(),
-                        SB.h(20),
-                        DialougeComponents.tile(
-                          context,
-                          title: AppStrings.assignedBy,
-                          isDecoration: isUrgent,
-                          value: isUrgent ? AppStrings.urgent : null,
-                        ),
-                        SB.h(20),
-                        DialougeComponents.nameTile(
-                          context,
-                          name: ticket?.assignByName,
-                          desc: ticket?.roomName,
-                          image: '${Urls.domain}${ticket?.assignByImage}',
-                          //Mohsin
+                                title:
+                                    currentUserId != ticket?.assignBy.toString()
+                                        ? AppStrings.assignedBy
+                                        : AppStrings.assignedTo,
+                                isDecoration: isUrgent,
+                                value: null,
+                              ),
+                            ),
+                            // SB.h(20),
+                            Expanded(
+                              child: DialougeComponents.nameTile(
+                                context,
+                                name:
+                                    currentUserId != ticket?.assignBy.toString()
+                                        ? ticket?.assignByName
+                                        : ticket?.assignToName,
+                                // desc: ticket?.roomName,
+                                image: currentUserId !=
+                                        ticket?.assignBy.toString()
+                                    ? '${Urls.domain}${ticket?.assignByImage}'
+                                    : '${Urls.domain}${ticket?.assignToImage}',
+                                //Mohsin
+                              ),
+                            ),
+                          ],
                         ),
                         SB.h(20),
                         if (currentUserId == ticket?.assignBy.toString())
@@ -156,8 +174,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                         empController.searchResults.firstWhere(
                                       (e) => e.employeeName == value,
                                       orElse: () => Employee(
-                                          employeeName: '',
-                                          userId: null),
+                                          employeeName: '', userId: null),
                                     );
 
                                     if (selectedEmployee.userId != null) {
@@ -165,7 +182,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                           .setSelectedEmployee(
                                               selectedEmployee);
                                     } else {
-
                                       print(
                                           'No valid employee found for the selected name.');
                                     }
@@ -175,8 +191,46 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                             ],
                           ),
                         SB.h(20),
-                        DialougeComponents.detailWithBorder(
-                            context, ticket?.ticketName ?? ''),
+                        if (ticket?.roomName != null) ...[
+                          DialougeComponents.tile(
+                            context,
+                            title: 'Room',
+                            isDecoration: false,
+                            value: null,
+                          ),
+                          DialougeComponents.detailWithBorder(
+                              context, ticket?.roomName ?? ''),
+                        ],
+                        if (ticket?.ticketName != null) ...[
+                          DialougeComponents.tile(
+                            context,
+                            title: 'Ticket Name',
+                            isDecoration: false,
+                            value: null,
+                          ),
+                          DialougeComponents.detailWithBorder(
+                              context, ticket?.ticketName ?? ''),
+                        ],
+                        if (ticket?.comment != null) ...[
+                          DialougeComponents.tile(
+                            context,
+                            title: 'Comment',
+                            isDecoration: false,
+                            value: null,
+                          ),
+                          DialougeComponents.detailWithBorder(
+                              context, ticket?.comment ?? ''),
+                        ],
+                        // if (ticket?.roomName != null) ...[
+                        //   DialougeComponents.tile(
+                        //     context,
+                        //     title: 'Room',
+                        //     isDecoration: false,
+                        //     value: null,
+                        //   ),
+                        //   DialougeComponents.detailWithBorder(
+                        //       context, ticket?.roomName ?? ''),
+                        // ],
                         ticket!.ticketMedia!.isNotEmpty
                             ? Row(
                                 children: [

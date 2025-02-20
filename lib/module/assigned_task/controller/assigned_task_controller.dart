@@ -92,18 +92,29 @@ class AssignedTaskController extends GetxController {
     };
 
     if (isClosed) {
-      if (profileController.isManager) {
-        data["assignBy"] = profileController.userId;
-      }
+      data["assignBy"] = profileController.userId;
     }
 
     if (selectedStatusValue != null && selectedStatusValue != "All") {
-      final selectedStatus = _ticketStatusList?.firstWhere(
-        (status) => status.value == selectedStatusValue,
-        orElse: () => TicketStatusModel(lookupId: null, value: "All"),
-      );
-      if (selectedStatus != null && selectedStatus.lookupId != null) {
-        data["statusId"] = selectedStatus.lookupId;
+      // The API expects an "isClosed" flag to determine whether to fetch open or closed tickets.
+      // Here, when the user selects "Open", we set "isClosed" to false because:
+      // - A false value for "isClosed" tells the API to return open tickets.
+      if (selectedStatusValue == "Open") {
+        data["isClosed"] = false;
+      } else {
+        // For statuses other than "Open", we do not directly use the "isClosed" flag.
+        // Instead, we search for a ticket status model that matches the selected status value.
+        //
+        // The lookupId from the TicketStatusModel represents a specific status filter.
+        // If such a model is found and its lookupId is valid (not null), we add it to the data
+        // using the "statusId" key. This way, the API will filter the tickets based on the provided status id.
+        final selectedStatus = _ticketStatusList?.firstWhere(
+          (status) => status.value == selectedStatusValue,
+          orElse: () => TicketStatusModel(lookupId: null, value: "All"),
+        );
+        if (selectedStatus != null && selectedStatus.lookupId != null) {
+          data["statusId"] = selectedStatus.lookupId;
+        }
       }
     }
 
@@ -129,11 +140,7 @@ class AssignedTaskController extends GetxController {
   Future<void> loadOpenTickets(
       {bool initial = false, bool refresh = false}) async {
     if (initial) {
-      if (isClosed) {
-        _updateHasClosedTickets(false);
-      } else {
-        _updateHasOpenTickets(false);
-      }
+      _updateHasOpenTickets(false);
       isFetchingOpenTickets = true;
       _openPage = 1;
       List<Ticket> fetched =
@@ -141,29 +148,15 @@ class AssignedTaskController extends GetxController {
       _openTickets = fetched;
       _hasMoreOpenTickets = fetched.length == _pageSize;
       isFetchingOpenTickets = false;
-      if (isClosed) {
-        _updateHasClosedTickets(true);
-      } else {
-        _updateHasOpenTickets(true);
-      }
+      _updateHasOpenTickets(true);
       update();
     } else if (refresh) {
       List<Ticket> fetched =
           await _fetchTicketsFromServer(isClosed: false, page: 1);
-      if (fetched.isNotEmpty) {
-        if (_openTickets.isEmpty ||
-            fetched.first.ticketId != _openTickets.first.ticketId) {
-          List<Ticket> newTickets = [];
-          for (var ticket in fetched) {
-            if (!_openTickets.any((t) => t.ticketId == ticket.ticketId)) {
-              newTickets.add(ticket);
-            }
-          }
-          if (newTickets.isNotEmpty) {
-            _openTickets.insertAll(0, newTickets);
-            update();
-          }
-        }
+      final newTickets = _getNewTickets(_openTickets, fetched);
+      if (newTickets.isNotEmpty) {
+        _openTickets.insertAll(0, newTickets);
+        update();
       }
     }
   }
@@ -187,11 +180,7 @@ class AssignedTaskController extends GetxController {
   Future<void> _loadClosedTickets(
       {bool initial = false, bool refresh = false}) async {
     if (initial) {
-      if (isClosed) {
-        _updateHasClosedTickets(false);
-      } else {
-        _updateHasOpenTickets(false);
-      }
+      _updateHasClosedTickets(false);
       isFetchingClosedTickets = true;
       _closedPage = 1;
       List<Ticket> fetched =
@@ -199,29 +188,15 @@ class AssignedTaskController extends GetxController {
       _closedTickets = fetched;
       hasMoreClosedTickets = fetched.length == _pageSize;
       isFetchingClosedTickets = false;
-      if (isClosed) {
-        _updateHasClosedTickets(true);
-      } else {
-        _updateHasOpenTickets(true);
-      }
+      _updateHasClosedTickets(true);
       update();
     } else if (refresh) {
       List<Ticket> fetched =
           await _fetchTicketsFromServer(isClosed: true, page: 1);
-      if (fetched.isNotEmpty) {
-        if (_closedTickets.isEmpty ||
-            fetched.first.ticketId != _closedTickets.first.ticketId) {
-          List<Ticket> newTickets = [];
-          for (var ticket in fetched) {
-            if (!_closedTickets.any((t) => t.ticketId == ticket.ticketId)) {
-              newTickets.add(ticket);
-            }
-          }
-          if (newTickets.isNotEmpty) {
-            _closedTickets.insertAll(0, newTickets);
-            update();
-          }
-        }
+      final newTickets = _getNewTickets(_closedTickets, fetched);
+      if (newTickets.isNotEmpty) {
+        _closedTickets.insertAll(0, newTickets);
+        update();
       }
     }
   }
@@ -260,12 +235,9 @@ class AssignedTaskController extends GetxController {
   }
 
   void _addTicketsTypes() {
-    bool isManager = profileController.isManager;
-    if (isManager) {
-      _ticketsTypesList.add(AppStrings.assignedTo);
-    } else {
-      _ticketsTypesList.add(AppStrings.sendTo);
-    }
+    _ticketsTypesList.add(profileController.isManager
+        ? AppStrings.assignedTo
+        : AppStrings.sendTo);
   }
 
   void refreshOpenAndClosedTickets() {
@@ -292,14 +264,22 @@ class AssignedTaskController extends GetxController {
     bool? isClosed,
   }) async {
     if (ticketId != null) {
-      String params =
-          '?ticketId=$ticketId&reply=$reply&statusId=$statusId&isClosed=$isClosed';
+      Map<String, String> queryParams = {
+        'ticketId': ticketId.toString(),
+        'reply': reply ?? "",
+        'statusId': statusId?.toString() ?? "",
+        'isClosed': isClosed.toString(),
+      };
       if (selectedEmployee?.userId != null) {
-        params += '&assignTo=${selectedEmployee!.userId}';
+        queryParams['assignTo'] = selectedEmployee!.userId.toString();
       }
+      final url = Uri.parse(Urls.updateTicketStatus)
+          .replace(queryParameters: queryParams)
+          .toString();
+
       var resp = await APIFunction.call(
         APIMethods.post,
-        Urls.updateTicketStatus + params,
+        url,
         showLoader: true,
         showErrorMessage: true,
         showSuccessMessage: true,
@@ -416,5 +396,18 @@ class AssignedTaskController extends GetxController {
         child: child,
       ),
     );
+  }
+
+  List<Ticket> _getNewTickets(
+      List<Ticket> currentTickets, List<Ticket> fetched) {
+    if (fetched.isNotEmpty &&
+        (currentTickets.isEmpty ||
+            fetched.first.ticketId != currentTickets.first.ticketId)) {
+      return fetched
+          .where((ticket) =>
+              !currentTickets.any((t) => t.ticketId == ticket.ticketId))
+          .toList();
+    }
+    return [];
   }
 }
