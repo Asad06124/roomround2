@@ -308,6 +308,7 @@ class AssignedTaskController extends GetxController {
           statusId != null ? newStatusText : null,
         );
         refreshOpenAndClosedTickets();
+        statusId = null;
         selectedEmployee = null;
         update();
       }
@@ -435,7 +436,7 @@ class AssignedTaskController extends GetxController {
           _closeTicketApi(
             ticketId: ticket?.ticketId,
             reply: replyController.text,
-            statusId: statusId,
+            statusId: statusId != null ? ticket?.statusId : statusId,
             isClosed: true,
             ticket: ticket,
             newStatusText: newStatusText,

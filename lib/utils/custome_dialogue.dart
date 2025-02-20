@@ -18,7 +18,7 @@ import '../module/room_list/controller/room_tasks_controller.dart';
 
 class CloseTicketDialouge extends StatefulWidget {
   const CloseTicketDialouge({
-    Key? key,
+    super.key,
     this.ticket,
     this.assighController,
     this.onCloseTap,
@@ -33,7 +33,7 @@ class CloseTicketDialouge extends StatefulWidget {
     ],
     this.onRadioTap,
     this.textController,
-  }) : super(key: key);
+  });
 
   final List<String> sendStatusList;
   final Ticket? ticket;
@@ -352,13 +352,11 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                   widget.sendStatusList[_selectedIndex];
                             }
                             widget.onReplyButtonTap?.call(selectedStatus);
-
-                            widget.textController?.clear();
                             setState(() {
                               _selectedIndex = -1;
                             });
-                            Get.back();
-
+                            widget.textController?.clear();
+                            // Get.back();
                           },
                         ),
 
