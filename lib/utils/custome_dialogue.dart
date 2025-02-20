@@ -18,7 +18,7 @@ import '../module/room_list/controller/room_tasks_controller.dart';
 
 class CloseTicketDialouge extends StatefulWidget {
   const CloseTicketDialouge({
-    super.key,
+    Key? key,
     this.ticket,
     this.assighController,
     this.onCloseTap,
@@ -33,12 +33,13 @@ class CloseTicketDialouge extends StatefulWidget {
     ],
     this.onRadioTap,
     this.textController,
-  });
+  }) : super(key: key);
 
   final List<String> sendStatusList;
   final Ticket? ticket;
   final GestureTapCallback? onCloseTap;
-  final GestureTapCallback? onReplyButtonTap;
+
+  final Function(String)? onReplyButtonTap;
   final AssignedTaskController? assighController;
   final bool showClose;
   final Function(int)? onRadioTap;
@@ -60,7 +61,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
       _selectedIndex = -1;
     }
 
-    // Initialize the controller with required parameters
     employeeDirectoryController = Get.put(EmployeeDirectoryController(
       fetchDepartments: true,
       fetchEmployees: true,
@@ -169,7 +169,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                       .toList(),
                                   hintText: AppStrings.selectAssignee,
                                   onSelect: (value) {
-                                    // Find the selected employee object based on the selected name
                                     final selectedEmployee =
                                         empController.searchResults.firstWhere(
                                       (e) => e.employeeName == value,
@@ -345,8 +344,24 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                         AppButton.primary(
                           height: 40,
                           title: AppStrings.done,
-                          onPressed: widget.onReplyButtonTap,
+                          onPressed: () {
+                            String selectedStatus = '';
+                            if (_selectedIndex >= 0 &&
+                                _selectedIndex < widget.sendStatusList.length) {
+                              selectedStatus =
+                                  widget.sendStatusList[_selectedIndex];
+                            }
+                            widget.onReplyButtonTap?.call(selectedStatus);
+
+                            widget.textController?.clear();
+                            setState(() {
+                              _selectedIndex = -1;
+                            });
+                            Get.back();
+
+                          },
                         ),
+
                         SB.h(10),
                       ],
                     ),

@@ -165,13 +165,56 @@ class TicketChatView extends StatelessWidget {
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   final message = messages[index];
+
+                  if (message.type == 'system') {
+                    final regex =
+                        RegExp(r'Assignee changed from (.+?) to (.+)');
+                    final match = regex.firstMatch(message.content);
+                    String fromName = '';
+                    String toName = '';
+                    if (match != null) {
+                      fromName = match.group(1) ?? '';
+                      toName = match.group(2) ?? '';
+                    }
+                    return Center(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 12,
+                            ),
+                            children: [
+                              const TextSpan(text: 'Assignee changed from '),
+                              TextSpan(
+                                text: fromName,
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                              const TextSpan(text: ' to '),
+                              TextSpan(
+                                text: toName,
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
                   return TicketMessageComponents.messageTile(
                     context,
                     sender: message.senderId == receiverId,
                     msg: message.content,
                     time: DateTimeExtension.formatTimeOnly(
-                      message.updatedAt.toString(),
-                    ),
+                        message.updatedAt.toString()),
                     isDelivered: message.isDelivered,
                     isSeen: message.isSeen,
                     imageUrl: message.imageUrl,

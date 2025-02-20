@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_status_model.dart';
@@ -6,6 +7,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/create_ticket/controller/create_ticket_controller.dart';
 
 import '../../../core/apis/models/employee/employee_model.dart';
+import '../../message/controller/chat_controller.dart';
 
 class AssignedTaskController extends GetxController {
   List<Ticket> _openTickets = [];
@@ -27,6 +29,7 @@ class AssignedTaskController extends GetxController {
   String? selectedStatusValue;
   DateTime? startDate;
   DateTime? endDate;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void _updateHasOpenTickets(bool value) {
     hasOpenTickets = value;
@@ -259,11 +262,13 @@ class AssignedTaskController extends GetxController {
 
   void _closeTicketApi({
     int? ticketId,
+    Ticket? ticket,
     String? reply,
     int? statusId,
     bool? isClosed,
+    String? newStatusText,
   }) async {
-    if (ticketId != null) {
+    if (ticketId != null && ticket != null) {
       Map<String, String> queryParams = {
         'ticketId': ticketId.toString(),
         'reply': reply ?? "",
@@ -277,7 +282,7 @@ class AssignedTaskController extends GetxController {
           .replace(queryParameters: queryParams)
           .toString();
 
-      var resp = await APIFunction.call(
+      final resp = await APIFunction.call(
         APIMethods.post,
         url,
         showLoader: true,
@@ -287,9 +292,61 @@ class AssignedTaskController extends GetxController {
       );
 
       if (resp != null && resp is bool && resp == true) {
+        sendAssigneeChangeNotification(
+          ticketId: ticket.ticketId.toString(),
+          oldAssignee: ticket.assignToName ?? '',
+          newAssignee: selectedEmployee?.employeeName ?? '',
+        );
+        // When updating only the assignee (statusId is null),
+        // force newStatusText to be null to avoid unwanted status update.
+        _updateTicketInCache(
+          ticketId,
+          reply,
+          statusId,
+          isClosed,
+          selectedEmployee,
+          statusId != null ? newStatusText : null,
+        );
         refreshOpenAndClosedTickets();
         selectedEmployee = null;
         update();
+      }
+    }
+  }
+
+  void _updateTicketInCache(
+      int ticketId,
+      String? reply,
+      int? statusId,
+      bool? isClosed,
+      Employee? newAssignee,
+      String? newStatusText,
+      ) {
+    for (var ticket in _openTickets) {
+      if (ticket.ticketId == ticketId) {
+        ticket.reply = reply;
+        ticket.statusId = statusId;
+        ticket.isClosed = isClosed;
+        ticket.assignToName = newAssignee?.employeeName;
+        ticket.assignToImage = newAssignee?.imageKey;
+        // Only update the status if newStatusText is provided.
+        if (newStatusText != null && newStatusText.isNotEmpty) {
+          ticket.status = newStatusText;
+        }
+        break;
+      }
+    }
+    for (var ticket in _closedTickets) {
+      if (ticket.ticketId == ticketId) {
+        ticket.reply = reply;
+        ticket.statusId = statusId;
+        ticket.isClosed = isClosed;
+        ticket.assignToName = newAssignee?.employeeName;
+        ticket.assignToImage = newAssignee?.imageKey;
+        if (newStatusText != null && newStatusText.isNotEmpty) {
+          ticket.status = newStatusText;
+        }
+        break;
       }
     }
   }
@@ -374,19 +431,54 @@ class AssignedTaskController extends GetxController {
         showClose: false,
         sendStatusList: statusStrings,
         textController: replyController,
-        onReplyButtonTap: () {
+
+        onReplyButtonTap: (newStatusText) {
           _closeTicketApi(
             ticketId: ticket?.ticketId,
             reply: replyController.text,
             statusId: statusId,
             isClosed: true,
+            ticket: ticket,
+            newStatusText: newStatusText,
           );
+          newStatusText = '';
         },
         onRadioTap: (index) {
           statusId = statusList[index].lookupId;
         },
       ),
     );
+  }
+
+  Future<void> sendAssigneeChangeNotification({
+    required String ticketId,
+    required String oldAssignee,
+    required String newAssignee,
+  }) async {
+    final String messageId = DateTime.now().millisecondsSinceEpoch.toString();
+    ChatMessage systemMessage = ChatMessage(
+      id: messageId,
+      chatId: ticketId,
+      senderId: 'system',
+      // system identifier
+      receiverId: '',
+      // not needed
+      type: 'system',
+      // custom type to distinguish system messages
+      content: "Assignee changed from $oldAssignee to $newAssignee",
+      imageUrl: '',
+      isDelivered: true,
+      isSeen: true,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await _firestore
+        .collection('ticketChats')
+        .doc(ticketId)
+        .collection('messages')
+        .doc(messageId)
+        .set(systemMessage.toJson());
   }
 
   void _showFullWidthDialog(Widget child) {

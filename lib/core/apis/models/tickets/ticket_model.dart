@@ -259,30 +259,83 @@ class Ticket {
   String? ticketName;
   List<TicketMedia>? ticketMedia;
 
-  Ticket(
-      {this.ticketId,
-      this.assignDate,
-      this.comment,
-      this.isUrgent,
-      this.assignTo,
-      this.isClosed,
-      this.reply,
-        this.isCompleted,
-      this.assignTemplateRoomId,
-      this.assignTemplateName,
-      this.completionDate,
-      this.assignBy,
-      this.assignByName,
-      this.assignByImage,
-      this.assignToName,
-      this.assignToImage,
-      this.status,
-      this.statusId,
-      this.roomName,
-      this.floorName,
-      this.ticketName,
-      this.ticketMedia});
+  Ticket({
+    this.ticketId,
+    this.assignDate,
+    this.comment,
+    this.isUrgent,
+    this.assignTo,
+    this.isClosed,
+    this.reply,
+    this.assignTemplateRoomId,
+    this.assignTemplateName,
+    this.completionDate,
+    this.assignBy,
+    this.isCompleted,
+    this.assignByName,
+    this.assignByImage,
+    this.assignToName,
+    this.assignToImage,
+    this.status,
+    this.statusId,
+    this.roomName,
+    this.floorName,
+    this.ticketName,
+    this.ticketMedia,
+  });
 
+  // CopyWith Method
+  Ticket copyWith({
+    int? ticketId,
+    String? assignDate,
+    String? comment,
+    bool? isUrgent,
+    int? assignTo,
+    bool? isClosed,
+    String? reply,
+    int? assignTemplateRoomId,
+    String? assignTemplateName,
+    String? completionDate,
+    int? assignBy,
+    bool? isCompleted,
+    String? assignByName,
+    String? assignByImage,
+    String? assignToName,
+    String? assignToImage,
+    String? status,
+    int? statusId,
+    String? roomName,
+    String? floorName,
+    String? ticketName,
+    List<TicketMedia>? ticketMedia,
+  }) {
+    return Ticket(
+      ticketId: ticketId ?? this.ticketId,
+      assignDate: assignDate ?? this.assignDate,
+      comment: comment ?? this.comment,
+      isUrgent: isUrgent ?? this.isUrgent,
+      assignTo: assignTo ?? this.assignTo,
+      isClosed: isClosed ?? this.isClosed,
+      reply: reply ?? this.reply,
+      assignTemplateRoomId: assignTemplateRoomId ?? this.assignTemplateRoomId,
+      assignTemplateName: assignTemplateName ?? this.assignTemplateName,
+      completionDate: completionDate ?? this.completionDate,
+      assignBy: assignBy ?? this.assignBy,
+      isCompleted: isCompleted ?? this.isCompleted,
+      assignByName: assignByName ?? this.assignByName,
+      assignByImage: assignByImage ?? this.assignByImage,
+      assignToName: assignToName ?? this.assignToName,
+      assignToImage: assignToImage ?? this.assignToImage,
+      status: status ?? this.status,
+      statusId: statusId ?? this.statusId,
+      roomName: roomName ?? this.roomName,
+      floorName: floorName ?? this.floorName,
+      ticketName: ticketName ?? this.ticketName,
+      ticketMedia: ticketMedia ?? this.ticketMedia,
+    );
+  }
+
+  // From JSON Constructor
   Ticket.fromJson(Map<String, dynamic> json) {
     ticketId = json['ticketId'];
     assignDate = json['assignDate'];
@@ -295,9 +348,9 @@ class Ticket {
     assignTemplateName = json['assignTemplateName'];
     completionDate = json['completionDate'];
     assignBy = json['assignBy'];
+    isCompleted = json['isCompleted'];
     assignByName = json['assignByName'];
     assignByImage = json['assignByImage'];
-    isCompleted = json['isCompleted'];
     assignToName = json['assignToName'];
     assignToImage = json['assignToImage'];
     status = json['status'];
@@ -313,31 +366,32 @@ class Ticket {
     }
   }
 
+  // To JSON Method
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['ticketId'] = this.ticketId;
-    data['assignDate'] = this.assignDate;
-    data['comment'] = this.comment;
-    data['isUrgent'] = this.isUrgent;
-    data['assignTo'] = this.assignTo;
-    data['isClosed'] = this.isClosed;
-    data['reply'] = this.reply;
-    data['assignTemplateRoomId'] = this.assignTemplateRoomId;
-    data['assignTemplateName'] = this.assignTemplateName;
-    data['completionDate'] = this.completionDate;
-    data['assignBy'] = this.assignBy;
-    data['isCompleted'] = this.isCompleted;
-    data['assignByName'] = this.assignByName;
-    data['assignByImage'] = this.assignByImage;
-    data['assignToName'] = this.assignToName;
-    data['assignToImage'] = this.assignToImage;
-    data['status'] = this.status;
-    data['statusId'] = this.statusId;
-    data['roomName'] = this.roomName;
-    data['floorName'] = this.floorName;
-    data['ticketName'] = this.ticketName;
-    if (this.ticketMedia != null) {
-      data['ticketMedia'] = this.ticketMedia!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = {};
+    data['ticketId'] = ticketId;
+    data['assignDate'] = assignDate;
+    data['comment'] = comment;
+    data['isUrgent'] = isUrgent;
+    data['assignTo'] = assignTo;
+    data['isClosed'] = isClosed;
+    data['reply'] = reply;
+    data['assignTemplateRoomId'] = assignTemplateRoomId;
+    data['assignTemplateName'] = assignTemplateName;
+    data['completionDate'] = completionDate;
+    data['assignBy'] = assignBy;
+    data['isCompleted'] = isCompleted;
+    data['assignByName'] = assignByName;
+    data['assignByImage'] = assignByImage;
+    data['assignToName'] = assignToName;
+    data['assignToImage'] = assignToImage;
+    data['status'] = status;
+    data['statusId'] = statusId;
+    data['roomName'] = roomName;
+    data['floorName'] = floorName;
+    data['ticketName'] = ticketName;
+    if (ticketMedia != null) {
+      data['ticketMedia'] = ticketMedia!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -349,9 +403,29 @@ class TicketMedia {
   String? imagekey;
   String? audioKey;
 
-  TicketMedia(
-      {this.ticketsMediaId, this.ticketId, this.imagekey, this.audioKey});
+  TicketMedia({
+    this.ticketsMediaId,
+    this.ticketId,
+    this.imagekey,
+    this.audioKey,
+  });
 
+  // CopyWith Method
+  TicketMedia copyWith({
+    int? ticketsMediaId,
+    int? ticketId,
+    String? imagekey,
+    String? audioKey,
+  }) {
+    return TicketMedia(
+      ticketsMediaId: ticketsMediaId ?? this.ticketsMediaId,
+      ticketId: ticketId ?? this.ticketId,
+      imagekey: imagekey ?? this.imagekey,
+      audioKey: audioKey ?? this.audioKey,
+    );
+  }
+
+  // From JSON Constructor
   TicketMedia.fromJson(Map<String, dynamic> json) {
     ticketsMediaId = json['ticketsMediaId'];
     ticketId = json['ticketId'];
@@ -359,12 +433,13 @@ class TicketMedia {
     audioKey = json['audioKey'];
   }
 
+  // To JSON Method
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['ticketsMediaId'] = this.ticketsMediaId;
-    data['ticketId'] = this.ticketId;
-    data['imagekey'] = this.imagekey;
-    data['audioKey'] = this.audioKey;
+    final Map<String, dynamic> data = {};
+    data['ticketsMediaId'] = ticketsMediaId;
+    data['ticketId'] = ticketId;
+    data['imagekey'] = imagekey;
+    data['audioKey'] = audioKey;
     return data;
   }
 }
