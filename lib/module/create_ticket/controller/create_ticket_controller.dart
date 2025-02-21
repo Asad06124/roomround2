@@ -288,9 +288,9 @@ class CreateTicketController extends GetxController with EmployeeMixin {
 
   void _fetchEmployeesFromDepartment() async {
     int? departmentId = departmentsController.selectedDepartmentId;
-    int? myDepartmentId = profileController.departmentId;
-    bool isManager = profileController.isManager;
-    int? managerId = profileController.userId;
+    // int? myDepartmentId = profileController.departmentId;
+    // bool isManager = profileController.isManager;
+    // int? managerId = profileController.userId;
     // bool managersOnly = true;
     //
     // if (departmentId != null && myDepartmentId != null) {

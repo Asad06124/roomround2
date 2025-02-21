@@ -51,7 +51,7 @@ class AssignedTaskController extends GetxController {
   final List<String> _ticketsTypesList = [AppStrings.assignedMe];
 
   List<String> get ticketsTypesList => _ticketsTypesList;
-  int? statusId;
+  int? selectedStatusId;
   TicketsType _ticketsType = TicketsType.assignedMe;
 
   TicketsType get ticketsType => _ticketsType;
@@ -68,7 +68,7 @@ class AssignedTaskController extends GetxController {
     fetchTicketStatusList();
     _addTicketsTypes();
 
-    startDate = DateTime.now().subtract(Duration(days: 7));
+    startDate = DateTime.now().subtract(Duration(days: 30));
     endDate = DateTime.now();
 
     _initialLoadTickets();
@@ -274,10 +274,9 @@ class AssignedTaskController extends GetxController {
         'reply': reply ?? "",
         'statusId': statusId?.toString() ?? "",
         'isClosed': isClosed.toString(),
+        'assignTo': selectedEmployee?.userId != null?selectedEmployee!.userId.toString():ticket.assignTo.toString(),
       };
-      if (selectedEmployee?.userId != null) {
-        queryParams['assignTo'] = selectedEmployee!.userId.toString();
-      }
+
       final url = Uri.parse(Urls.updateTicketStatus)
           .replace(queryParameters: queryParams)
           .toString();
@@ -292,13 +291,18 @@ class AssignedTaskController extends GetxController {
       );
 
       if (resp != null && resp is bool && resp == true) {
-        sendAssigneeChangeNotification(
-          ticketId: ticket.ticketId.toString(),
-          oldAssignee: ticket.assignToName ?? '',
-          newAssignee: selectedEmployee?.employeeName ?? '',
-        );
-        // When updating only the assignee (statusId is null),
-        // force newStatusText to be null to avoid unwanted status update.
+        String oldAssignee = (ticket.assignToName ?? '').trim();
+        String newAssignee = (selectedEmployee?.employeeName ?? '').trim();
+
+        if (oldAssignee.isNotEmpty && newAssignee.isNotEmpty && oldAssignee != newAssignee) {
+          sendAssigneeChangeNotification(
+            ticketId: ticket.ticketId.toString(),
+            oldAssignee: oldAssignee,
+            newAssignee: newAssignee,
+          );
+        }
+
+
         _updateTicketInCache(
           ticketId,
           reply,
@@ -307,8 +311,9 @@ class AssignedTaskController extends GetxController {
           selectedEmployee,
           statusId != null ? newStatusText : null,
         );
+
         refreshOpenAndClosedTickets();
-        statusId = null;
+        selectedStatusId = null;
         selectedEmployee = null;
         update();
       }
@@ -414,6 +419,7 @@ class AssignedTaskController extends GetxController {
     bool isClosed = false,
     bool isManager = false,
   }) {
+    debugPrint('statusId.....: $selectedStatusId');
     _openTicketsDialog(
       type: TicketDialogs.closeTicket,
       ticket: ticket,
@@ -436,7 +442,7 @@ class AssignedTaskController extends GetxController {
           _closeTicketApi(
             ticketId: ticket?.ticketId,
             reply: replyController.text,
-            statusId: statusId != null ? ticket?.statusId : statusId,
+            statusId: selectedStatusId ?? ticket?.statusId,
             isClosed: true,
             ticket: ticket,
             newStatusText: newStatusText,
@@ -444,7 +450,8 @@ class AssignedTaskController extends GetxController {
           newStatusText = '';
         },
         onRadioTap: (index) {
-          statusId = statusList[index].lookupId;
+          selectedStatusId = statusList[index].lookupId;
+          update();
         },
       ),
     );

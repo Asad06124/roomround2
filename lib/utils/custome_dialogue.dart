@@ -200,26 +200,27 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                           DialougeComponents.detailWithBorder(
                               context, ticket?.roomName ?? ''),
                         ],
+                        if (ticket?.comment != null) ...[
+                          DialougeComponents.tile(
+                            context,
+                            title: 'Floor',
+                            isDecoration: false,
+                            value: null,
+                          ),
+                          DialougeComponents.detailWithBorder(
+                              context, ticket?.floorName ?? ''),
+                        ],
                         if (ticket?.ticketName != null) ...[
                           DialougeComponents.tile(
                             context,
-                            title: 'Ticket Name',
+                            title: 'Description',
                             isDecoration: false,
                             value: null,
                           ),
                           DialougeComponents.detailWithBorder(
                               context, ticket?.ticketName ?? ''),
                         ],
-                        if (ticket?.comment != null) ...[
-                          DialougeComponents.tile(
-                            context,
-                            title: 'Comment',
-                            isDecoration: false,
-                            value: null,
-                          ),
-                          DialougeComponents.detailWithBorder(
-                              context, ticket?.comment ?? ''),
-                        ],
+
                         // if (ticket?.roomName != null) ...[
                         //   DialougeComponents.tile(
                         //     context,
@@ -1122,20 +1123,22 @@ class CreateTicketDialog extends StatelessWidget {
         init: EmployeeDirectoryController(
           fetchEmployees: true,
           fetchDepartments: false,
+          ignoreDepartmentId: true,
+          ignoreManager: true
         ),
         builder: (controller) {
           List<Employee> employees = List.from(controller.searchResults);
-          if (employees.isEmpty) {
-            User? user = profileController.user;
-
-            if (user != null) {
-              employees.add(Employee(
-                employeeId: user.userId,
-                employeeName: user.username,
-                employeeImage: user.image,
-              ));
-            }
-          }
+          // if (employees.isEmpty) {
+          //   User? user = profileController.user;
+          //
+          //   if (user != null) {
+          //     employees.add(Employee(
+          //       employeeId: user.userId,
+          //       employeeName: user.username,
+          //       employeeImage: user.image,
+          //     ));
+          //   }
+          // }
 
           return CustomeDropDown.simple<Employee>(
             context,

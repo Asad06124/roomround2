@@ -19,6 +19,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
       Get.put(TicketChatController());
   final AssignedTaskController controller = Get.put(AssignedTaskController());
   final ScrollController _scrollController = ScrollController();
+  ValueKey<String> _dropdownKey = ValueKey("All");
 
   @override
   void initState() {
@@ -125,13 +126,19 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
 
   void _handleTabChange() {
     if (!_tabController.indexIsChanging) {
-      final AssignedTaskController controller =
-          Get.find<AssignedTaskController>();
       controller.changeTicketsType(
         _tabController.index == 0
             ? AppStrings.assignedMe
             : AppStrings.assignedTo,
       );
+
+      // Reset filter value in controller
+      controller.changeStatusFilter("All");
+
+      // Force dropdown rebuild by changing the key
+      setState(() {
+        _dropdownKey = ValueKey("All_${_tabController.index}");
+      });
 
       _scrollController.jumpTo(0);
     }
@@ -322,6 +329,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
                       ),
                     ),
                     CustomeDropDown.simple<String>(
+                      key: _dropdownKey,
                       context,
                       list: controller.ticketStatusList
                           .map((status) => status.value ?? 'All')
@@ -332,7 +340,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
                       borderRadius: 20,
                       showShadow: true,
                       closedShadow: false,
-                    ),
+                    )
                   ],
                 ),
                 SB.h(16),

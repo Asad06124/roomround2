@@ -33,7 +33,7 @@ class MainFeatureController extends GetxController {
       page: AppRoutes.ROOMS_LIST,
     );
     MainFeature facilitiesViewFeature = MainFeature(
-      title: isManager ? AppStrings.facilitiesView : AppStrings.roommapView,
+      title: AppStrings.facilitiesView,
       image: Assets.icons.roomMapView,
       // page: AppRoutes.ROOM_MAP,
       page: AppRoutes.CREATE_TICKET,
@@ -58,9 +58,9 @@ class MainFeatureController extends GetxController {
       ];
     } else if (isEmployee) {
       _features = [
-        employeeDirectoryFeature,
-        assignedTaskFeature,
         facilitiesViewFeature,
+        assignedTaskFeature,
+        employeeDirectoryFeature,
       ];
     }
     // update();

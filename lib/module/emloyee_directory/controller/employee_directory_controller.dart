@@ -5,10 +5,17 @@ import 'package:roomrounds/core/mixins/employee_mixin.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/departments_controller.dart';
 
 class EmployeeDirectoryController extends GetxController with EmployeeMixin {
-  EmployeeDirectoryController(
-      {this.fetchDepartments = true, this.fetchEmployees = false});
+  EmployeeDirectoryController({
+    this.fetchDepartments = true,
+    this.fetchEmployees = false,
+    this.ignoreDepartmentId = false,
+    this.ignoreManager = false,
+  });
+
+  final bool ignoreDepartmentId;
 
   final bool fetchDepartments;
+  final bool ignoreManager;
   final bool fetchEmployees;
 
   final TextEditingController searchTextField = TextEditingController();
@@ -94,15 +101,18 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
   void onSearch(String? text) async {
     _updateHasData(false);
 
-    int? departmentId =
-        myDepartmentId ?? departmentsController.selectedDepartmentId;
+    int? departmentId = ignoreDepartmentId
+        ? null
+        : (myDepartmentId ?? departmentsController.selectedDepartmentId);
 
+    bool? managersOnlyParam = ignoreManager ? null : managersOnly;
     List<Employee> resp = await getEmployeeList(
       search: text,
       managerId: managerId,
       departmentId: departmentId,
-      managersOnly: managersOnly,
+      managersOnly: managersOnlyParam,
     );
+
 
     /*   Map<String, dynamic> data = {
       "search": text?.trim(),
