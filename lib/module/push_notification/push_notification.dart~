@@ -146,7 +146,7 @@ class PushNotificationController {
         Get.find<NotificationController>().fetchNotificationsList();
         Get.toNamed(AppRoutes.NOTIFICATION);
         break;
--
+
       case 'TicketStatus':
         Get.toNamed(AppRoutes.NOTIFICATION);
         break;

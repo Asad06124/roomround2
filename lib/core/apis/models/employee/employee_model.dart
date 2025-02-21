@@ -19,22 +19,22 @@ class Employee {
 
   Employee(
       {this.userId,
-        this.roleId,
-        this.employeeId,
-        this.imageKey,
-        this.employeeImage,
-        this.employeeName,
-        this.firstName,
-        this.lastName,
-        this.roleName,
-        this.departmentName,
-        this.departmentId,
-        this.employeeDepartmentId,
-        this.email,
-        this.phoneNumber,
-        this.roomCount,
-        this.isDeleted,
-        this.fcmToken}); // Added fcmToken to constructor
+      this.roleId,
+      this.employeeId,
+      this.imageKey,
+      this.employeeImage,
+      this.employeeName,
+      this.firstName,
+      this.lastName,
+      this.roleName,
+      this.departmentName,
+      this.departmentId,
+      this.employeeDepartmentId,
+      this.email,
+      this.phoneNumber,
+      this.roomCount,
+      this.isDeleted,
+      this.fcmToken}); // Added fcmToken to constructor
 
   Employee.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];

@@ -114,12 +114,13 @@ class NotificationView extends StatelessWidget {
               Get.toNamed(AppRoutes.ROOMS_LIST);
             }
             if (notification.notificationDescription
-                    ?.toLowerCase()
-                    .contains('ticket') ==
-                true||notification.notificationTitle
-                ?.toLowerCase()
-                .contains('ticket') ==
-                true) {
+                        ?.toLowerCase()
+                        .contains('ticket') ==
+                    true ||
+                notification.notificationTitle
+                        ?.toLowerCase()
+                        .contains('ticket') ==
+                    true) {
               Get.toNamed(AppRoutes.ASSIGNED_TASKS);
             }
           });

@@ -25,14 +25,12 @@ class ForgetController extends GetxController {
   }
 }
 
-
-
 //  String params = "?id=$id";
 //       var resp = await APIFunction.call(
 //         APIMethods.post,
 //         Urls.readNotification + params,
-        // showLoader: true,
-        // showErrorMessage: true,
+// showLoader: true,
+// showErrorMessage: true,
 //       );
 
 //       if (resp != null && resp is bool && resp == true) {
@@ -40,11 +38,11 @@ class ForgetController extends GetxController {
 //           notificationsList.removeWhere((item) => item.notificationId == id);
 //           update();
 //         } catch (e) {
-          // customLogger(
-          //   'Error: $e',
-          //   error: 'removeNotification',
-          //   type: LoggerType.error,
-          // );
+// customLogger(
+//   'Error: $e',
+//   error: 'removeNotification',
+//   type: LoggerType.error,
+// );
 //         }
 //       }
 //     }

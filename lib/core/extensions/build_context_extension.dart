@@ -28,6 +28,7 @@ extension BuildContextEntension<T> on BuildContext {
   Size get size => MediaQuery.of(this).size;
 
   double get paddingTop => MediaQuery.of(this).padding.top;
+
   double get paddingBottom => MediaQuery.of(this).padding.bottom;
 
   double get paddingDefault => height * 0.02;

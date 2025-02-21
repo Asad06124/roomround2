@@ -33,7 +33,8 @@ class CustomAppbar {
           .snapshots()
           .asyncExpand((chatRoomSnapshot) {
         // For each chat room, get unread message counts
-        List<Stream<int>> unreadCountStreams = chatRoomSnapshot.docs.map((chatRoom) {
+        List<Stream<int>> unreadCountStreams =
+            chatRoomSnapshot.docs.map((chatRoom) {
           String chatRoomId = chatRoom.id;
           return firestore
               .collection('chatrooms')
@@ -46,8 +47,9 @@ class CustomAppbar {
         }).toList();
 
         // Combine all streams to get the total unread count
-        return CombineLatestStream.list(unreadCountStreams)
-            .map((unreadCounts) => unreadCounts.fold(0, (sum, count) => sum + count));
+        return CombineLatestStream.list(unreadCountStreams).map(
+            (unreadCounts) =>
+                unreadCounts.fold(0, (sum, count) => sum + count));
       });
     }
 
@@ -152,7 +154,8 @@ class CustomAppbar {
                                   },
                                   child: Assets.icons.mail.svg(
                                     colorFilter: iconsClor != null
-                                        ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
+                                        ? ColorFilter.mode(
+                                            iconsClor, BlendMode.srcIn)
                                         : null,
                                     height: iconHeight,
                                     width: iconWeight,
@@ -160,11 +163,15 @@ class CustomAppbar {
                                 ),
                               ),
                               StreamBuilder<int>(
-                                stream: getTotalUnreadMessageCount(profileController.userId.toString()), // Assuming userId is available in ProfileController
+                                stream: getTotalUnreadMessageCount(
+                                    profileController.userId.toString()),
+                                // Assuming userId is available in ProfileController
                                 builder: (context, snapshot) {
-                                  if (!snapshot.hasData || snapshot.data == 0) return const SizedBox();
+                                  if (!snapshot.hasData || snapshot.data == 0) {
+                                    return const SizedBox();
+                                  }
 
-                                  return  Positioned(
+                                  return Positioned(
                                     right: 1.5,
                                     top: 1.5,
                                     child: CircleAvatar(

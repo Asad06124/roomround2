@@ -484,7 +484,7 @@ class CreateTicketController extends GetxController with EmployeeMixin {
       }
     } catch (e) {
       debugPrint('Error: ${e.toString()}');
-    }finally{
+    } finally {
       Get.back(closeOverlays: true);
     }
   }

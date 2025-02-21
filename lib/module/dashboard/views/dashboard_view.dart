@@ -5,15 +5,18 @@ import 'package:roomrounds/module/dashboard/controller/dashboard_controller.dart
 
 import '../../../firebase_options.dart';
 import '../../push_notification/push_notification.dart';
+
 @pragma('vm:entry-point')
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
+
 Future<void> initnotification() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
 
   await PushNotificationController.initialize();
 }
+
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
 

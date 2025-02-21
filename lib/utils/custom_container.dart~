@@ -6,7 +6,6 @@ class CustomContainer extends StatelessWidget {
   PreferredSize? appBar;
   bool isGradient;
   EdgeInsetsGeometry padding;
-
   CustomContainer(
       {super.key,
       this.child,

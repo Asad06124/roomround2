@@ -6,6 +6,7 @@ class NotificationController extends GetxController {
   bool hasData = false;
   bool hasUnreadNotifications = false;
   List<NotificationModel> _notificationsList = [];
+
   List<NotificationModel> get notificationsList => _notificationsList;
 
   @override

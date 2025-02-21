@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -13,8 +14,8 @@ class PushNotificationController {
   static String fcmToken = '';
   static bool isPermissionGranted = false;
 
-  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin
+      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
     // Initialize Firebase
@@ -22,9 +23,9 @@ class PushNotificationController {
 
     // Configure local notifications
     const AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings =
-    InitializationSettings(android: androidSettings);
+        InitializationSettings(android: androidSettings);
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
@@ -100,7 +101,8 @@ class PushNotificationController {
     required String body,
     required String payload,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       'your_channel_id',
       'Your Channel Name',
       channelDescription: 'Your Channel Description',
@@ -108,7 +110,7 @@ class PushNotificationController {
       priority: Priority.high,
     );
     const NotificationDetails notificationDetails =
-    NotificationDetails(android: androidDetails);
+        NotificationDetails(android: androidDetails);
 
     await _flutterLocalNotificationsPlugin.show(
       0,

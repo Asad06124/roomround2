@@ -20,8 +20,7 @@ class EmployeeListResponseModel {
       httpStatusCode: json['httpStatusCode'] ?? 0,
       totalCounts: json['totalCounts'] ?? 0,
       data: json['data'] != null
-          ? List<Employee>.from(
-          json['data'].map((x) => Employee.fromJson(x)))
+          ? List<Employee>.from(json['data'].map((x) => Employee.fromJson(x)))
           : null,
     );
   }

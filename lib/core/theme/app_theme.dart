@@ -1,5 +1,5 @@
-import 'package:roomrounds/core/extensions/app_theme_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:roomrounds/core/extensions/app_theme_extension.dart';
 
 abstract class AppTheme {
   MaterialColor get primarySwatch;

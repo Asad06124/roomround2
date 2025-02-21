@@ -1,10 +1,7 @@
 // import 'dart:io';
- 
-
 
 // mixin ImagePickerMixin{
 //    Future<File?> pickImage({required bool isCamera}) async {
-
 
 //     // bool permissionAllowed = await PermissionHandler.permission(
 //     //     permission: isCamera == true

@@ -10,5 +10,5 @@ class AppImages {
   // Network
   static const String personPlaceholder =
       "https://pcgacademia.pl/wp-content/themes/pcgacademia-child/images/png/avatar-placeholder.png";
-  // "https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png";
+// "https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png";
 }

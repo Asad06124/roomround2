@@ -5,9 +5,11 @@ class MainFeatureController extends GetxController {
   // UserType _userType = UserType.employee;
 
   bool _isGridView = true;
+
   bool get isGridView => _isGridView;
 
   List<MainFeature> _features = [];
+
   List<MainFeature> get features => _features;
 
   @override

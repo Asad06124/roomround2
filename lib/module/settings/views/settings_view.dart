@@ -103,8 +103,8 @@ void _showFontSizeDialog(BuildContext context, ChatController controller) {
   );
 }
 
-
-Widget _fontSizeButton(BuildContext context, ChatController controller, double size, String label) {
+Widget _fontSizeButton(BuildContext context, ChatController controller,
+    double size, String label) {
   return InkWell(
     onTap: () async {
       await controller.updateFontSize(size);
@@ -113,13 +113,16 @@ Widget _fontSizeButton(BuildContext context, ChatController controller, double s
     child: Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: controller.chatFontSize == size ? AppColors.primary : Colors.transparent,
+        color: controller.chatFontSize == size
+            ? AppColors.primary
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: controller.chatFontSize == size ? Colors.white : AppColors.white,
+          color:
+              controller.chatFontSize == size ? Colors.white : AppColors.white,
           fontSize: size,
         ),
       ),

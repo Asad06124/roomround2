@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/apis/models/base_model/base_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
@@ -194,9 +195,6 @@ class APIFunction {
   }
 }
 
-
-
-
 // Future<bool> _checkInternetConnectivity() async {
 //   bool hasInternet = false;
 //   final connectivityResult = await Connectivity().checkConnectivity();
@@ -206,7 +204,6 @@ class APIFunction {
 //   // return await InternetConnectionChecker().hasConnection;
 //   return Future.value(true);
 // }
-
 
 // // ignore_for_file: constant_identifier_names
 
@@ -333,7 +330,6 @@ class APIFunction {
 //       "Authorization": "token ${userData.token}",
 //       "Content-Type": "application/json"
 //     };
-
 
 // Future<bool> _checkInternetConnectivity() async {
 //   bool hasInternet = false;

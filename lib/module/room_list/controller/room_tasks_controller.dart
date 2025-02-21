@@ -298,7 +298,10 @@ class RoomTasksController extends GetxController {
     _updateHasData(true);
   }
 
-  void changeTaskStatus(int index, YesNo value, ) {
+  void changeTaskStatus(
+    int index,
+    YesNo value,
+  ) {
     if (index < _tasks.length) {
       _tasks[index].userSelection = value;
       _tasks[index].isNA = value == YesNo.na;

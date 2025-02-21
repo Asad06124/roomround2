@@ -9,6 +9,7 @@ class FloorPlanView extends StatelessWidget {
       this.image,
       this.onDoneTap,
       this.boundaryKey});
+
   final String? image;
   final GlobalKey? boundaryKey;
   final Offset? markerPosition;

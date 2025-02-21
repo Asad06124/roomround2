@@ -4,6 +4,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 
 class RoomListController extends GetxController {
   RoomType _roomType = RoomType.allRooms;
+
   RoomType get roomType => _roomType;
 
   bool hasData = false;

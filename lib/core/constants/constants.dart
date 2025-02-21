@@ -13,6 +13,6 @@ class AppConstants {
 
   static const String playStoreLink =
       "https://play.google.com/store/apps/details?id=$packageName";
-  // static const String appStoreLink =
-  //     "https://play.google.com/store/apps/details?id=$packageName";
+// static const String appStoreLink =
+//     "https://play.google.com/store/apps/details?id=$packageName";
 }

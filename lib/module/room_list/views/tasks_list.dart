@@ -137,8 +137,10 @@ class TasksList extends StatelessWidget {
                         child: RoomListComponents.yesNoWidget(
                           context,
                           YesNo.no,
-                          (newVal) =>
-                              controller.changeTaskStatus(index, newVal, ),
+                          (newVal) => controller.changeTaskStatus(
+                            index,
+                            newVal,
+                          ),
                         ),
                       )
                     : IgnorePointer(
@@ -146,8 +148,10 @@ class TasksList extends StatelessWidget {
                         child: RoomListComponents.yesNoWidget(
                           context,
                           YesNo.na,
-                          (newVal) =>
-                              controller.changeTaskStatus(index, newVal, ),
+                          (newVal) => controller.changeTaskStatus(
+                            index,
+                            newVal,
+                          ),
                         ),
                       )
                 : IgnorePointer(
@@ -155,8 +159,10 @@ class TasksList extends StatelessWidget {
                     child: RoomListComponents.yesNoWidget(
                       context,
                       task.userSelection,
-                      (newVal) =>
-                          controller.changeTaskStatus(index, newVal, ),
+                      (newVal) => controller.changeTaskStatus(
+                        index,
+                        newVal,
+                      ),
                     ),
                   ),
           );

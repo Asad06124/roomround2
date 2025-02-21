@@ -1,10 +1,12 @@
 import 'dart:developer';
+
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/push_notification/push_notification.dart';
 
 class LoginController extends GetxController {
   final GlobalKey<FormState> _loginKey = GlobalKey();
+
   GlobalKey<FormState> get loginKey => _loginKey;
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();

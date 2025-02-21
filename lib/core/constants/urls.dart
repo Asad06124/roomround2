@@ -49,7 +49,7 @@ class Urls {
   static const String updateUser = "$_settings/updateUser";
   static const String updatePassword = "$_settings/updatePassword";
   static const String getUserProfile = "$_settings/getUserProfile";
-  //Push Notification
-  // static const String setFcmToken = "$_auth/setFcmToken";
-  // auth/setFcmToken?fcmToken=
+//Push Notification
+// static const String setFcmToken = "$_auth/setFcmToken";
+// auth/setFcmToken?fcmToken=
 }

@@ -75,9 +75,9 @@ class CreateTicketView extends StatelessWidget with Validators {
                         CreateTicketComponents.customDropdown(
                           context,
                           title:
-                          // isManager ?
-                          AppStrings.managerOrEmployee
-                              // : AppStrings.manager
+                              // isManager ?
+                              AppStrings.managerOrEmployee
+                          // : AppStrings.manager
                           ,
                           list: controller.employeesNamesList,
                           hintText: AppStrings.selectAssignee,
