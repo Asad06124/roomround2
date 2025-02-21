@@ -7,6 +7,7 @@ class AppStrings {
   static const String allEmployees = "All Employees";
   static const String allManagers = "All Managers";
   static const String allRooms = "All Rooms";
+  static const String rooms = "Rooms";
   static const String alreadyRegistered = "Already registered?";
   static const String andText = "and";
   static const String areYouSureWantToLogout =

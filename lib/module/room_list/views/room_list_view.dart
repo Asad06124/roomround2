@@ -52,7 +52,7 @@ class RoomListView extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(),
+                            // const SizedBox(),
                             Text(
                               controller.hasData
                                   ? roomsList.firstOrNull?.templateName ??
@@ -68,6 +68,19 @@ class RoomListView extends StatelessWidget {
                         RoomListComponents.filter(
                           context,
                           controller.changeRoomType,
+                        ),
+                        SB.h(10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(),
+                            Text(
+                              AppStrings.rooms,
+                              style: context.titleMedium!.copyWith(
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
                         SB.h(10),
                         Expanded(
