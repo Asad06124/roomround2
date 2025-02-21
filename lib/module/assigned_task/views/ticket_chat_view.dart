@@ -45,7 +45,7 @@ class TicketChatView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(70),
+          preferredSize: Size.fromHeight(70),
           child: Container(
             padding: EdgeInsets.only(
               top: MediaQuery.of(context).padding.top - 15,
@@ -56,7 +56,7 @@ class TicketChatView extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
-                  offset: const Offset(0, 1),
+                  offset: Offset(0, 1),
                   blurRadius: 5,
                 ),
               ],
@@ -64,8 +64,6 @@ class TicketChatView extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   InkWell(
                     onTap: () => Get.back(),
@@ -90,29 +88,26 @@ class TicketChatView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      assignedTaskController.onTicketTap(
-                        type: assignedTaskController.ticketsType,
-                        ticket: ticket,
-                        isManager: isManager,
-                        isClosed: ticket.isClosed!,
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width /1.4,
-                        child: Expanded(
-                          child: Text(
-                            ticketTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.titleSmall!.copyWith(
-                              color: AppColors.darkGrey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: controller.chatFontSize,
-                            ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        assignedTaskController.onTicketTap(
+                          type: assignedTaskController.ticketsType,
+                          ticket: ticket,
+                          isManager: isManager,
+                          isClosed: ticket.isClosed!,
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Text(
+                          ticketTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.titleSmall!.copyWith(
+                            color: AppColors.darkGrey,
+                            fontWeight: FontWeight.w600,
+                            fontSize: controller.chatFontSize,
                           ),
                         ),
                       ),
