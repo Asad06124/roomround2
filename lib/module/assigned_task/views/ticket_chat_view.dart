@@ -99,17 +99,20 @@ class TicketChatView extends StatelessWidget {
                         isClosed: ticket.isClosed!,
                       );
                     },
-                    child: Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Text(
-                          ticketTitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.titleSmall!.copyWith(
-                            color: AppColors.darkGrey,
-                            fontWeight: FontWeight.w600,
-                            fontSize: controller.chatFontSize,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width /1.4,
+                        child: Expanded(
+                          child: Text(
+                            ticketTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.titleSmall!.copyWith(
+                              color: AppColors.darkGrey,
+                              fontWeight: FontWeight.w600,
+                              fontSize: controller.chatFontSize,
+                            ),
                           ),
                         ),
                       ),
