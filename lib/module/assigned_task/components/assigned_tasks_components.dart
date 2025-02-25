@@ -114,24 +114,25 @@ class AssignedTaskComponents {
                   ),
                 GestureDetector(
                   onTap: () {
-                    // profileController.fetchUserProfile();
-                    String currentUserId =
-                        profileController.user!.userId.toString();
+                    String currentUserId = profileController.user!.userId.toString();
                     String? image;
                     int? receiverId;
+                    int? senderId; // Now making senderId dynamic
+
                     if (currentUserId == ticket.assignBy.toString()) {
                       receiverId = ticket.assignTo;
+                      senderId = ticket.assignBy; // Sender is the assignBy (current user)
                       image = ticket.assignToImage;
                     } else {
                       receiverId = ticket.assignBy;
+                      senderId = ticket.assignTo; // Sender is the assignTo (current user)
                       image = ticket.assignByImage;
                     }
-                    print('ticket id is...: ${ticket.ticketId}');
                     Get.to(
                       TicketChatView(
                         ticketId: ticket.ticketId.toString(),
                         receiverId: '${receiverId ?? ''}',
-                        senderId: profileController.user!.userId.toString(),
+                        senderId: '${senderId ?? ''}', // Updated to use dynamic senderId
                         ticketTitle: ticket.ticketName ?? '',
                         receiverImage: image,
                         ticket: ticket,

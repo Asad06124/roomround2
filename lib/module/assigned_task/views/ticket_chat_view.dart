@@ -145,7 +145,7 @@ class TicketChatView extends StatelessWidget {
 
                   return TicketMessageComponents.messageTile(
                     context,
-                    sender: message.senderId == receiverId,
+                    sender: int.parse(message.senderId) != profileController.user?.userId,
                     msg: message.content,
                     time: DateTimeExtension.formatTimeOnly(
                         message.updatedAt.toString()),
