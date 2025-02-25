@@ -111,7 +111,7 @@ class APIFunction {
 
       if (showLoader) {
         isGoBack
-            ? CustomOverlays.dismissLoader()
+            ? CustomOverlays.dismissLoader(isGoBack: isGoBack)
             : CustomOverlays.showLoaderOnScreen();
       }
 
@@ -145,6 +145,9 @@ class APIFunction {
           if (showSuccessMessage) {
             CustomOverlays.showToastMessage(
                 message: baseModel.message, isSuccess: true);
+          }
+          if (respData is bool) {
+            return baseModel.succeeded;
           }
           return result ?? respData ?? baseModel.succeeded ?? false;
         } else if (response.statusCode == 401 &&

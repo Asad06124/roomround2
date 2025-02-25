@@ -10,6 +10,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/extensions/datetime_extension.dart';
 import 'package:roomrounds/core/extensions/string_extension.dart';
 import 'package:roomrounds/module/assigned_task/controller/assigned_task_controller.dart';
+import 'package:roomrounds/module/assigned_task/views/ticket_image_full_view.dart';
 import 'package:roomrounds/module/create_ticket/controller/audio_controller.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
@@ -244,20 +245,29 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                       itemBuilder: (context, index) {
                                         final imageUrl =
                                             '${Urls.domain}${ticket.ticketMedia![index].imagekey}';
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: CachedNetworkImage(
-                                            imageUrl: imageUrl,
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                Center(
-                                              child: CircularProgressIndicator(
-                                                color: AppColors.black,
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Get.to(
+                                              TicketImageFullView(
+                                                  imageUrl: imageUrl),
+                                            );
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: CachedNetworkImage(
+                                              imageUrl: imageUrl,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: AppColors.black,
+                                                ),
                                               ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Icon(Icons.error),
                                             ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Icon(Icons.error),
                                           ),
                                         );
                                       },
@@ -1121,11 +1131,10 @@ class CreateTicketDialog extends StatelessWidget {
   Widget _buildEmployeeDropDown(BuildContext context) {
     return GetBuilder<EmployeeDirectoryController>(
         init: EmployeeDirectoryController(
-          fetchEmployees: true,
-          fetchDepartments: false,
-          ignoreDepartmentId: true,
-          ignoreManager: true
-        ),
+            fetchEmployees: true,
+            fetchDepartments: false,
+            ignoreDepartmentId: true,
+            ignoreManager: true),
         builder: (controller) {
           List<Employee> employees = List.from(controller.searchResults);
           // if (employees.isEmpty) {

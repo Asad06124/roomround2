@@ -126,7 +126,7 @@ class AssignedTaskComponents {
                       receiverId = ticket.assignBy;
                       image = ticket.assignByImage;
                     }
-                    print('ticket id is...: ${ticket.ticketId}');
+                    print('${ticket.ticketId}');
                     Get.to(
                       TicketChatView(
                         ticketId: ticket.ticketId.toString(),

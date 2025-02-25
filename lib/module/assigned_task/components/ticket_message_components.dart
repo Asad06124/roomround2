@@ -5,6 +5,7 @@ import 'package:roomrounds/module/assigned_task/controller/ticket_chat_controlle
 
 import '../../../core/components/app_image.dart';
 import '../../message/components/message_components.dart';
+import '../views/ticket_image_full_view.dart';
 
 class TicketMessageComponents {
   static Widget detailTile(
@@ -125,29 +126,37 @@ class TicketMessageComponents {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (imageUrl != null && imageUrl.isNotEmpty)
-                      Container(
-                        height: context.width * 0.40,
-                        width: context.width * 0.50,
-                        decoration: BoxDecoration(
-                          color: sender
-                              ? AppColors.gry.withOpacity(0.24)
-                              : AppColors.primary,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(15),
-                            topRight: const Radius.circular(15),
-                            bottomLeft: Radius.circular(15),
-                            bottomRight: Radius.circular(15),
+                      GestureDetector(
+                        onTap: (){
+                          Get.to(
+                            TicketImageFullView(
+                                imageUrl: imageUrl),
+                          );
+                        },
+                        child: Container(
+                          height: context.width * 0.40,
+                          width: context.width * 0.50,
+                          decoration: BoxDecoration(
+                            color: sender
+                                ? AppColors.gry.withOpacity(0.24)
+                                : AppColors.primary,
                           ),
-                          child: CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                Center(child: CircularProgressIndicator()),
-                            // Optional placeholder
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error), // Optional error widget
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(15),
+                              topRight: const Radius.circular(15),
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(15),
+                            ),
+                            child: CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) =>
+                                  Center(child: CircularProgressIndicator()),
+                              // Optional placeholder
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error), // Optional error widget
+                            ),
                           ),
                         ),
                       ),

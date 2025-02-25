@@ -8,6 +8,17 @@ class ChatViewModel {
     required this.lastMessage,
     required this.unreadCount,
   });
+
+  // Add copyWith method
+  ChatViewModel copyWith({
+    String? lastMessage,
+    int? unreadCount,
+  }) {
+    return ChatViewModel(
+      lastMessage: lastMessage ?? this.lastMessage,
+      unreadCount: unreadCount ?? this.unreadCount,
+    );
+  }
 }
 
 class EmployeeWithLiveChat {
@@ -20,6 +31,18 @@ class EmployeeWithLiveChat {
     required this.lastMessageStream,
     required this.unreadCountStream,
   });
+
+  EmployeeWithLiveChat copyWith({
+    Employee? employee,
+    Stream<String>? lastMessageStream,
+    Stream<int>? unreadCountStream,
+  }) {
+    return EmployeeWithLiveChat(
+      employee: employee ?? this.employee,
+      lastMessageStream: lastMessageStream ?? this.lastMessageStream,
+      unreadCountStream: unreadCountStream ?? this.unreadCountStream,
+    );
+  }
 }
 
 class ChatMessage {
@@ -78,6 +101,35 @@ class ChatMessage {
       isSeen: json['isSeen'] ?? false,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+    );
+  }
+
+  // Add copyWith method
+  ChatMessage copyWith({
+    String? id,
+    String? chatId,
+    String? senderId,
+    String? receiverId,
+    String? type,
+    String? content,
+    String? imageUrl, // Nullable, so no need for special handling
+    bool? isDelivered,
+    bool? isSeen,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return ChatMessage(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
+      senderId: senderId ?? this.senderId,
+      receiverId: receiverId ?? this.receiverId,
+      type: type ?? this.type,
+      content: content ?? this.content,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isDelivered: isDelivered ?? this.isDelivered,
+      isSeen: isSeen ?? this.isSeen,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

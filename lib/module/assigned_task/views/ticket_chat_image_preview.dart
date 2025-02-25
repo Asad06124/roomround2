@@ -67,9 +67,7 @@ class TicketChatImagePreviewScreen extends StatelessWidget {
                                 mController.messageController.value.text.trim(),
                             type: 'text',
                             ticketId: ticketId,
-                            // senderName: profileController.user!.username!,
-                            // receiverDeviceToken: receiverDeviceToken,
-                            // receiverImgUrl: receiverImgUrl,
+
                           )
                           .then((value) => Get.back());
                     }

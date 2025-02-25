@@ -4,8 +4,8 @@ class AppStrings {
   static const String about = "About";
   static const String account = "Account";
   static const String all = "Employee";
-  static const String allEmployees = "All Employees";
-  static const String allManagers = "All Managers";
+  static const String allEmployees = "Staff";
+  static const String allManagers = "Managers";
   static const String allRooms = "All Rooms";
   static const String rooms = "Rooms";
   static const String alreadyRegistered = "Already registered?";

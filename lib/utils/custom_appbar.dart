@@ -19,7 +19,8 @@ class CustomAppbar {
       TextStyle? titleStyle,
       Widget? decriptionWidget,
       Widget? actionWidget,
-      String? title}) {
+      String? title})
+  {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
@@ -105,34 +106,31 @@ class CustomAppbar {
                   children: [
                     if (showNotificationIcon)
                       GetBuilder<NotificationController>(
-                        init: notificationsController,
+                        init: Get.find<NotificationController>(), // Ensure the controller is initialized
                         builder: (controller) {
-                          bool hasNotifications =
-                              controller.hasUnreadNotifications;
+                          bool hasNotifications = controller.hasUnreadNotifications;
                           return Stack(
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Get.find<NotificationController>()
-                                      .fetchNotificationsList();
-                                  Get.toNamed(AppRoutes.NOTIFICATION);
+                                  controller.fetchNotificationsList(); // Fetch notifications when tapped
+                                  Get.toNamed(AppRoutes.NOTIFICATION); // Navigate to the notification screen
                                 },
                                 child: Assets.icons.bell.svg(
                                   colorFilter: iconsClor != null
-                                      ? ColorFilter.mode(
-                                          iconsClor, BlendMode.srcIn)
+                                      ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
                                       : null,
                                   height: iconHeight + 4,
                                   width: iconWeight + 4,
                                 ),
                               ),
-                              if (hasNotifications)
+                              if (hasNotifications) // Show the dot only if there are unread notifications
                                 Positioned(
                                   right: 3,
                                   top: 2,
                                   child: CircleAvatar(
                                     radius: iconWeight * 0.24,
-                                    backgroundColor: AppColors.orange,
+                                    backgroundColor: AppColors.orange, // Dot color
                                   ),
                                 ),
                             ],

@@ -19,11 +19,11 @@ class NotificationController extends GetxController {
     _updateHasData(false);
 
     Map<String, dynamic> data = {
-      "isRead": false,
+      // "isRead": false,
       "pageNo": 1,
       "size": 20,
       "isPagination": false,
-      "receiverId": profileController.userId,
+      "receiverId": profileController.user?.userId,
     };
 
     var resp = await APIFunction.call(

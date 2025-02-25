@@ -193,7 +193,7 @@ class TicketChatView extends StatelessWidget {
                     onSuffixTap: () {
                       if (controller.messageController.text.trim().isNotEmpty) {
                         controller.sendMessage(
-                          ticketId: ticket.ticketId.toString(),
+                          ticketId: ticketId,
                           receiverId: receiverId,
                           senderId: senderId,
                           content: controller.messageController.text.trim(),

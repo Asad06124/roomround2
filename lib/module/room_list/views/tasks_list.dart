@@ -74,16 +74,36 @@ class TasksList extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            CustomeDropDown.simple<String>(
-                              context,
-                              list: controller.sortBy,
-                              initialItem: controller.sortBy[0],
-                              onSelect: controller.changeSortBy,
-                              closedFillColor: AppColors.lightWhite,
-                              borderRadius: 20,
-                              showShadow: true,
-                              closedShadow: false,
+                            PopupMenuButton<String>(
+                              color: AppColors.white,
+                              offset: const Offset(3, 40),
+                              icon: SvgPicture.asset(
+                                'assets/icons/filter.svg',
+                                height: 24,
+                                width: 24,
+                                colorFilter:ColorFilter.mode(AppColors
+                                    .primary, BlendMode.srcIn),
+                              ),
+                              onSelected: controller.changeSortBy,
+                              itemBuilder: (BuildContext context) {
+                                return controller.sortBy
+                                    .map((String value) => PopupMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                ))
+                                    .toList();
+                              },
                             ),
+                            // CustomeDropDown.simple<String>(
+                            //   context,
+                            //   list: controller.sortBy,
+                            //   initialItem: controller.sortBy[0],
+                            //   onSelect: ,
+                            //   closedFillColor: AppColors.lightWhite,
+                            //   borderRadius: 20,
+                            //   showShadow: true,
+                            //   closedShadow: false,
+                            // ),
                           ],
                         ),
                         SB.h(10),

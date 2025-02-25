@@ -5,11 +5,13 @@ import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/utils/custom_loader.dart';
 
 class CustomOverlays {
-  static void dismissLoader() {
+  static void dismissLoader({bool? isGoBack}) {
     bool? isDialogOpen = Get.isDialogOpen;
-
     customLogger("IsDialogOpen: $isDialogOpen");
-    // if (isDialogOpen == true) Get.back(closeOverlays: true);
+
+    if (isDialogOpen == true && isGoBack == true) {
+      Get.back(closeOverlays: true);
+    }
   }
 
   static void showLoaderOnScreen() {

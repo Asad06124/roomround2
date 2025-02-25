@@ -33,7 +33,6 @@ class TicketChatController extends GetxController {
         await _firestore.collection('ticketChats').doc(ticketId).get();
 
     if (!ticketChatDoc.exists) {
-      // Create new ticket chat if it doesn't exist
       await _firestore.collection('ticketChats').doc(ticketId).set({
         'ticketId': ticketId,
         'participants': [senderId, receiverId],
@@ -100,24 +99,18 @@ class TicketChatController extends GetxController {
     }
   }
 
-  // Get messages stream for a specific ticket
   Stream<List<ChatMessage>> getMessages(String ticketId) {
     return _firestore
         .collection('ticketChats')
         .doc(ticketId)
         .collection('messages')
-        .orderBy('createdAt', descending: false)
+        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => ChatMessage.fromJson(doc.data()))
-          .toList()
-          .reversed
-          .toList();
-    });
+        .map((snapshot) => snapshot.docs
+            .map((doc) => ChatMessage.fromJson(doc.data()))
+            .toList());
   }
 
-  // Get last message stream for ticket preview
   Stream<String> getLastMessageStream(String ticketId) {
     return _firestore
         .collection('ticketChats')
@@ -132,7 +125,6 @@ class TicketChatController extends GetxController {
     });
   }
 
-  // Get unread count stream
   Stream<int> getUnreadMessageCountStream(
       String ticketId, String currentUserId) {
     return _firestore
@@ -154,85 +146,85 @@ class TicketChatController extends GetxController {
   }) async {
     if (content.trim().isEmpty && selectedImageFile.value == null) return;
 
+    final String tempId = DateTime.now().millisecondsSinceEpoch.toString();
+    final File? imageFile = selectedImageFile.value;
+    final tempMessage = ChatMessage(
+      id: tempId,
+      chatId: ticketId,
+      senderId: senderId,
+      receiverId: receiverId,
+      type: type,
+      content: content,
+      imageUrl: imageFile != null ? 'uploading' : '',
+      isDelivered: false,
+      isSeen: false,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
     try {
-      messageController.clear();
-      isLoading.value = true;
-
-      await initializeTicketChat(
-        ticketId: ticketId,
-        senderId: senderId,
-        receiverId: receiverId,
-      );
-
       String? url;
-      if (selectedImageFile.value != null) {
-        url = await uploadImage(selectedImageFile.value!);
+      if (imageFile != null) {
+        isLoading.value = true;
+        url = await uploadImage(imageFile);
       }
-
-      final String messageId = DateTime.now().millisecondsSinceEpoch.toString();
-
-      ChatMessage message = ChatMessage(
-        id: messageId,
-        chatId: ticketId,
-        senderId: senderId,
-        receiverId: receiverId,
-        type: type,
-        content: content,
-        imageUrl: url ?? '',
-        isDelivered: false,
-        isSeen: false,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
-
-      selectedImageFile.value = null;
+      messages.insert(0, tempMessage);
+      messageController.clear();
       isLoading.value = false;
 
-      // Save message
-      await _firestore
+      final updatedMessage = tempMessage.copyWith(
+        imageUrl: url ?? '',
+        isDelivered: true,
+      );
+
+      // Update local message
+      final index = messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) messages[index] = updatedMessage;
+
+       _firestore
           .collection('ticketChats')
           .doc(ticketId)
           .collection('messages')
-          .doc(messageId)
-          .set(message.toJson());
+          .doc(tempId)
+          .set(updatedMessage.toJson());
 
-      // Update ticket chat's last message
-      await _firestore.collection('ticketChats').doc(ticketId).update({
-        'lastMessage': content,
-        'lastMessageTime': Timestamp.now(),
+       _firestore.collection('ticketChats').doc(ticketId).update({
+        'lastMessage': content.isNotEmpty ? content : 'Image',
+        'lastMessageTime': FieldValue.serverTimestamp(),
       });
     } catch (e) {
+      final index = messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        messages[index] = tempMessage.copyWith(
+          content: 'Failed to send',
+          type: 'error',
+        );
+      }
+      print('Error: $e');
+    } finally {
+      selectedImageFile.value = null;
       isLoading.value = false;
-      Get.snackbar(
-        'Error',
-        'Unable to send message. Please check your connection.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: Duration(seconds: 3),
-      );
-      print('Error sending message: $e');
     }
   }
 
-  // Mark messages as seen
   Future<void> markMessagesAsSeen(String ticketId, String receiverId) async {
-    final messagesRef = _firestore
+    final batch = _firestore.batch();
+    final querySnapshot = await _firestore
         .collection('ticketChats')
         .doc(ticketId)
         .collection('messages')
         .where('senderId', isEqualTo: receiverId)
-        .where('isSeen', isEqualTo: false);
+        .where('isSeen', isEqualTo: false)
+        .get();
 
-    final snapshot = await messagesRef.get();
-
-    for (var doc in snapshot.docs) {
-      await doc.reference.update({
+    for (var doc in querySnapshot.docs) {
+      batch.update(doc.reference, {
         'isSeen': true,
         'isDelivered': true,
         'updatedAt': DateTime.now().toIso8601String(),
       });
     }
+
+    await batch.commit();
   }
 
   Future<String?> uploadImage(File imageFile) async {

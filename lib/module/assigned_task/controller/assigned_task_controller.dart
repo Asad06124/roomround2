@@ -273,10 +273,11 @@ class AssignedTaskController extends GetxController {
         'ticketId': ticketId.toString(),
         'reply': reply ?? "",
         'statusId': statusId?.toString() ?? "",
-        'isClosed': isClosed.toString(),
-        'assignTo': selectedEmployee?.userId != null?selectedEmployee!.userId.toString():ticket.assignTo.toString(),
+        'isClosed': statusId == null ? false.toString() : isClosed.toString(),
       };
-
+      if (selectedEmployee?.userId != null) {
+        queryParams['assignTo'] = selectedEmployee!.userId.toString();
+      }
       final url = Uri.parse(Urls.updateTicketStatus)
           .replace(queryParameters: queryParams)
           .toString();
@@ -289,12 +290,14 @@ class AssignedTaskController extends GetxController {
         showSuccessMessage: true,
         isGoBack: false,
       );
-
+      print('response.....: ${resp.toString()}');
       if (resp != null && resp is bool && resp == true) {
         String oldAssignee = (ticket.assignToName ?? '').trim();
         String newAssignee = (selectedEmployee?.employeeName ?? '').trim();
 
-        if (oldAssignee.isNotEmpty && newAssignee.isNotEmpty && oldAssignee != newAssignee) {
+        if (oldAssignee.isNotEmpty &&
+            newAssignee.isNotEmpty &&
+            oldAssignee != newAssignee) {
           sendAssigneeChangeNotification(
             ticketId: ticket.ticketId.toString(),
             oldAssignee: oldAssignee,
@@ -302,26 +305,27 @@ class AssignedTaskController extends GetxController {
           );
         }
 
-
         _updateTicketInCache(
-          ticketId,
+          ticket,
           reply,
           statusId,
-          isClosed,
+          statusId == null ? false : isClosed,
           selectedEmployee,
           statusId != null ? newStatusText : null,
         );
 
         refreshOpenAndClosedTickets();
-        selectedStatusId = null;
-        selectedEmployee = null;
+
         update();
       }
+      selectedStatusId = null;
+      selectedEmployee = null;
+      update();
     }
   }
 
   void _updateTicketInCache(
-    int ticketId,
+    Ticket ticket,
     String? reply,
     int? statusId,
     bool? isClosed,
@@ -329,13 +333,12 @@ class AssignedTaskController extends GetxController {
     String? newStatusText,
   ) {
     for (var ticket in _openTickets) {
-      if (ticket.ticketId == ticketId) {
+      if (ticket.ticketId == ticket.ticketId) {
         ticket.reply = reply;
         ticket.statusId = statusId;
         ticket.isClosed = isClosed;
-        ticket.assignToName = newAssignee?.employeeName;
-        ticket.assignToImage = newAssignee?.imageKey;
-        // Only update the status if newStatusText is provided.
+        ticket.assignToName = newAssignee?.employeeName??ticket.assignToName;
+        ticket.assignToImage = newAssignee?.imageKey??ticket.assignToImage;
         if (newStatusText != null && newStatusText.isNotEmpty) {
           ticket.status = newStatusText;
         }
@@ -343,12 +346,12 @@ class AssignedTaskController extends GetxController {
       }
     }
     for (var ticket in _closedTickets) {
-      if (ticket.ticketId == ticketId) {
+      if (ticket.ticketId == ticket.ticketId) {
         ticket.reply = reply;
         ticket.statusId = statusId;
         ticket.isClosed = isClosed;
-        ticket.assignToName = newAssignee?.employeeName;
-        ticket.assignToImage = newAssignee?.imageKey;
+        ticket.assignToName = newAssignee?.employeeName??ticket.assignToName;
+        ticket.assignToImage = newAssignee?.imageKey??ticket.assignToImage;
         if (newStatusText != null && newStatusText.isNotEmpty) {
           ticket.status = newStatusText;
         }
@@ -494,7 +497,10 @@ class AssignedTaskController extends GetxController {
         insetPadding: const EdgeInsets.symmetric(horizontal: 14),
         child: child,
       ),
-    );
+    ).then((_) {
+      selectedStatusId = null;
+      update();
+    });
   }
 
   List<Ticket> _getNewTickets(

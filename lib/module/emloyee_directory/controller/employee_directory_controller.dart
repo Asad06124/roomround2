@@ -10,12 +10,14 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
     this.fetchEmployees = false,
     this.ignoreDepartmentId = false,
     this.ignoreManager = false,
+    this.onlyMyEmployees = false,
   });
 
   final bool ignoreDepartmentId;
 
   final bool fetchDepartments;
   final bool ignoreManager;
+  final bool onlyMyEmployees;
   final bool fetchEmployees;
 
   final TextEditingController searchTextField = TextEditingController();
@@ -103,7 +105,9 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
 
     int? departmentId = ignoreDepartmentId
         ? null
-        : (myDepartmentId ?? departmentsController.selectedDepartmentId);
+        : (onlyMyEmployees
+            ? profileController.departmentId
+            : myDepartmentId ?? departmentsController.selectedDepartmentId);
 
     bool? managersOnlyParam = ignoreManager ? null : managersOnly;
     List<Employee> resp = await getEmployeeList(
@@ -112,7 +116,6 @@ class EmployeeDirectoryController extends GetxController with EmployeeMixin {
       departmentId: departmentId,
       managersOnly: managersOnlyParam,
     );
-
 
     /*   Map<String, dynamic> data = {
       "search": text?.trim(),

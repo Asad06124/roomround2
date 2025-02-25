@@ -14,6 +14,7 @@ class TeamMembersView extends StatelessWidget {
             init: EmployeeDirectoryController(
               fetchEmployees: true,
               fetchDepartments: false,
+              onlyMyEmployees: true
             ),
             builder: (controller) {
               return Column(
