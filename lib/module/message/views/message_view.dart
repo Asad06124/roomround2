@@ -2,18 +2,21 @@ import 'dart:developer';
 
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/message/controller/chat_controller.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/rxdart.dart' as rxDart;
 
 import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/apis/models/employee/employee_model.dart';
 import '../../emloyee_directory/controller/employee_directory_controller.dart';
 
 class MessageView extends GetView<EmployeeDirectoryController> {
-  const MessageView({super.key});
+  MessageView({super.key});
+
+  Future<List<EmployeeWithLiveChat>>? _cachedFuture;
 
   @override
   Widget build(BuildContext context) {
     var chatController = Get.find<ChatController>();
+    var searchQuery = ''.obs;
     return Scaffold(
       appBar: CustomAppbar.simpleAppBar(
         context,
@@ -43,6 +46,9 @@ class MessageView extends GetView<EmployeeDirectoryController> {
               validator: (value) {
                 return null;
               },
+              onChange: (search) {
+                searchQuery.value = search;
+              },
               suffixIcon: AppImages.search,
             ),
             SB.h(10),
@@ -51,11 +57,20 @@ class MessageView extends GetView<EmployeeDirectoryController> {
               builder: (controller) {
                 String currentUserId =
                     profileController.user!.userId.toString();
+
+                if (controller.hasData && _cachedFuture == null) {
+                  _cachedFuture = chatController.setupLiveChats(
+                      controller.searchResults, currentUserId);
+                }
+
                 return controller.hasData
                     ? FutureBuilder<List<EmployeeWithLiveChat>>(
-                        future: chatController.setupLiveChats(
-                            controller.searchResults, currentUserId),
+                        future: _cachedFuture,
                         builder: (context, snapshot) {
+                          if (_cachedFuture == null) {
+                            return const CustomLoader();
+                          }
+
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const CustomLoader();
@@ -69,74 +84,99 @@ class MessageView extends GetView<EmployeeDirectoryController> {
 
                           List<EmployeeWithLiveChat> liveChats = snapshot.data!;
 
-                          return Expanded(
-                            child: SizedBox(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: liveChats.length,
-                                itemBuilder: (context, index) {
-                                  EmployeeWithLiveChat liveChat =
-                                      liveChats[index];
-                                  Employee employee = liveChat.employee;
+                          return Obx(() {
+                            List<EmployeeWithLiveChat> filteredChats =
+                                searchQuery.value.isEmpty
+                                    ? liveChats
+                                    : liveChats.where((liveChat) {
+                                        return liveChat.employee.employeeName!
+                                            .toLowerCase()
+                                            .contains(searchQuery.value
+                                                .toLowerCase());
+                                      }).toList();
 
-                                  String imageUrl =
-                                      (employee.imageKey?.isNotEmpty ?? false)
-                                          ? '${Urls.domain}${employee.imageKey}'
-                                          : AppImages.personPlaceholder;
+                            return filteredChats.isEmpty
+                                ? const Expanded(
+                                    child: Center(
+                                      child:
+                                          Text('No matching employees found.'),
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: SizedBox(
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: filteredChats.length,
+                                        itemBuilder: (context, index) {
+                                          EmployeeWithLiveChat liveChat =
+                                              filteredChats[index];
+                                          Employee employee = liveChat.employee;
 
-                                  Color roleColor =
-                                      employee.roleName?.toLowerCase() ==
-                                              'manager'
-                                          ? Color(0xff326FEA)
-                                          : AppColors.darkGrey;
+                                          String imageUrl = (employee
+                                                      .imageKey?.isNotEmpty ??
+                                                  false)
+                                              ? '${Urls.domain}${employee.imageKey}'
+                                              : AppImages.personPlaceholder;
 
-                                  return StreamBuilder<ChatViewModel>(
-                                    stream: CombineLatestStream.combine2(
-                                      liveChat.lastMessageStream,
-                                      liveChat.unreadCountStream,
-                                      (String lastMessage, int unreadCount) =>
-                                          ChatViewModel(
-                                        lastMessage: lastMessage,
-                                        unreadCount: unreadCount,
+                                          Color roleColor = employee.roleName
+                                                      ?.toLowerCase() ==
+                                                  'manager'
+                                              ? const Color(0xff326FEA)
+                                              : AppColors.darkGrey;
+
+                                          return StreamBuilder<ChatViewModel>(
+                                            stream: rxDart.CombineLatestStream
+                                                .combine2(
+                                              liveChat.lastMessageStream,
+                                              liveChat.unreadCountStream,
+                                              (String lastMessage,
+                                                      int unreadCount) =>
+                                                  ChatViewModel(
+                                                lastMessage: lastMessage,
+                                                unreadCount: unreadCount,
+                                              ),
+                                            ),
+                                            builder: (context, chatSnapshot) {
+                                              return CustomeTiles.employeeTile(
+                                                context,
+                                                notificationCount: chatSnapshot
+                                                        .data?.unreadCount ??
+                                                    0,
+                                                image: imageUrl,
+                                                title: employee.employeeName,
+                                                subHeading: employee.roleName,
+                                                subtile: chatSnapshot
+                                                        .data?.lastMessage ??
+                                                    'Loading...',
+                                                roleColor: roleColor,
+                                                onPressed: () {
+                                                  log('Fcm Token For Push Notification: ${employee.fcmToken}');
+                                                  Get.toNamed(AppRoutes.CHAT,
+                                                      arguments: {
+                                                        'receiverId': employee
+                                                            .userId
+                                                            .toString(),
+                                                        'receiverImgUrl':
+                                                            imageUrl,
+                                                        'receiverDeviceToken':
+                                                            employee.fcmToken,
+                                                        'name':
+                                                            '${employee.firstName} ${employee.lastName}',
+                                                      });
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
                                       ),
                                     ),
-                                    builder: (context, chatSnapshot) {
-                                      return CustomeTiles.employeeTile(
-                                        context,
-                                        notificationCount:
-                                            chatSnapshot.data?.unreadCount ?? 0,
-                                        image: imageUrl,
-                                        title: employee.employeeName,
-                                        subHeading: employee.roleName,
-                                        subtile:
-                                            chatSnapshot.data?.lastMessage ??
-                                                'Loading...',
-                                        roleColor: roleColor,
-                                        onPressed: () {
-                                          log('Fcm Token For Push Notification: ${employee.fcmToken}');
-                                          Get.toNamed(AppRoutes.CHAT,
-                                              arguments: {
-                                                'receiverId':
-                                                    employee.userId.toString(),
-                                                'receiverImgUrl': imageUrl,
-                                                'receiverDeviceToken':
-                                                    employee.fcmToken,
-                                                'name':
-                                                    '${employee.firstName} ${employee.lastName}',
-                                              });
-                                        },
-                                      );
-                                    },
                                   );
-                                },
-                              ),
-                            ),
-                          );
+                          });
                         },
                       )
                     : const CustomLoader();
               },
-            )
+            ),
           ],
         ),
       ),

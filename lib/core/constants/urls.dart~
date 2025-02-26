@@ -38,7 +38,7 @@ class Urls {
   static const String _notification = "/notification";
   static const String getAllNotifications = "$_notification/getAll";
   static const String deleteAllNotifications = "$_notification/delete";
-  static const String readAllNotifications = "$_notification/readAll";
+  static const String deleteAllNotifications = "$_notification/readAll";
   static const String deleteSingleNotification = "$_notification/delete";
 
   // Assistant Manager

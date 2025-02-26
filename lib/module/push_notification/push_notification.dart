@@ -77,7 +77,13 @@ class PushNotificationController {
           payload: jsonEncode(message.data),
         );
       }
+      final action = message.data['Screen'];
+      if (action == 'TicketCreate' || action == 'TicketStatus') {
+        Get.find<NotificationController>()
+            .fetchNotificationsList(forceRefresh: true);
+      }
     });
+
 
     // Listen for notifications when the app is in the background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {

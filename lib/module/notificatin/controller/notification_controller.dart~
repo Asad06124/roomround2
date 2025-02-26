@@ -110,13 +110,13 @@ class NotificationController extends GetxController
   Future<void> markAllNotificationsAsRead() async {
     var resp = await APIFunction.call(
       APIMethods.post,
-      Urls.readAllNotifications,
-      showLoader: false,
+      Urls.readAllNotifications, // URL for the readAll API
+      showLoader: false, // No loader since this runs in the background
       showErrorMessage: false,
     );
 
     if (resp != null && resp is bool && resp) {
-
+      // Update the local state to reflect that all notifications are read
       for (var notification in _notificationsList) {
         notification.isRead = true;
       }

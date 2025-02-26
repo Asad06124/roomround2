@@ -19,8 +19,7 @@ class CustomAppbar {
       TextStyle? titleStyle,
       Widget? decriptionWidget,
       Widget? actionWidget,
-      String? title})
-  {
+      String? title}) {
     final txtStyle = titleStyle ?? context.titleLarge;
     double iconHeight = isHome ? 20 : 20;
     final iconWeight = iconHeight;
@@ -105,38 +104,41 @@ class CustomAppbar {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (showNotificationIcon)
-                      GetBuilder<NotificationController>(
-                        init: Get.find<NotificationController>(), // Ensure the controller is initialized
-                        builder: (controller) {
-                          bool hasNotifications = controller.hasUnreadNotifications;
-                          return Stack(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  controller.fetchNotificationsList(); // Fetch notifications when tapped
-                                  Get.toNamed(AppRoutes.NOTIFICATION); // Navigate to the notification screen
-                                },
-                                child: Assets.icons.bell.svg(
-                                  colorFilter: iconsClor != null
-                                      ? ColorFilter.mode(iconsClor, BlendMode.srcIn)
-                                      : null,
-                                  height: iconHeight + 4,
-                                  width: iconWeight + 4,
+                      Obx(() {
+                        final controller = Get.find<NotificationController>();
+                        bool hasNotifications =
+                            controller.hasUnreadNotifications.value;
+                        return Stack(
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                 controller.markAllNotificationsAsRead();
+                                controller.fetchNotificationsList(
+                                    forceRefresh: true);
+                                Get.toNamed(AppRoutes.NOTIFICATION);
+                              },
+                              child: Assets.icons.bell.svg(
+                                colorFilter: iconsClor != null
+                                    ? ColorFilter.mode(
+                                        iconsClor, BlendMode.srcIn)
+                                    : null,
+                                height: iconHeight + 4,
+                                width: iconWeight + 4,
+                              ),
+                            ),
+                            if (hasNotifications) // Show dot if there are unread notifications
+                              Positioned(
+                                right: 3,
+                                top: 2,
+                                child: CircleAvatar(
+                                  radius: iconWeight * 0.24,
+                                  backgroundColor:
+                                      AppColors.orange, // Dot color
                                 ),
                               ),
-                              if (hasNotifications) // Show the dot only if there are unread notifications
-                                Positioned(
-                                  right: 3,
-                                  top: 2,
-                                  child: CircleAvatar(
-                                    radius: iconWeight * 0.24,
-                                    backgroundColor: AppColors.orange, // Dot color
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),
+                          ],
+                        );
+                      }),
                     if (showMailIcon) ...{
                       SB.w(10),
                       GetBuilder<ProfileController>(
