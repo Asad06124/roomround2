@@ -11,6 +11,7 @@ import '../controller/ticket_chat_controller.dart';
 class TicketChatView extends StatelessWidget {
   final String ticketId;
   final String receiverId;
+  final bool isAssignedToMe;
   Ticket ticket;
   final String senderId;
   final String ticketTitle;
@@ -24,6 +25,7 @@ class TicketChatView extends StatelessWidget {
     required this.senderId,
     required this.ticketTitle,
     required this.receiverImage,
+    required this.isAssignedToMe,
   });
 
   final LayerLink link = LayerLink();
@@ -145,10 +147,13 @@ class TicketChatView extends StatelessWidget {
 
                   return TicketMessageComponents.messageTile(
                     context,
-                    sender: int.parse(message.senderId) != profileController.user?.userId,
+                    isSender: isAssignedToMe == false
+                        ? int.parse(message.senderId) != ticket.assignBy
+                        : int.parse(message.senderId) == ticket.assignBy,
                     msg: message.content,
                     time: DateTimeExtension.formatTimeOnly(
-                        message.updatedAt.toString()),
+                      message.updatedAt.toString(),
+                    ),
                     isDelivered: message.isDelivered,
                     isSeen: message.isSeen,
                     imageUrl: message.imageUrl,

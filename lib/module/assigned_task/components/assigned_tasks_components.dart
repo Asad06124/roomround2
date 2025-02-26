@@ -12,6 +12,7 @@ class AssignedTaskComponents {
       bool showPrefixDropdown = false,
       bool titleActive = true,
       bool isUnderline = true,
+      bool isAssignedToMe = true,
       Color fillColor = AppColors.white,
       Color statusTextColor = AppColors.black,
       Widget? trailingWidget,
@@ -114,28 +115,33 @@ class AssignedTaskComponents {
                   ),
                 GestureDetector(
                   onTap: () {
-                    String currentUserId = profileController.user!.userId.toString();
-                    String? image;
-                    int? receiverId;
-                    int? senderId; // Now making senderId dynamic
-
-                    if (currentUserId == ticket.assignBy.toString()) {
-                      receiverId = ticket.assignTo;
-                      senderId = ticket.assignBy; // Sender is the assignBy (current user)
-                      image = ticket.assignToImage;
-                    } else {
-                      receiverId = ticket.assignBy;
-                      senderId = ticket.assignTo; // Sender is the assignTo (current user)
-                      image = ticket.assignByImage;
-                    }
+                    // String currentUserId = profileController.user!.userId.toString();
+                    String? image = isAssignedToMe
+                        ? ticket.assignByImage
+                        : ticket.assignToImage;
+                    int? receiverId =
+                        isAssignedToMe ? ticket.assignBy : ticket.assignTo;
+                    int? senderId =
+                        isAssignedToMe ? ticket.assignTo : ticket.assignBy;
+                    //
+                    // if (currentUserId == ticket.assignBy.toString()) {
+                    //   receiverId = ticket.assignTo;
+                    //   senderId = ticket.assignBy; // Sender is the assignBy (current user)
+                    //   image = ticket.assignToImage;
+                    // } else {
+                    //   receiverId = ticket.assignBy;
+                    //   senderId = ticket.assignTo; // Sender is the assignTo (current user)
+                    //   image = ticket.assignByImage;
+                    // }
                     Get.to(
                       TicketChatView(
                         ticketId: ticket.ticketId.toString(),
                         receiverId: '${receiverId ?? ''}',
-                        senderId: '${senderId ?? ''}', // Updated to use dynamic senderId
+                        senderId: '${senderId ?? ''}',
                         ticketTitle: ticket.ticketName ?? '',
                         receiverImage: image,
                         ticket: ticket,
+                        isAssignedToMe: isAssignedToMe,
                       ),
                     );
                   },

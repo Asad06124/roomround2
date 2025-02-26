@@ -71,7 +71,7 @@ class TicketMessageComponents {
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.',
       String time = '1:03 PM',
       String date = '11/23/2023',
-      bool sender = true,
+      bool isSender = true,
       String? imageUrl,
       bool? isDelivered,
       bool? isSeen,
@@ -83,9 +83,9 @@ class TicketMessageComponents {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment:
-            sender ? MainAxisAlignment.start : MainAxisAlignment.end,
+            isSender ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
-          if (sender) ...{
+          if (isSender) ...{
             AppImage.network(
               imageUrl: recieverImageUrl != null
                   ? ('${Urls.domain}$recieverImageUrl')
@@ -99,7 +99,7 @@ class TicketMessageComponents {
           },
           Column(
             crossAxisAlignment:
-                sender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                isSender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
             children: [
               Container(
                 // width: ,
@@ -108,19 +108,19 @@ class TicketMessageComponents {
                   // minWidth: context.width * 0.30, // Minimum width constraint
                 ),
                 decoration: BoxDecoration(
-                  color: sender
+                  color: isSender
                       ? AppColors.gry.withOpacity(0.24)
                       : AppColors.primary,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(15),
                     topRight: const Radius.circular(15),
-                    bottomLeft: Radius.circular(sender ? 0 : 15),
-                    bottomRight: Radius.circular(!sender ? 0 : 15),
+                    bottomLeft: Radius.circular(isSender ? 0 : 15),
+                    bottomRight: Radius.circular(!isSender ? 0 : 15),
                   ),
                 ),
                 padding: const EdgeInsets.all(10),
                 child: Column(
-                  crossAxisAlignment: sender
+                  crossAxisAlignment: isSender
                       ? CrossAxisAlignment.start
                       : CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -137,7 +137,7 @@ class TicketMessageComponents {
                           height: context.width * 0.40,
                           width: context.width * 0.50,
                           decoration: BoxDecoration(
-                            color: sender
+                            color: isSender
                                 ? AppColors.gry.withOpacity(0.24)
                                 : AppColors.primary,
                           ),
@@ -166,8 +166,8 @@ class TicketMessageComponents {
                       style: context.bodySmall!.copyWith(
                         fontSize: controller.chatFontSize,
                         color:
-                            sender ? AppColors.textGrey : AppColors.lightWhite,
-                        fontWeight: sender ? FontWeight.w600 : null,
+                            isSender ? AppColors.textGrey : AppColors.lightWhite,
+                        fontWeight: isSender ? FontWeight.w600 : null,
                       ),
                     ),
                   ],
@@ -183,7 +183,7 @@ class TicketMessageComponents {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  if (!sender) ...[
+                  if (!isSender) ...[
                     // Show different ticks based on message delivery and seen status
                     // if (isDelivered == false) // Not Delivered - Single tick
                     //   Icon(Icons.check, size: 16),
@@ -199,7 +199,7 @@ class TicketMessageComponents {
               )
             ],
           ),
-          if (!sender) ...{
+          if (!isSender) ...{
             SB.w(5),
             AppImage.network(
               imageUrl: profileController.user?.image != null

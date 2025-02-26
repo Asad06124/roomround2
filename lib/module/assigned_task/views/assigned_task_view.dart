@@ -402,6 +402,9 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
                   ? 'Completed'
                   : ticket.status!,
           isUnderline: showUnderline,
+          isAssignedToMe:  _tabController.index == 0
+              ? true
+              : false,
           onTap: () {
             controller.onTicketTap(
               type: controller.ticketsType,
