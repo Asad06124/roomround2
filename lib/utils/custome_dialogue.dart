@@ -58,328 +58,254 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
   void initState() {
     super.initState();
     _selectedIndex = widget.sendStatusList.indexOf(widget.ticket?.status ?? '');
-    if (_selectedIndex == -1) {
-      _selectedIndex = -1;
-    }
-
     employeeDirectoryController = Get.put(EmployeeDirectoryController(
       fetchDepartments: true,
       fetchEmployees: true,
     ));
   }
 
-  // EmployeeDirectoryController employeeDirectoryController =
-  //     Get.put(EmployeeDirectoryController());
-
   @override
   Widget build(BuildContext context) {
-    String currentUserId = profileController.user!.userId.toString();
-    Ticket? ticket = widget.ticket;
-    bool isUrgent = ticket?.isUrgent == true;
+    final currentUserId = profileController.user!.userId.toString();
+    final ticket = widget.ticket;
+    final isUrgent = ticket?.isUrgent == true;
+    final audioMediaList = ticket?.ticketMedia
+        ?.where((media) => media.audioKey?.isNotEmpty ?? false)
+        .toList();
+
     return GetBuilder<AudioController>(
-        init: AudioController(),
-        builder: (controller) {
-          return Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            // height: context.height * 0.75,
-            width: context.width,
-            padding: const EdgeInsets.all(12),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DialougeComponents.closeBtn(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Column(
-                      children: [
-                        // widget.showClose ? SB.h(15) : SizedBox(),
-                        // widget.showClose
-                        //     ? DialougeComponents.labelTile(
-                        //         context,
-                        //         isUnderline: true,
-                        //         title: ticket?.ticketName,
-                        //         status: AppStrings.close,
-                        //         onStatusTap: widget.onCloseTap,
-                        //       )
-                        //     : SizedBox(),
-                        SB.h(20),
+      init: AudioController(),
+      builder: (controller) {
+        final imageMediaList = ticket!.ticketMedia!
+            .where((media) => media.imagekey?.isNotEmpty ?? false)
+            .toList();
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          width: context.width,
+          padding: const EdgeInsets.all(12),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DialougeComponents.closeBtn(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: Column(
+                    children: [
+                      SB.h(20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: DialougeComponents.tile(
+                              context,
+                              title: currentUserId != ticket.assignBy.toString()
+                                  ? AppStrings.assignedBy
+                                  : AppStrings.assignedTo,
+                              isDecoration: isUrgent,
+                              value: null,
+                            ),
+                          ),
+                          Expanded(
+                            child: DialougeComponents.nameTile(
+                              context,
+                              name: currentUserId != ticket.assignBy.toString()
+                                  ? ticket.assignByName
+                                  : ticket.assignToName,
+                              image:
+                                  '${Urls.domain}${currentUserId != ticket.assignBy.toString() ? ticket.assignByImage : ticket.assignToImage}',
+                            ),
+                          ),
+                        ],
+                      ),
+                      SB.h(20),
+                      if (currentUserId == ticket.assignBy.toString())
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              child: DialougeComponents.tile(
+                            GetBuilder<DepartmentsController>(
+                              builder: (deptController) =>
+                                  CustomeDropDown.simple(
                                 context,
-                                title:
-                                    currentUserId != ticket?.assignBy.toString()
-                                        ? AppStrings.assignedBy
-                                        : AppStrings.assignedTo,
-                                isDecoration: isUrgent,
-                                value: null,
+                                hintText: AppStrings.selectDepartment,
+                                initialItem:
+                                    deptController.selectedDepartment == null
+                                        ? "Department"
+                                        : deptController
+                                            .selectedDepartment?.departmentName
+                                            ?.trim(),
+                                list: deptController.getDepartmentsNames(),
+                                onSelect: employeeDirectoryController
+                                    .onChangeDepartment,
                               ),
                             ),
-                            // SB.h(20),
-                            Expanded(
-                              child: DialougeComponents.nameTile(
+                            GetBuilder<EmployeeDirectoryController>(
+                              builder: (empController) =>
+                                  CustomeDropDown.simple(
                                 context,
-                                name:
-                                    currentUserId != ticket?.assignBy.toString()
-                                        ? ticket?.assignByName
-                                        : ticket?.assignToName,
-                                // desc: ticket?.roomName,
-                                image: currentUserId !=
-                                        ticket?.assignBy.toString()
-                                    ? '${Urls.domain}${ticket?.assignByImage}'
-                                    : '${Urls.domain}${ticket?.assignToImage}',
-                                //Mohsin
+                                list: empController.searchResults
+                                    .map((e) => e.employeeName ?? '')
+                                    .toList(),
+                                hintText: AppStrings.selectAssignee,
+                                onSelect: (value) {
+                                  final selectedEmployee =
+                                      empController.searchResults.firstWhere(
+                                    (e) => e.employeeName == value,
+                                    orElse: () => Employee(
+                                        employeeName: '', userId: null),
+                                  );
+                                  if (selectedEmployee.userId != null) {
+                                    Get.find<AssignedTaskController>()
+                                        .setSelectedEmployee(selectedEmployee);
+                                  } else {
+                                    print(
+                                        'No valid employee found for the selected name.');
+                                  }
+                                },
                               ),
                             ),
                           ],
                         ),
-                        SB.h(20),
-                        if (currentUserId == ticket?.assignBy.toString())
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GetBuilder<DepartmentsController>(
-                                builder: (deptController) =>
-                                    CustomeDropDown.simple(
-                                  context,
-                                  hintText: AppStrings.selectDepartment,
-                                  initialItem:
-                                      deptController.selectedDepartment == null
-                                          ? "Department"
-                                          : deptController.selectedDepartment
-                                              ?.departmentName
-                                              ?.trim(),
-                                  list: deptController.getDepartmentsNames(),
-                                  onSelect: employeeDirectoryController
-                                      .onChangeDepartment,
-                                ),
-                              ),
-                              GetBuilder<EmployeeDirectoryController>(
-                                builder: (empController) =>
-                                    CustomeDropDown.simple(
-                                  context,
-                                  list: empController.searchResults
-                                      .map((e) => e.employeeName ?? '')
-                                      .toList(),
-                                  hintText: AppStrings.selectAssignee,
-                                  onSelect: (value) {
-                                    final selectedEmployee =
-                                        empController.searchResults.firstWhere(
-                                      (e) => e.employeeName == value,
-                                      orElse: () => Employee(
-                                          employeeName: '', userId: null),
-                                    );
-
-                                    if (selectedEmployee.userId != null) {
-                                      Get.find<AssignedTaskController>()
-                                          .setSelectedEmployee(
-                                              selectedEmployee);
-                                    } else {
-                                      print(
-                                          'No valid employee found for the selected name.');
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        SB.h(20),
-                        if (ticket?.roomName != null) ...[
-                          DialougeComponents.tile(
-                            context,
-                            title: 'Room',
-                            isDecoration: false,
-                            value: null,
-                          ),
-                          DialougeComponents.detailWithBorder(
-                              context, ticket?.roomName ?? ''),
-                        ],
-                        if (ticket?.comment != null) ...[
-                          DialougeComponents.tile(
-                            context,
-                            title: 'Floor',
-                            isDecoration: false,
-                            value: null,
-                          ),
-                          DialougeComponents.detailWithBorder(
-                              context, ticket?.floorName ?? ''),
-                        ],
-                        if (ticket?.ticketName != null) ...[
-                          DialougeComponents.tile(
-                            context,
+                      SB.h(20),
+                      if (ticket.roomName != null) ...[
+                        DialougeComponents.tile(context,
+                            title: 'Room', isDecoration: false, value: null),
+                        DialougeComponents.detailWithBorder(
+                            context, ticket.roomName ?? ''),
+                      ],
+                      if (ticket.floorName != null) ...[
+                        DialougeComponents.tile(context,
+                            title: 'Floor', isDecoration: false, value: null),
+                        DialougeComponents.detailWithBorder(
+                            context, ticket.floorName ?? ''),
+                      ],
+                      if (ticket.comment != null &&
+                          ticket.comment != ticket.ticketName) ...[
+                        DialougeComponents.tile(context,
+                            title: 'Comment', isDecoration: false, value: null),
+                        DialougeComponents.detailWithBorder(
+                            context, ticket.comment ?? ''),
+                      ],
+                      if (ticket.ticketName != null) ...[
+                        DialougeComponents.tile(context,
                             title: 'Description',
                             isDecoration: false,
-                            value: null,
-                          ),
-                          DialougeComponents.detailWithBorder(
-                              context, ticket?.ticketName ?? ''),
-                        ],
-
-                        // if (ticket?.roomName != null) ...[
-                        //   DialougeComponents.tile(
-                        //     context,
-                        //     title: 'Room',
-                        //     isDecoration: false,
-                        //     value: null,
-                        //   ),
-                        //   DialougeComponents.detailWithBorder(
-                        //       context, ticket?.roomName ?? ''),
-                        // ],
-                        ticket!.ticketMedia!.isNotEmpty
-                            ? Row(
-                                children: [
-                                  SizedBox(
-                                    height: 80,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount:
-                                          ticket.ticketMedia?.length ?? 0,
-                                      itemBuilder: (context, index) {
-                                        final imageUrl =
-                                            '${Urls.domain}${ticket.ticketMedia![index].imagekey}';
-                                        return GestureDetector(
-                                          onTap: () {
-                                            Get.to(
-                                              TicketImageFullView(
-                                                  imageUrl: imageUrl),
-                                            );
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: CachedNetworkImage(
-                                              imageUrl: imageUrl,
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: AppColors.black,
-                                                ),
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : SizedBox(),
-                        ticket.ticketMedia?.isNotEmpty ?? false
-                            ? Row(
-                                children: ticket.ticketMedia!
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
-                                  final media = entry.value;
-                                  final index = entry.key;
-                                  final audioUrl =
-                                      '${Urls.domain}/${media.audioKey}';
-
-                                  return Row(
-                                    children: [
-                                      Obx(() {
-                                        if (controller.isLoading.value &&
-                                            controller.currentlyPlayingIndex!
-                                                    .value ==
-                                                index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                              right: 20,
-                                              top: 5,
-                                            ),
-                                            child: SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child:
-                                                  const CircularProgressIndicator(
-                                                color: AppColors.primary,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        return IconButton(
-                                          icon: Icon(
-                                            controller.isPlaying.value &&
-                                                    controller
-                                                            .currentlyPlayingIndex!
-                                                            .value ==
-                                                        index
-                                                ? Icons.pause
-                                                : Icons.play_arrow,
-                                            color: Colors.green,
-                                          ),
-                                          onPressed: () async {
-                                            if (audioUrl.isNotEmpty) {
-                                              await controller.playAudio(
-                                                  audioUrl, index);
-                                            } else {
-                                              debugPrint(
-                                                  'Invalid audio URL for index $index');
-                                            }
-                                          },
-                                        );
-                                      }),
-                                      Text('Audio ${index + 1}'),
-                                    ],
-                                  );
-                                }).toList(),
-                              )
-                            : const SizedBox(),
-                        SB.h(20),
-                        DialougeComponents.reply(
-                          context,
-                          sendStatusList: widget.sendStatusList,
-                          selectedIndex: _selectedIndex,
-                          textField: widget.textController
-                            ?..text = ticket.reply ?? '',
-                          onTap: (index) {
-                            setState(() {
-                              _selectedIndex = index;
-                              widget.onRadioTap!(_selectedIndex);
-                            });
-                          },
-                        ),
-                        SB.h(20),
-                        AppButton.primary(
-                          height: 40,
-                          title: AppStrings.done,
-                          onPressed: () {
-                            String selectedStatus = '';
-                            if (_selectedIndex >= 0 &&
-                                _selectedIndex < widget.sendStatusList.length) {
-                              selectedStatus =
-                                  widget.sendStatusList[_selectedIndex];
-                            }
-                            widget.onReplyButtonTap?.call(selectedStatus);
-                            setState(() {
-                              _selectedIndex = -1;
-                            });
-                            widget.textController?.clear();
-                            // Get.back();
-                          },
-                        ),
-
-                        SB.h(10),
+                            value: null),
+                        DialougeComponents.detailWithBorder(
+                            context, ticket.ticketName ?? ''),
                       ],
-                    ),
+                      if (imageMediaList.isNotEmpty)
+                        SizedBox(
+                          height: 80,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: imageMediaList.length,
+                            itemBuilder: (context, index) {
+                              final imageUrl =
+                                  '${Urls.domain}${imageMediaList[index].imagekey}';
+                              return GestureDetector(
+                                onTap: () => Get.to(
+                                    TicketImageFullView(imageUrl: imageUrl)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: CachedNetworkImage(
+                                    imageUrl: imageUrl,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(
+                                          color: AppColors.black),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      if (audioMediaList?.isNotEmpty ?? false)
+                        Row(
+                          children:
+                              audioMediaList!.asMap().entries.map((entry) {
+                            final media = entry.value;
+                            final index = entry.key;
+                            final audioUrl = '${Urls.domain}/${media.audioKey}';
+                            return Row(
+                              children: [
+                                Obx(() {
+                                  if (controller.isLoading.value &&
+                                      controller.currentlyPlayingIndex!.value ==
+                                          index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20, top: 5),
+                                      child: SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: const CircularProgressIndicator(
+                                            color: AppColors.primary),
+                                      ),
+                                    );
+                                  }
+                                  return IconButton(
+                                    icon: Icon(
+                                      controller.isPlaying.value &&
+                                              controller.currentlyPlayingIndex!
+                                                      .value ==
+                                                  index
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      color: Colors.green,
+                                    ),
+                                    onPressed: () async => await controller
+                                        .playAudio(audioUrl, index),
+                                  );
+                                }),
+                                Text('Audio ${index + 1}'),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      DialougeComponents.reply(
+                        context,
+                        sendStatusList: widget.sendStatusList,
+                        selectedIndex: _selectedIndex,
+                        textField: widget.textController
+                          ?..text = ticket.reply ?? '',
+                        onTap: (index) {
+                          setState(() {
+                            _selectedIndex = index;
+                            widget.onRadioTap!(_selectedIndex);
+                          });
+                        },
+                      ),
+                      SB.h(20),
+                      AppButton.primary(
+                        height: 40,
+                        title: AppStrings.done,
+                        onPressed: () {
+                          final selectedStatus = _selectedIndex >= 0 &&
+                                  _selectedIndex < widget.sendStatusList.length
+                              ? widget.sendStatusList[_selectedIndex]
+                              : '';
+                          widget.onReplyButtonTap?.call(selectedStatus);
+                          setState(() => _selectedIndex = -1);
+                          widget.textController?.clear();
+                        },
+                      ),
+                      SB.h(10),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }
 

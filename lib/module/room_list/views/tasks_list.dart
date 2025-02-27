@@ -81,16 +81,17 @@ class TasksList extends StatelessWidget {
                                 'assets/icons/filter.svg',
                                 height: 24,
                                 width: 24,
-                                colorFilter:ColorFilter.mode(AppColors
-                                    .primary, BlendMode.srcIn),
+                                colorFilter: ColorFilter.mode(
+                                    AppColors.primary, BlendMode.srcIn),
                               ),
                               onSelected: controller.changeSortBy,
                               itemBuilder: (BuildContext context) {
                                 return controller.sortBy
-                                    .map((String value) => PopupMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                ))
+                                    .map(
+                                        (String value) => PopupMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            ))
                                     .toList();
                               },
                             ),
@@ -152,17 +153,29 @@ class TasksList extends StatelessWidget {
             ),
             subtitleWidget: task.taskStatus == true
                 ? task.isNA != true
-                    ? IgnorePointer(
-                        ignoring: isTaskCompleted,
-                        child: RoomListComponents.yesNoWidget(
-                          context,
-                          YesNo.no,
-                          (newVal) => controller.changeTaskStatus(
-                            index,
-                            newVal,
-                          ),
-                        ),
-                      )
+                    ? task.taskCompletion == true
+                        ? IgnorePointer(
+                            ignoring: isTaskCompleted,
+                            child: RoomListComponents.yesNoWidget(
+                              context,
+                              YesNo.yes,
+                              (newVal) => controller.changeTaskStatus(
+                                index,
+                                newVal,
+                              ),
+                            ),
+                          )
+                        : IgnorePointer(
+                            ignoring: isTaskCompleted,
+                            child: RoomListComponents.yesNoWidget(
+                              context,
+                              YesNo.no,
+                              (newVal) => controller.changeTaskStatus(
+                                index,
+                                newVal,
+                              ),
+                            ),
+                          )
                     : IgnorePointer(
                         ignoring: isTaskCompleted,
                         child: RoomListComponents.yesNoWidget(

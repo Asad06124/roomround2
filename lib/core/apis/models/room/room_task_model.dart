@@ -7,6 +7,7 @@ class RoomTask {
   int? managerId;
   bool? isDeleted;
   bool? isCompleted;
+  bool? taskCompletion;
   String? roomName;
   String? taskName;
   bool? roomStatus;
@@ -22,6 +23,7 @@ class RoomTask {
     this.managerId,
     this.isDeleted,
     this.isCompleted,
+    this.taskCompletion,
     this.roomName,
     this.taskName,
     this.roomStatus,
@@ -37,6 +39,7 @@ class RoomTask {
     managerId = json['managerId'];
     isDeleted = json['isDeleted'];
     isCompleted = json['isCompleted'];
+    taskCompletion = json['taskCompletion'];
     roomName = json['roomName'];
     taskName = json['taskName'];
     roomStatus = json['roomStatus'];
@@ -52,6 +55,7 @@ class RoomTask {
     data['managerId'] = managerId;
     data['isDeleted'] = isDeleted;
     data['isCompleted'] = isCompleted;
+    data['taskCompletion'] = taskCompletion;
     data['roomName'] = roomName;
     data['taskName'] = taskName;
     data['roomStatus'] = roomStatus;
