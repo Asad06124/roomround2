@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:roomrounds/core/constants/imports.dart';
@@ -9,6 +10,21 @@ import '../../push_notification/push_notification.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final action = message.data['Screen'];
+  if (action == 'Chat') {
+    final String chatRoomId = message.data['chatRoomId'];
+    final String msgId = message.data['msgId'];
+    try {
+      await FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .doc(msgId)
+          .update({'isDelivered': true});
+    } catch (error) {
+      print('Error updating isDelivered in background: $error');
+    }
+  }
 }
 
 Future<void> initnotification() async {

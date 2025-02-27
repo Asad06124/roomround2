@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -77,15 +78,27 @@ class PushNotificationController {
           payload: jsonEncode(message.data),
         );
       }
+
       final action = message.data['Screen'];
-      if (action == 'TicketCreate' || action == 'TicketStatus') {
+
+      if (action == 'Chat') {
+        final String chatRoomId = message.data['chatRoomId'];
+        final String msgId = message.data['msgId'];
+
+        FirebaseFirestore.instance
+            .collection('chatrooms')
+            .doc(chatRoomId)
+            .collection('messages')
+            .doc(msgId)
+            .update({'isDelivered': true}).catchError((error) {
+          print('Error updating isDelivered: $error');
+        });
+      } else if (action == 'TicketCreate' || action == 'TicketStatus') {
         Get.find<NotificationController>()
             .fetchNotificationsList(forceRefresh: true);
       }
     });
 
-
-    // Listen for notifications when the app is in the background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       _handleNotificationClick(message.data);
     });

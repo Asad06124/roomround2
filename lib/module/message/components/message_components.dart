@@ -183,16 +183,13 @@ class MessageComponents {
                     ),
                   ),
                   if (!sender) ...[
-                    // Show different ticks based on message delivery and seen status
-                    // if (isDelivered == false) // Not Delivered - Single tick
-                    //   Icon(Icons.check, size: 16),
-                    // Single tick
-                    if (isSeen != true) // Delivered - Double tick
-                      Icon(Icons.check_circle_outline, size: 16),
-                    // Single tick
-                    if (isSeen == true) // Seen - Double Blue tick
-                      Icon(Icons.check_circle, color: Colors.blue, size: 16),
-                    // Blue tick
+                      if (isSeen != true&&isDelivered != true)
+                        Icon(Icons.check_circle_outline, size: 16,color: AppColors.gry,),
+                      if (isDelivered == true&&isSeen != true)
+                        Icon(Icons.check_circle, size: 16,color: AppColors.gry,),
+                      if (isSeen == true)
+                        Icon(Icons.check_circle, color: Colors.blue, size: 16),
+
                   ],
                 ],
               )
