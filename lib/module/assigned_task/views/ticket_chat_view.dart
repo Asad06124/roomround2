@@ -202,7 +202,7 @@ class TicketChatView extends StatelessWidget {
                           receiverId: receiverId,
                           senderId: senderId,
                           content: controller.messageController.text.trim(),
-                          type: 'text',
+                          type: 'text', ticket: ticket,
                         );
                       }
                     },
@@ -272,6 +272,7 @@ class TicketChatView extends StatelessWidget {
             ticketId: ticketId,
             receiverId: receiverId,
             senderId: senderId,
+            ticket: ticket,
             child: Assets.icons.add.svg(),
           ),
         ],

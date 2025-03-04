@@ -1,0 +1,339 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:roomrounds/module/message/views/image_previewscreen.dart';
+
+import '../../../core/apis/models/chat_model/chat_model.dart';
+import '../../../core/apis/models/employee/employee_model.dart';
+import '../../../core/services/get_server_key.dart';
+import '../../push_notification/push_notification.dart';
+
+class NotificationMessage {
+  final String? chatRoomId;
+  final String? msgId;
+  final String? senderId;
+  final String? receiverId;
+  final String? screen;
+  // Add other fields as needed
+
+  NotificationMessage({
+    this.chatRoomId,
+    this.msgId,
+    this.senderId,
+    this.receiverId,
+    this.screen,
+  });
+
+class PushNotificationController {
+  static final FirebaseMessaging fcm = FirebaseMessaging.instance;
+  static final FlutterLocalNotificationsPlugin _fln =
+      FlutterLocalNotificationsPlugin();
+
+  // Service: Handles the database operations
+  static final MessageService _messageService = MessageService();
+
+  static Future<void> initialize() async {
+    await Firebase.initializeApp();
+
+    // Initialize local notifications
+    await _initLocalNotifications();
+
+    // Request notification permissions
+    await _requestNotificationPermissions();
+
+    // Handle app opened from a terminated state
+    final initialMessage = await fcm.getInitialMessage();
+    if (initialMessage != null) {
+      final notificationMessage =
+          NotificationMessage.fromMap(initialMessage.data);
+      _handleNotificationClick(notificationMessage, fromTerminated: true);
+      _messageService.markMessageAsRead(
+          notificationMessage.chatRoomId, notificationMessage.msgId);
+    }
+
+    // Set up listeners for foreground messages
+    FirebaseMessaging.onMessage.listen((message) async {
+      if (message.notification != null) {
+        await _showNotification(message);
+      }
+      _processDataMessage(NotificationMessage.fromMap(message.data));
+    });
+
+    // Set up listeners for when app is opened from background
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      final notificationMessage = NotificationMessage.fromMap(message.data);
+      _handleNotificationClick(notificationMessage);
+      _messageService.markMessageAsRead(
+          notificationMessage.chatRoomId, notificationMessage.msgId);
+    });
+
+    // Register background handler
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+  // Important: This must be a top-level function
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    // Initialize Firebase in the background
+    await Firebase.initializeApp();
+
+    // Process the message
+    final notificationMessage = NotificationMessage.fromMap(message.data);
+
+    // Create a service instance to handle database operations
+    final messageService = MessageService();
+    messageService.markMessageAsRead(
+        notificationMessage.chatRoomId, notificationMessage.msgId);
+  }
+
+  static Future<void> _initLocalNotifications() async {
+    const initializationSettings = InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    );
+    await _fln.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: _onNotificationResponse,
+    );
+  }
+
+  static Future<void> _requestNotificationPermissions() async {
+    final settings =
+        await fcm.requestPermission(alert: true, badge: true, sound: true);
+    await fcm.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    debugPrint(
+        'Notification permission granted: ${settings.authorizationStatus == AuthorizationStatus.authorized}');
+  }
+
+  static Future<void> _showNotification(RemoteMessage message) async {
+    // Ensure msgId and chatRoomId are included in the payload
+    final payload = {...message.data};
+
+    await _fln.show(
+      0,
+      message.notification?.title ?? '',
+      message.notification?.body ?? '',
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channel_id',
+          'Channel Name',
+          channelDescription: 'Channel Description',
+          importance: Importance.max,
+          priority: Priority.high,
+          actions: [
+            AndroidNotificationAction(
+              'reply_action',
+              'Reply',
+              inputs: [
+                const AndroidNotificationActionInput(
+                    label: 'Type your reply...')
+              ],
+              allowGeneratedReplies: true,
+            ),
+            AndroidNotificationAction('mark_as_read', 'Mark as Read',
+                cancelNotification: true),
+          ],
+        ),
+      ),
+      payload: jsonEncode(payload),
+    );
+  }
+
+  static void _onNotificationResponse(NotificationResponse response) {
+    try {
+      if (response.payload == null) {
+        debugPrint('Notification payload is null');
+        return;
+      }
+
+      final payload = jsonDecode(response.payload!);
+      final notificationMessage = NotificationMessage.fromMap(payload);
+
+      // Handle reply action
+      if (response.input != null && response.input!.trim().isNotEmpty) {
+        _handleReplyAction(notificationMessage, response.input!.trim());
+      }
+
+      // Handle mark as read action
+      if (response.actionId == 'mark_as_read') {
+        _messageService.markMessageAsRead(
+            notificationMessage.chatRoomId, notificationMessage.msgId);
+      }
+    } catch (e) {
+      debugPrint('Error handling notification response: $e');
+    }
+  }
+
+  static void _handleReplyAction(
+      NotificationMessage message, String replyText) {
+    if (message.senderId != null &&
+        message.receiverId != null &&
+        message.chatRoomId != null) {
+      _messageService.sendReplyMessage(
+        receiverId: message.senderId!,
+        senderId: message.receiverId!,
+        replyText: replyText,
+        chatRoomId: message.chatRoomId!,
+      );
+    } else {
+      debugPrint('Cannot send reply: Missing required fields');
+    }
+  }
+
+  static void _processDataMessage(NotificationMessage message) {
+    if (message.screen == 'Chat' &&
+        message.chatRoomId != null &&
+        message.msgId != null) {
+      _messageService.markMessageAsDelivered(
+          message.chatRoomId!, message.msgId!);
+    } else if (message.screen == 'TicketCreate' ||
+        message.screen == 'TicketStatus') {
+      Get.find<NotificationController>()
+          .fetchNotificationsList(forceRefresh: true);
+    }
+  }
+
+  static void _handleNotificationClick(NotificationMessage message,
+      {bool fromTerminated = false}) {
+    switch (message.screen) {
+      case 'Chat':
+        Get.offAndToNamed(AppRoutes.DASHBOARD);
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Get.toNamed(AppRoutes.MESSAGE);
+          Get.toNamed(AppRoutes.CHAT, preventDuplicates: false, arguments: {
+            'receiverId': message.senderId,
+            'receiverImgUrl': message.data?['receiverImgUrl'],
+            'receiverDeviceToken': message.data?['receiverDeviceToken'],
+            'name': message.data?['senderName'],
+          });
+        });
+        break;
+      case 'TicketCreate':
+      case 'TicketStatus':
+        Get.find<NotificationController>().fetchNotificationsList();
+        Get.toNamed(AppRoutes.NOTIFICATION);
+        break;
+      case 'AssignedTemplate':
+        Get.toNamed(AppRoutes.ASSIGNED_TASKS);
+        break;
+      default:
+        debugPrint('Unhandled action: ${message.screen}');
+    }
+  }
+
+  static Future<void> sendNotificationUsingApi({
+    required String? token,
+    required String? title,
+    required String? body,
+    required Map<String, dynamic>? data,
+  }) async {
+    final serverKey = await GetServerKey().getServerKeyToken();
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $serverKey'
+    };
+    final message = {
+      "message": {
+        "token": token,
+        "notification": {"title": title, "body": body},
+        "data": data,
+      }
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(
+            "https://fcm.googleapis.com/v1/projects/roomround-34b5f/messages:send"),
+        headers: headers,
+        body: jsonEncode(message),
+      );
+      if (response.statusCode == 200) {
+        debugPrint("Notification sent successfully");
+      } else {
+        debugPrint(
+            "Failed to send notification: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("Error sending notification: $e");
+    }
+  }
+}
+
+// Service: Handles database operations
+class MessageService {
+  Future<void> markMessageAsRead(String? chatRoomId, String? msgId) async {
+    if (chatRoomId == null || msgId == null) {
+      debugPrint('Cannot mark as read: Missing chatRoomId or msgId');
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .doc(msgId)
+          .update({'isSeen': true});
+      debugPrint('Message marked as read successfully');
+    } catch (e) {
+      debugPrint('Error marking message as read: $e');
+    }
+  }
+
+  Future<void> markMessageAsDelivered(String chatRoomId, String msgId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .doc(msgId)
+          .update({'isDelivered': true});
+      debugPrint('Message marked as delivered successfully');
+    } catch (e) {
+      debugPrint('Error marking message as delivered: $e');
+    }
+  }
+
+  Future<void> sendReplyMessage({
+    required String receiverId,
+    required String senderId,
+    required String replyText,
+    required String chatRoomId,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .doc(DateTime.now().millisecondsSinceEpoch.toString())
+          .set({
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'content': replyText,
+        'type': 'text',
+        'isDelivered': false,
+        'isSeen': false,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      });
+      debugPrint('Reply sent successfully');
+    } catch (e) {
+      debugPrint('Error sending reply: $e');
+    }
+  }
+}

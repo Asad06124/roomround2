@@ -14,6 +14,7 @@ import 'package:roomrounds/module/message/views/image_previewscreen.dart';
 
 import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/apis/models/employee/employee_model.dart';
+import '../../../core/services/get_server_key.dart';
 import '../../push_notification/push_notification.dart';
 
 class ChatController extends GetxController {
@@ -174,13 +175,10 @@ class ChatController extends GetxController {
     return _firestore
         .collection('chatrooms')
         .doc(chatRoomId)
-        .collection('messages')
-        .orderBy('createdAt', descending: true)
-        .limit(1)
         .snapshots()
         .map((snapshot) {
-      if (snapshot.docs.isEmpty) return 'No messages yet';
-      return snapshot.docs.first['content'] ?? '';
+      if (!snapshot.exists) return 'No messages yet';
+      return snapshot.data()?['lastMessage'] ?? 'No messages yet';
     });
   }
 
@@ -225,7 +223,6 @@ class ChatController extends GetxController {
         .collection('chatrooms')
         .doc(chatRoomId)
         .collection('messages')
-        .orderBy('createdAt', descending: false)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
@@ -302,7 +299,7 @@ class ChatController extends GetxController {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-
+      String serverKey = await GetServerKey().getServerKeyToken();
       selectedImageFile.value = null;
       await _firestore
           .collection('chatrooms')
@@ -325,7 +322,7 @@ class ChatController extends GetxController {
           "senderName": senderName,
           "msgId": messageId,
           "receiverImgUrl": receiverImgUrl,
-          "receiverDeviceToken": receiverDeviceToken,
+          "receiverDeviceToken": serverKey,
         },
       ).catchError((e) {
         print('Error sending notification: $e');

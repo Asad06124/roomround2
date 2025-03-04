@@ -1,3 +1,4 @@
+import '../../../core/apis/models/tickets/ticket_model.dart';
 import '../../../core/constants/imports.dart';
 import '../controller/ticket_chat_controller.dart';
 
@@ -5,12 +6,14 @@ class TicketChatImagePreviewScreen extends StatelessWidget {
   final String ticketId;
   final String receiverId;
   final String senderId;
+  final Ticket ticket;
 
   const TicketChatImagePreviewScreen({
     super.key,
     required this.ticketId,
     required this.receiverId,
     required this.senderId,
+    required this.ticket,
   });
 
   @override
@@ -66,8 +69,7 @@ class TicketChatImagePreviewScreen extends StatelessWidget {
                             content:
                                 mController.messageController.value.text.trim(),
                             type: 'text',
-                            ticketId: ticketId,
-
+                            ticketId: ticketId, ticket: ticket,
                           )
                           .then((value) => Get.back());
                     }

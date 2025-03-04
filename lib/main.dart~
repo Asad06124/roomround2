@@ -6,6 +6,7 @@ import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
 import 'firebase_options.dart';
+import 'module/notificatin/controller/notification_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +43,9 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
+      initialBinding: BindingsBuilder(() {
+        Get.put(NotificationController());
+      }),
     );
   }
 }

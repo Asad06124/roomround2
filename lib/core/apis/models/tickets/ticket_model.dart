@@ -249,6 +249,8 @@ class Ticket {
   int? assignBy;
   bool? isCompleted;
   String? assignByName;
+  String? assignByFCMToken;
+  String? assignToFCMToken;
   String? assignByImage;
   String? assignToName;
   String? assignToImage;
@@ -273,6 +275,8 @@ class Ticket {
     this.assignBy,
     this.isCompleted,
     this.assignByName,
+    this.assignToFCMToken,
+    this.assignByFCMToken,
     this.assignByImage,
     this.assignToName,
     this.assignToImage,
@@ -299,6 +303,8 @@ class Ticket {
     int? assignBy,
     bool? isCompleted,
     String? assignByName,
+    String? assignByFCMToken,
+    String? assignToFCMToken,
     String? assignByImage,
     String? assignToName,
     String? assignToImage,
@@ -323,6 +329,8 @@ class Ticket {
       assignBy: assignBy ?? this.assignBy,
       isCompleted: isCompleted ?? this.isCompleted,
       assignByName: assignByName ?? this.assignByName,
+      assignByFCMToken: assignByFCMToken ?? this.assignByFCMToken,
+      assignToFCMToken: assignToFCMToken ?? this.assignToFCMToken,
       assignByImage: assignByImage ?? this.assignByImage,
       assignToName: assignToName ?? this.assignToName,
       assignToImage: assignToImage ?? this.assignToImage,
@@ -350,6 +358,8 @@ class Ticket {
     assignBy = json['assignBy'];
     isCompleted = json['isCompleted'];
     assignByName = json['assignByName'];
+    assignByFCMToken = json['assignByFCMToken'];
+    assignToFCMToken = json['assignToFCMToken'];
     assignByImage = json['assignByImage'];
     assignToName = json['assignToName'];
     assignToImage = json['assignToImage'];
@@ -382,6 +392,8 @@ class Ticket {
     data['assignBy'] = assignBy;
     data['isCompleted'] = isCompleted;
     data['assignByName'] = assignByName;
+    data['assignByFCMToken'] = assignByFCMToken;
+    data['assignToFCMToken'] = assignToFCMToken;
     data['assignByImage'] = assignByImage;
     data['assignToName'] = assignToName;
     data['assignToImage'] = assignToImage;

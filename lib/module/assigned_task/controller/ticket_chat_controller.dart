@@ -7,8 +7,12 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:roomrounds/core/constants/controllers.dart';
 
 import '../../../core/apis/models/chat_model/chat_model.dart';
+import '../../../core/apis/models/tickets/ticket_model.dart';
+import '../../../core/services/get_server_key.dart';
+import '../../push_notification/push_notification.dart';
 import '../views/ticket_chat_image_preview.dart';
 
 class TicketChatController extends GetxController {
@@ -48,6 +52,7 @@ class TicketChatController extends GetxController {
     required final String ticketId,
     required final String receiverId,
     required final String senderId,
+    required final Ticket ticket,
   }) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -60,6 +65,7 @@ class TicketChatController extends GetxController {
             ticketId: ticketId,
             receiverId: receiverId,
             senderId: senderId,
+            ticket: ticket,
           ),
           arguments: {
             ticketId: ticketId,
@@ -75,6 +81,7 @@ class TicketChatController extends GetxController {
     required final String ticketId,
     required final String receiverId,
     required final String senderId,
+    required final Ticket ticket,
   }) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.camera);
@@ -88,6 +95,7 @@ class TicketChatController extends GetxController {
             ticketId: ticketId,
             receiverId: receiverId,
             senderId: senderId,
+            ticket: ticket,
           ),
           arguments: {
             ticketId: ticketId,
@@ -104,11 +112,14 @@ class TicketChatController extends GetxController {
         .collection('ticketChats')
         .doc(ticketId)
         .collection('messages')
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ChatMessage.fromJson(doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ChatMessage.fromJson(doc.data()))
+              .toList()
+              .reversed
+              .toList(),
+        );
   }
 
   Stream<String> getLastMessageStream(String ticketId) {
@@ -142,8 +153,10 @@ class TicketChatController extends GetxController {
     required String receiverId,
     required String senderId,
     required String content,
+    required Ticket ticket,
     required String type,
-  }) async {
+  }) async
+  {
     if (content.trim().isEmpty && selectedImageFile.value == null) return;
 
     final String tempId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -180,16 +193,37 @@ class TicketChatController extends GetxController {
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) messages[index] = updatedMessage;
 
-       _firestore
+      _firestore
           .collection('ticketChats')
           .doc(ticketId)
           .collection('messages')
           .doc(tempId)
           .set(updatedMessage.toJson());
 
-       _firestore.collection('ticketChats').doc(ticketId).update({
+      _firestore.collection('ticketChats').doc(ticketId).update({
         'lastMessage': content.isNotEmpty ? content : 'Image',
         'lastMessageTime': FieldValue.serverTimestamp(),
+      });
+
+      PushNotificationController.sendNotificationUsingApi(
+        token: ticket.assignBy.toString() == senderId
+            ? ticket.assignToFCMToken
+            : ticket.assignByFCMToken,
+        title: "New message from ${profileController.user?.username ?? ''}",
+        body: content,
+        data: {
+          "Screen": "Ticket_Chat",
+          "senderId": senderId,
+          "chatRoomId": ticketId,
+          "senderName": profileController.user?.username ?? '',
+          "msgId": tempId,
+          "receiverImgUrl": '',
+          "receiverDeviceToken": ticket.assignBy.toString() != senderId
+      ? ticket.assignToFCMToken
+          : ticket.assignByFCMToken,
+        },
+      ).catchError((e) {
+        print('Error sending notification: $e');
       });
     } catch (e) {
       final index = messages.indexWhere((m) => m.id == tempId);

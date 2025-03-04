@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/assigned_task/controller/ticket_chat_controller.dart';
 
+import '../../../core/apis/models/tickets/ticket_model.dart';
 import '../../../core/components/app_image.dart';
 import '../../message/components/message_components.dart';
 import '../views/ticket_image_full_view.dart';
@@ -225,6 +226,7 @@ class TicketCustomePainterDialouge extends StatefulWidget {
   GestureTapCallback? onTap;
   Widget child;
   final String ticketId;
+  final Ticket ticket;
   final String receiverId;
   final String senderId;
 
@@ -236,7 +238,7 @@ class TicketCustomePainterDialouge extends StatefulWidget {
     required this.child,
     required this.ticketId,
     required this.receiverId,
-    required this.senderId,
+    required this.senderId, required this.ticket,
     // required this.receiverDeviceToken,
     // required this.receiverImgUrl,
   });
@@ -290,7 +292,7 @@ class _TicketCustomePainterDialougeState
                                 await chatController.pickImageFromGallery(
                                   ticketId: widget.ticketId,
                                   receiverId: widget.receiverId,
-                                  senderId: widget.senderId,
+                                  senderId: widget.senderId, ticket: widget.ticket,
                                 );
                                 chatController.overlayController.toggle();
                               },
@@ -316,7 +318,7 @@ class _TicketCustomePainterDialougeState
                                 await chatController.pickImageFromCamera(
                                   ticketId: widget.ticketId,
                                   receiverId: widget.receiverId,
-                                  senderId: widget.senderId,
+                                  senderId: widget.senderId, ticket: widget.ticket,
                                 );
                                 chatController.overlayController.toggle();
                               },
