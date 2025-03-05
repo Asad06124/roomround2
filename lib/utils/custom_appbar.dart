@@ -112,7 +112,7 @@ class CustomAppbar {
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                 controller.markAllNotificationsAsRead();
+                                controller.markAllNotificationsAsRead();
                                 controller.fetchNotificationsList(
                                     forceRefresh: true);
                                 Get.toNamed(AppRoutes.NOTIFICATION);

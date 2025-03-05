@@ -126,10 +126,9 @@ class MessageComponents {
                   children: [
                     if (imageUrl != null && imageUrl.isNotEmpty)
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Get.to(
-                            TicketImageFullView(
-                                imageUrl: imageUrl),
+                            TicketImageFullView(imageUrl: imageUrl),
                           );
                         },
                         child: Container(
@@ -183,13 +182,20 @@ class MessageComponents {
                     ),
                   ),
                   if (!sender) ...[
-                      if (isSeen != true&&isDelivered != true)
-                        Icon(Icons.check_circle_outline, size: 16,color: AppColors.gry,),
-                      if (isDelivered == true&&isSeen != true)
-                        Icon(Icons.check_circle, size: 16,color: AppColors.gry,),
-                      if (isSeen == true)
-                        Icon(Icons.check_circle, color: Colors.blue, size: 16),
-
+                    if (isSeen != true && isDelivered != true)
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 16,
+                        color: AppColors.gry,
+                      ),
+                    if (isDelivered == true && isSeen != true)
+                      Icon(
+                        Icons.check_circle,
+                        size: 16,
+                        color: AppColors.gry,
+                      ),
+                    if (isSeen == true)
+                      Icon(Icons.check_circle, color: Colors.blue, size: 16),
                   ],
                 ],
               )

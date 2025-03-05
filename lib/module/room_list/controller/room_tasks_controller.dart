@@ -310,12 +310,7 @@ class RoomTasksController extends GetxController {
       RoomTask? task = _tasks[index];
       bool userSelection = value == YesNo.yes;
 
-      _completeTask(
-        index,
-        userSelection,
-        task,
-        value
-      );
+      _completeTask(index, userSelection, task, value);
     }
   }
 
@@ -332,18 +327,14 @@ class RoomTasksController extends GetxController {
   }
 
   void _completeTask(
-    int index,
-    bool userSelection,
-    RoomTask? task,
-      YesNo value
-  ) {
+      int index, bool userSelection, RoomTask? task, YesNo value) {
     if (task != null) {
       bool? completeAt = task.taskCompletion;
       // int? taskId = task.assignTemplateTaskId;
       // String? taskName = task.taskName;
 
       if (completeAt != null) {
-        if (completeAt == userSelection || value==YesNo.na) {
+        if (completeAt == userSelection || value == YesNo.na) {
           // Update Task
           _updateTaskStatus(
             index,

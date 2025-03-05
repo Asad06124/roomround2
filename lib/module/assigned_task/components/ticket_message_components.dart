@@ -238,7 +238,8 @@ class TicketCustomePainterDialouge extends StatefulWidget {
     required this.child,
     required this.ticketId,
     required this.receiverId,
-    required this.senderId, required this.ticket,
+    required this.senderId,
+    required this.ticket,
     // required this.receiverDeviceToken,
     // required this.receiverImgUrl,
   });
@@ -292,7 +293,8 @@ class _TicketCustomePainterDialougeState
                                 await chatController.pickImageFromGallery(
                                   ticketId: widget.ticketId,
                                   receiverId: widget.receiverId,
-                                  senderId: widget.senderId, ticket: widget.ticket,
+                                  senderId: widget.senderId,
+                                  ticket: widget.ticket,
                                 );
                                 chatController.overlayController.toggle();
                               },
@@ -318,7 +320,8 @@ class _TicketCustomePainterDialougeState
                                 await chatController.pickImageFromCamera(
                                   ticketId: widget.ticketId,
                                   receiverId: widget.receiverId,
-                                  senderId: widget.senderId, ticket: widget.ticket,
+                                  senderId: widget.senderId,
+                                  ticket: widget.ticket,
                                 );
                                 chatController.overlayController.toggle();
                               },

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,7 +12,6 @@ import 'package:roomrounds/core/constants/controllers.dart';
 
 import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/apis/models/tickets/ticket_model.dart';
-import '../../../core/services/get_server_key.dart';
 import '../../push_notification/push_notification.dart';
 import '../views/ticket_chat_image_preview.dart';
 
@@ -155,8 +155,7 @@ class TicketChatController extends GetxController {
     required String content,
     required Ticket ticket,
     required String type,
-  }) async
-  {
+  }) async {
     if (content.trim().isEmpty && selectedImageFile.value == null) return;
 
     final String tempId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -212,15 +211,21 @@ class TicketChatController extends GetxController {
         title: "New message from ${profileController.user?.username ?? ''}",
         body: content,
         data: {
-          "Screen": "Ticket_Chat",
-          "senderId": senderId,
+          "Screen": "ticketChat",
+          "senderId": receiverId,
+          "receiverId": senderId,
+          "ticketTitle": ticket.ticketName,
           "chatRoomId": ticketId,
+          "ticket": jsonEncode(ticket.toJson()),
+          "isAssignedToMe": (ticket.assignTo.toString() !=
+                  profileController.userId.toString())
+              .toString(),
           "senderName": profileController.user?.username ?? '',
           "msgId": tempId,
           "receiverImgUrl": '',
           "receiverDeviceToken": ticket.assignBy.toString() != senderId
-      ? ticket.assignToFCMToken
-          : ticket.assignByFCMToken,
+              ? ticket.assignToFCMToken
+              : ticket.assignByFCMToken,
         },
       ).catchError((e) {
         print('Error sending notification: $e');

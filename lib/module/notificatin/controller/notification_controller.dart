@@ -107,6 +107,7 @@ class NotificationController extends GetxController
       update();
     }
   }
+
   Future<void> markAllNotificationsAsRead() async {
     var resp = await APIFunction.call(
       APIMethods.post,
@@ -116,7 +117,6 @@ class NotificationController extends GetxController
     );
 
     if (resp != null && resp is bool && resp) {
-
       for (var notification in _notificationsList) {
         notification.isRead = true;
       }
@@ -124,6 +124,7 @@ class NotificationController extends GetxController
       update();
     }
   }
+
   void _updateHasData(bool value) {
     hasData = value;
     update();

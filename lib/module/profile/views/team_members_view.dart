@@ -12,10 +12,9 @@ class TeamMembersView extends StatelessWidget {
         height: context.height,
         child: GetBuilder<EmployeeDirectoryController>(
             init: EmployeeDirectoryController(
-              fetchEmployees: true,
-              fetchDepartments: false,
-              onlyMyEmployees: true
-            ),
+                fetchEmployees: true,
+                fetchDepartments: false,
+                onlyMyEmployees: true),
             builder: (controller) {
               return Column(
                 children: [

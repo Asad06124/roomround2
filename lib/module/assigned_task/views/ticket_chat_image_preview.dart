@@ -69,7 +69,8 @@ class TicketChatImagePreviewScreen extends StatelessWidget {
                             content:
                                 mController.messageController.value.text.trim(),
                             type: 'text',
-                            ticketId: ticketId, ticket: ticket,
+                            ticketId: ticketId,
+                            ticket: ticket,
                           )
                           .then((value) => Get.back());
                     }

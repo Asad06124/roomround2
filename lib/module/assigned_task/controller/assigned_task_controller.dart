@@ -337,8 +337,8 @@ class AssignedTaskController extends GetxController {
         ticket.reply = reply;
         ticket.statusId = statusId;
         ticket.isClosed = isClosed;
-        ticket.assignToName = newAssignee?.employeeName??ticket.assignToName;
-        ticket.assignToImage = newAssignee?.imageKey??ticket.assignToImage;
+        ticket.assignToName = newAssignee?.employeeName ?? ticket.assignToName;
+        ticket.assignToImage = newAssignee?.imageKey ?? ticket.assignToImage;
         if (newStatusText != null && newStatusText.isNotEmpty) {
           ticket.status = newStatusText;
         }
@@ -350,8 +350,8 @@ class AssignedTaskController extends GetxController {
         ticket.reply = reply;
         ticket.statusId = statusId;
         ticket.isClosed = isClosed;
-        ticket.assignToName = newAssignee?.employeeName??ticket.assignToName;
-        ticket.assignToImage = newAssignee?.imageKey??ticket.assignToImage;
+        ticket.assignToName = newAssignee?.employeeName ?? ticket.assignToName;
+        ticket.assignToImage = newAssignee?.imageKey ?? ticket.assignToImage;
         if (newStatusText != null && newStatusText.isNotEmpty) {
           ticket.status = newStatusText;
         }

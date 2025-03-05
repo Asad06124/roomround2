@@ -6,8 +6,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/module/assigned_task/views/ticket_chat_view.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 
+import '../../core/apis/models/tickets/ticket_model.dart';
 import '../../core/services/get_server_key.dart';
 
 class PushNotificationController {
@@ -159,6 +161,24 @@ class PushNotificationController {
               'receiverDeviceToken': data['receiverDeviceToken'],
               'name': data['senderName'],
             },
+          );
+        });
+        break;
+      case 'ticketChat':
+        Get.offAndToNamed(AppRoutes.DASHBOARD);
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Get.toNamed(AppRoutes.ASSIGNED_TASKS);
+        });
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Get.to(
+            TicketChatView(
+              ticketId: data['chatRoomId'],
+              receiverId: data['receiverId'],
+              ticket: Ticket.fromJson(jsonDecode(data['ticket'])),
+              senderId: data['senderId'],
+              ticketTitle: data['ticketTitle'],
+              isAssignedToMe: data['isAssignedToMe'] == "true",
+            ),
           );
         });
         break;

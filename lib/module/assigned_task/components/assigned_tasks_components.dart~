@@ -123,12 +123,23 @@ class AssignedTaskComponents {
                         isAssignedToMe ? ticket.assignBy : ticket.assignTo;
                     int? senderId =
                         isAssignedToMe ? ticket.assignTo : ticket.assignBy;
+                    //
+                    // if (currentUserId == ticket.assignBy.toString()) {
+                    //   receiverId = ticket.assignTo;
+                    //   senderId = ticket.assignBy; // Sender is the assignBy (current user)
+                    //   image = ticket.assignToImage;
+                    // } else {
+                    //   receiverId = ticket.assignBy;
+                    //   senderId = ticket.assignTo; // Sender is the assignTo (current user)
+                    //   image = ticket.assignByImage;
+                    // }
                     Get.to(
                       TicketChatView(
                         ticketId: ticket.ticketId.toString(),
                         receiverId: '${receiverId ?? ''}',
                         senderId: '${senderId ?? ''}',
                         ticketTitle: ticket.ticketName ?? '',
+                        receiverImage: image,
                         ticket: ticket,
                         isAssignedToMe: isAssignedToMe,
                       ),

@@ -1,6 +1,5 @@
 import 'package:roomrounds/core/constants/imports.dart';
 
-
 class TicketImageFullView extends StatelessWidget {
   const TicketImageFullView({super.key, required this.imageUrl});
 
@@ -13,7 +12,6 @@ class TicketImageFullView extends StatelessWidget {
       appBar: CustomAppbar.simpleAppBar(
         context,
         height: 70,
-
         backButtunColor: AppColors.primary,
         iconsClor: AppColors.primary,
         isHome: false,
@@ -29,8 +27,8 @@ class TicketImageFullView extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: Image.network(
-                imageUrl,
-                fit: BoxFit.contain,
+                  imageUrl,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),

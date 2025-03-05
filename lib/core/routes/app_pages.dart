@@ -100,7 +100,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.MESSAGE,
-      page: () =>  MessageView(),
+      page: () => MessageView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {

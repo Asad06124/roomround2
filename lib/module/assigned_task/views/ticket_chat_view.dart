@@ -12,10 +12,9 @@ class TicketChatView extends StatelessWidget {
   final String ticketId;
   final String receiverId;
   final bool isAssignedToMe;
-  Ticket ticket;
+  final Ticket ticket;
   final String senderId;
   final String ticketTitle;
-  final String? receiverImage;
 
   TicketChatView({
     super.key,
@@ -24,7 +23,6 @@ class TicketChatView extends StatelessWidget {
     required this.ticket,
     required this.senderId,
     required this.ticketTitle,
-    required this.receiverImage,
     required this.isAssignedToMe,
   });
 
@@ -157,7 +155,6 @@ class TicketChatView extends StatelessWidget {
                     isDelivered: message.isDelivered,
                     isSeen: message.isSeen,
                     imageUrl: message.imageUrl,
-                    recieverImageUrl: receiverImage,
                     controller: controller,
                   );
                 },
@@ -202,7 +199,8 @@ class TicketChatView extends StatelessWidget {
                           receiverId: receiverId,
                           senderId: senderId,
                           content: controller.messageController.text.trim(),
-                          type: 'text', ticket: ticket,
+                          type: 'text',
+                          ticket: ticket,
                         );
                       }
                     },
