@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeDark().theme,
       initialRoute: AppRoutes.SPLASH_SCREEN,
+      defaultTransition: Transition.zoom,
       getPages: AppPages.routes,
       builder: (context, child) {
         final scale = MediaQuery.of(context).textScaler.clamp(
@@ -43,9 +44,6 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      initialBinding: BindingsBuilder(() {
-        Get.put(NotificationController());
-      }),
     );
   }
 }

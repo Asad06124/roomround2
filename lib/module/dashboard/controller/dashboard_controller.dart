@@ -1,6 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/departments_controller.dart';
 import 'package:roomrounds/module/profile/views/profile_view.dart';
+
+import '../../../firebase_options.dart';
+import '../../notificatin/controller/notification_controller.dart';
+import '../../push_notification/push_notification.dart';
 
 class DashBoardController extends GetxController {
   int _curruntIndex = 0;
@@ -38,7 +45,9 @@ class DashBoardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    initnotification();
     _initDepartments();
+    Get.put(NotificationController());
   }
 
   void _initDepartments() async {
@@ -49,4 +58,30 @@ class DashBoardController extends GetxController {
     _curruntIndex = indx;
     update();
   }
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final action = message.data['Screen'];
+  if (action == 'Chat') {
+    final String chatRoomId = message.data['chatRoomId'];
+    final String msgId = message.data['msgId'];
+    try {
+      await FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .doc(msgId)
+          .update({'isDelivered': true});
+    } catch (error) {
+      print('Error updating isDelivered in background: $error');
+    }
+  }
+}
+
+Future<void> initnotification() async {
+  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+
+  await PushNotificationController.initialize();
 }
