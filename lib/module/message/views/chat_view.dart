@@ -27,9 +27,9 @@ class ChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.black,
+        statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
     );
@@ -41,9 +41,7 @@ class ChatView extends StatelessWidget {
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(70),
           child: Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top - 15,
-                bottom: MediaQuery.of(context).padding.top - 15),
+            padding: EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [

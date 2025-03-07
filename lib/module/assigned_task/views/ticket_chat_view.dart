@@ -32,8 +32,8 @@ class TicketChatView extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
+        statusBarColor: Colors.black,
+        statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
     );
@@ -47,10 +47,7 @@ class TicketChatView extends StatelessWidget {
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(70),
           child: Container(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top - 15,
-              bottom: MediaQuery.of(context).padding.top - 15,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 15),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
