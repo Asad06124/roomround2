@@ -58,11 +58,13 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
   void initState() {
     super.initState();
     _selectedIndex = widget.sendStatusList.indexOf(widget.ticket?.status ?? '');
+    widget.textController?.text = widget.ticket?.reply ?? '';
     employeeDirectoryController = Get.put(EmployeeDirectoryController(
       fetchDepartments: true,
       fetchEmployees: true,
     ));
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -273,8 +275,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                         context,
                         sendStatusList: widget.sendStatusList,
                         selectedIndex: _selectedIndex,
-                        textField: widget.textController
-                          ?..text = ticket.reply ?? '',
+                        textField: widget.textController,
                         onTap: (index) {
                           setState(() {
                             _selectedIndex = index;
@@ -282,6 +283,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                           });
                         },
                       ),
+
                       SB.h(20),
                       AppButton.primary(
                         height: 40,
