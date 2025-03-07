@@ -307,10 +307,12 @@ class ChatController extends GetxController {
           .collection('messages')
           .doc(messageId)
           .set(message.toJson());
-      await _firestore.collection('chatrooms').doc(chatRoomId).update({
+      await _firestore.collection('chatrooms').doc(chatRoomId).set({
+        'participants': [senderId, receiverId],
+        'createdAt': FieldValue.serverTimestamp(),
         'lastMessage': content,
-        'lastMessageTime': Timestamp.now(),
-      });
+        'lastMessageTime': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
       PushNotificationController.sendNotificationUsingApi(
         token: receiverDeviceToken,
         title: "New message from $senderName",

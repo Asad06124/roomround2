@@ -44,6 +44,9 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
+      navigatorObservers: [routeObserver],
     );
   }
+
 }
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();

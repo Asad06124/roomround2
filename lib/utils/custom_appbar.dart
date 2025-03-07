@@ -133,7 +133,7 @@ class CustomAppbar {
                                 child: CircleAvatar(
                                   radius: iconWeight * 0.24,
                                   backgroundColor:
-                                      AppColors.orange, // Dot color
+                                      AppColors.red, // Dot color
                                 ),
                               ),
                           ],
@@ -176,7 +176,7 @@ class CustomAppbar {
                                     top: 1.5,
                                     child: CircleAvatar(
                                       radius: iconWeight * 0.24,
-                                      backgroundColor: AppColors.orange,
+                                      backgroundColor: AppColors.red,
                                     ),
                                   );
                                 },

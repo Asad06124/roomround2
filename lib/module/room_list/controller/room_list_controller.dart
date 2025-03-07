@@ -16,13 +16,13 @@ class RoomListController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _fetchRoomsList();
+    fetchRoomsList();
   }
 
-  void _fetchRoomsList() async {
+  void fetchRoomsList({bool hasData = false}) async {
     int? managerId = profileController.userId;
     bool? roomStatus = getRoomStatus();
-    _updateHasData(false);
+    _updateHasData(hasData);
 
     Map<String, dynamic> data = {
       "managerId": managerId,
@@ -59,7 +59,7 @@ class RoomListController extends GetxController {
       _roomType = RoomType.allRooms;
     }
     update();
-    _fetchRoomsList();
+    fetchRoomsList();
   }
 
   bool? getRoomStatus() {

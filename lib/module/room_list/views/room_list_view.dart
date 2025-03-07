@@ -136,8 +136,9 @@ class RoomListView extends StatelessWidget {
           return EmployeeDirectoryComponents.tile(
             context,
             title: room.roomName,
-            onTap: () {
-              Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
+            onTap: () async {
+              await Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
+              Get.find<RoomListController>().fetchRoomsList(hasData: true);
             },
             trailingWidget: RoomListComponents.statusWidget(
               context,
@@ -148,7 +149,6 @@ class RoomListView extends StatelessWidget {
         },
       );
     } else {
-      // No Rooms found
       return SettingsComponents.noResultsFound(
           context, AppStrings.noRoomsFound);
     }

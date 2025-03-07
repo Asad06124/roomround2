@@ -143,6 +143,7 @@ class TasksList extends StatelessWidget {
               child: RoomListComponents.statusWidget(
                 context,
                 isComplete: isTaskCompleted,
+                isTask:true,
                 onToggle: () {
                   controller.updateTaskStatus(
                     index,
