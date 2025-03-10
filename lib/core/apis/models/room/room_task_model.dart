@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/apis/models/room/room_task_ticket_model.dart';
 import 'package:roomrounds/core/constants/app_enum.dart';
 
 class RoomTask {
@@ -13,7 +14,7 @@ class RoomTask {
   bool? roomStatus;
   bool? isNA;
   bool? taskStatus;
-
+  TicketData? ticketData;
   YesNo? userSelection;
 
   RoomTask({
@@ -30,6 +31,7 @@ class RoomTask {
     this.isNA,
     this.taskStatus,
     this.userSelection,
+    this.ticketData,
   });
 
   RoomTask.fromJson(Map<String, dynamic> json) {
@@ -45,11 +47,13 @@ class RoomTask {
     roomStatus = json['roomStatus'];
     isNA = json['isNA'];
     taskStatus = json['taskStatus'];
+    if (json['ticketData'] != null) {
+      ticketData = TicketData.fromJson(json['ticketData']);
+    }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    // data['assignTemplateRoomId'] = assignTemplateRoomId;
     data['assignTemplateTaskId'] = assignTemplateTaskId;
     data['roomId'] = roomId;
     data['managerId'] = managerId;
@@ -61,6 +65,9 @@ class RoomTask {
     data['roomStatus'] = roomStatus;
     data['isNA'] = isNA;
     data['taskStatus'] = taskStatus;
+    if (ticketData != null) {
+      data['ticketData'] = ticketData!.toJson();
+    }
     return data;
   }
 }

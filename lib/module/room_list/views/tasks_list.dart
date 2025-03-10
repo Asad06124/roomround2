@@ -144,11 +144,13 @@ class TasksList extends StatelessWidget {
                 context,
                 isComplete: isTaskCompleted,
                 isTask:true,
+                isTicket: task.ticketData != null,
                 onToggle: () {
                   controller.updateTaskStatus(
                     index,
                     YesNo.no,
                   );
+
                 },
               ),
             ),

@@ -351,12 +351,12 @@ class RoomTasksController extends GetxController {
 
   void _updateTask(int index, bool userSelection, RoomTask? task) {
     if (task != null) {
-      bool? completeAt = task.isCompleted;
+      bool? completeAt = task.taskStatus;
       // int? taskId = task.assignTemplateTaskId;
       // String? taskName = task.taskName;
 
       if (completeAt != null) {
-        if (completeAt == userSelection) {
+        if (completeAt == !userSelection) {
           // Update Task
           _updateStatusAfterComplete(
             index,
@@ -452,12 +452,33 @@ class RoomTasksController extends GetxController {
     _updateHasData(true);
   }
 
+  void _clearTicketDialogData() {
+    _commentsController.clear();
+    urgent.value = null;
+    assignedTo.value = null;
+    selectedAudio.clear();
+    selectedImages.clear();
+  }
+
   void _showCreateTicketDialog(RoomTask? task) {
     bool showMyTeamMembers = profileController.isManager;
     bool showMyManager = profileController.isEmployee;
     int? departmentId = profileController.user?.departmentId;
 
-    _onAssignedToChange(null);
+    if (task?.ticketData != null) {
+      Employee preSelectedEmployee = Employee(
+        userId: task?.ticketData!.assignTo,
+        employeeName: task?.ticketData!.assignToName,
+        imageKey: task?.ticketData!.assignToImageKey,
+      );
+      _onAssignedToChange(preSelectedEmployee);
+      _onUrgentValueChanged(
+        task?.ticketData!.isUrgent == true ? YesNo.yes : YesNo.no,
+      );
+      _commentsController.text = task?.ticketData!.comment ?? '';
+    } else {
+      _onAssignedToChange(null);
+    }
 
     Get.dialog(
       Dialog(
@@ -472,7 +493,6 @@ class RoomTasksController extends GetxController {
                 onSelectItem: _onAssignedToChange,
                 onDoneTap: () {
                   _createNewTicket(task);
-                  Navigator.of(context).pop();
                 },
               );
             });
@@ -484,7 +504,9 @@ class RoomTasksController extends GetxController {
         "myTeam": showMyTeamMembers,
         "departmentId": departmentId,
       },
-    );
+    ).then((_) {
+      _clearTicketDialogData();
+    });
   }
 
   void removeImage(int index) {
@@ -509,6 +531,8 @@ class RoomTasksController extends GetxController {
       "Comment": comments,
       "IsUrgent": '$isUrgent',
       "AssignTo": '$assignedToId',
+      if (task?.ticketData != null)
+        'TicketId': task!.ticketData!.ticketId.toString(),
     };
 
     var resp = await APIFunction.call(

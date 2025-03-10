@@ -14,7 +14,6 @@ import 'package:roomrounds/module/assigned_task/views/ticket_image_full_view.dar
 import 'package:roomrounds/module/create_ticket/controller/audio_controller.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
 
-import '../core/apis/models/room/room_task_model.dart';
 import '../module/emloyee_directory/controller/departments_controller.dart';
 import '../module/room_list/controller/room_tasks_controller.dart';
 
@@ -657,7 +656,6 @@ class CreateTicketDialog extends StatelessWidget {
   const CreateTicketDialog({
     super.key,
     this.title,
-    this.task,
     this.selectedUrgent,
     this.onUrgentChanged,
     this.textFieldController,
@@ -667,7 +665,6 @@ class CreateTicketDialog extends StatelessWidget {
   });
 
   final String? title;
-  final RoomTask? task;
   final YesNo? selectedUrgent;
   final Function(YesNo)? onUrgentChanged;
   final TextEditingController? textFieldController;

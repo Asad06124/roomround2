@@ -40,7 +40,9 @@ class RoomListComponents {
   static Widget statusWidget(
     BuildContext context, {
     bool isComplete = false,
-    VoidCallback? onToggle,  bool? isTask,
+    bool isTicket = false,
+    VoidCallback? onToggle,
+    bool? isTask,
   }) {
     return InkWell(
       onTap: isComplete == true ? onToggle : null,
@@ -56,13 +58,13 @@ class RoomListComponents {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              isComplete ? "Completed " : "Incomplete",
+              isComplete ? "Completed " : isTicket? "Ticket" : "Incomplete",
               style: context.bodyLarge!.copyWith(
                 color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            if (isComplete&&isTask==true)
+            if (isComplete && isTask == true)
               const Icon(
                 Icons.cancel,
                 color: AppColors.red,
