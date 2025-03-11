@@ -66,7 +66,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
     ));
   }
 
-
   @override
   Widget build(BuildContext context) {
     final currentUserId = profileController.user!.userId.toString();
@@ -81,7 +80,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
     return GetBuilder<AudioController>(
       init: AudioController(),
       builder: (controller) {
-
         return Container(
           decoration: BoxDecoration(
             color: AppColors.white,
@@ -284,7 +282,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                           });
                         },
                       ),
-
                       SB.h(20),
                       AppButton.primary(
                         height: 40,
@@ -663,11 +660,13 @@ class CreateTicketDialog extends StatelessWidget {
     this.textFieldController,
     required this.onSelectItem,
     this.onDoneTap,
+    this.preSelectedEmployee,
     // this.onImagePicked,
   });
 
   final String? title;
   final RoomTask? task;
+  final Employee? preSelectedEmployee;
   final YesNo? selectedUrgent;
   final Function(YesNo)? onUrgentChanged;
   final TextEditingController? textFieldController;
@@ -1003,7 +1002,8 @@ class CreateTicketDialog extends StatelessWidget {
                   SB.h(10),
                   // DialougeComponents.nameTile(context, name: "Anthony Roy"),
 
-                  _buildEmployeeDropDown(context),
+                  _buildEmployeeDropDown(context,
+                      preSelectedEmployee: preSelectedEmployee),
 
                   SB.h(10),
                   // DialougeComponents.dateTile(context,
@@ -1059,7 +1059,8 @@ class CreateTicketDialog extends StatelessWidget {
         });
   }
 
-  Widget _buildEmployeeDropDown(BuildContext context) {
+  Widget _buildEmployeeDropDown(BuildContext context,
+      {Employee? preSelectedEmployee}) {
     return GetBuilder<EmployeeDirectoryController>(
         init: EmployeeDirectoryController(
             fetchEmployees: true,
@@ -1068,6 +1069,18 @@ class CreateTicketDialog extends StatelessWidget {
             ignoreManager: true),
         builder: (controller) {
           List<Employee> employees = List.from(controller.searchResults);
+
+          Employee? initialEmployee;
+          if (preSelectedEmployee != null) {
+            try {
+              initialEmployee = employees.firstWhere(
+                (employee) => employee.userId == preSelectedEmployee.userId,
+              );
+            } catch (e) {
+              initialEmployee = null;
+            }
+          }
+
           // if (employees.isEmpty) {
           //   User? user = profileController.user;
           //
@@ -1087,7 +1100,7 @@ class CreateTicketDialog extends StatelessWidget {
             closedShadow: false,
             width: context.width,
             onSelect: onSelectItem,
-            initialItem: employees.firstOrNull,
+            initialItem: initialEmployee ?? employees.firstOrNull,
             closedFillColor: AppColors.lightWhite,
             headerBuilder: (context, selectedItem, enabled) {
               return DialougeComponents.nameTile(

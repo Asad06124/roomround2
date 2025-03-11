@@ -15,7 +15,7 @@ class Employee {
   String? phoneNumber;
   int? roomCount;
   bool? isDeleted;
-  String? fcmToken; // Added property for FCM token
+  String? fcmToken;
 
   Employee(
       {this.userId,
@@ -53,7 +53,7 @@ class Employee {
     phoneNumber = json['phoneNumber'];
     roomCount = json['roomCount'];
     isDeleted = json['isDeleted'];
-    fcmToken = json['fcmToken']; // Extract fcmToken from JSON
+    fcmToken = json['fcmToken'];
   }
 
   Map<String, dynamic> toJson() {
@@ -74,7 +74,7 @@ class Employee {
     data['phoneNumber'] = phoneNumber;
     data['roomCount'] = roomCount;
     data['isDeleted'] = isDeleted;
-    data['fcmToken'] = fcmToken; // Include fcmToken when converting to JSON
+    data['fcmToken'] = fcmToken;
     return data;
   }
 
@@ -82,4 +82,14 @@ class Employee {
   String toString() {
     return employeeName ?? '';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Employee) return false;
+    return userId == other.userId;
+  }
+
+  @override
+  int get hashCode => userId.hashCode;
 }

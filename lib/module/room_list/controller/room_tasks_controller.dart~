@@ -12,7 +12,6 @@ import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 import '../../../utils/custom_overlays.dart';
-import '../../emloyee_directory/controller/employee_directory_controller.dart';
 
 class RoomTasksController extends GetxController {
   // TaskListController({this.roomId});
@@ -475,6 +474,7 @@ class RoomTasksController extends GetxController {
         employeeName: task.ticketData!.assignToName,
         imageKey: task.ticketData!.assignToImageKey,
       );
+      _onAssignedToChange(preSelectedEmployee);
 
       _onUrgentValueChanged(
         task.ticketData!.isUrgent == true ? YesNo.yes : YesNo.no,
