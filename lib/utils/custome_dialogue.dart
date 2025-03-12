@@ -676,386 +676,573 @@ class CreateTicketDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // var controller = Get.find<RoomTasksController>();
-    return GetBuilder<RoomTasksController>(
-        init: RoomTasksController(),
-        builder: (controller) {
-          return SingleChildScrollView(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              // height: context.height * 0.75,
-              width: context.width,
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DialougeComponents.closeBtn(),
-                  SB.h(10),
-                  DialougeComponents.labelTile(context, title: title),
-                  SB.h(10),
-                  DialougeComponents.labelTile(
-                    context,
-                    // isBorder: true,
-                    // status: '',
-                    title: AppStrings.comments,
-                    titleStyle: context.titleSmall!.copyWith(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w600,
+    return GetBuilder<AudioController>(
+        init: AudioController(),
+        builder: (audioController) {
+          return GetBuilder<RoomTasksController>(
+              init: RoomTasksController(),
+              builder: (controller) {
+                final existingImages = task?.ticketData?.ticketMedia
+                    ?.where((media) =>
+                (media.imagekey?.isNotEmpty ?? false) &&
+                    !(controller.removedMediaIds.contains(media.ticketsMediaId) ?? false))
+                    .toList() ?? [];
+
+                final existingAudio = task?.ticketData?.ticketMedia
+                    ?.where((media) =>
+                (media.audioKey?.isNotEmpty ?? false) &&
+                    !(controller.removedMediaIds.contains(media.ticketsMediaId) ?? false))
+                    .toList() ?? [];
+
+                return SingleChildScrollView(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                  SB.h(10),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.lightWhite,
-                          borderRadius: BorderRadius.circular(9.0),
-                          border: Border.all(
-                            color: AppColors.gry,
+                    // height: context.height * 0.75,
+                    width: context.width,
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DialougeComponents.closeBtn(),
+                        SB.h(10),
+                        DialougeComponents.labelTile(context, title: title),
+                        SB.h(10),
+                        DialougeComponents.labelTile(
+                          context,
+                          // isBorder: true,
+                          // status: '',
+                          title: AppStrings.comments,
+                          titleStyle: context.titleSmall!.copyWith(
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                        SB.h(10),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Expanded(
-                              child: CustomTextField(
-                                maxLines: 5,
-                                borderRadius: 10,
-                                isRequiredField: false,
-                                controller: textFieldController,
-                                fillColor: AppColors.lightWhite,
-                                borderColor: AppColors.lightWhite,
-                                hintText: AppStrings.writeMessage,
-                                validator: (value) => null,
+                            Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.lightWhite,
+                                borderRadius: BorderRadius.circular(9.0),
+                                border: Border.all(
+                                  color: AppColors.gry,
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 8.0,
-                                right: 8.0,
-                              ),
-                              child: Column(
+                              child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Row(
-                                    children: [
-                                      controller.recorderController.isRecording
-                                          ? AudioWaveforms(
-                                              size: Size(80, 50),
-                                              waveStyle: WaveStyle(
-                                                showMiddleLine: false,
-                                                extendWaveform: true,
-                                                durationTextPadding: 0.0,
-                                                waveThickness: 2.0,
-                                                waveColor: Colors.green,
-                                                waveCap: StrokeCap.round,
+                                  Expanded(
+                                    child: CustomTextField(
+                                      maxLines: 5,
+                                      borderRadius: 10,
+                                      isRequiredField: false,
+                                      controller: textFieldController,
+                                      fillColor: AppColors.lightWhite,
+                                      borderColor: AppColors.lightWhite,
+                                      hintText: AppStrings.writeMessage,
+                                      validator: (value) => null,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 8.0,
+                                      right: 8.0,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            controller.recorderController
+                                                    .isRecording
+                                                ? AudioWaveforms(
+                                                    size: Size(80, 50),
+                                                    waveStyle: WaveStyle(
+                                                      showMiddleLine: false,
+                                                      extendWaveform: true,
+                                                      durationTextPadding: 0.0,
+                                                      waveThickness: 2.0,
+                                                      waveColor: Colors.green,
+                                                      waveCap: StrokeCap.round,
+                                                    ),
+                                                    recorderController:
+                                                        controller
+                                                            .recorderController,
+                                                  )
+                                                : SizedBox(),
+                                            IconButton(
+                                              icon: Icon(
+                                                controller.recorderController
+                                                        .isRecording
+                                                    ? Icons.stop
+                                                    : Icons
+                                                        .keyboard_voice_sharp,
+                                                color: controller
+                                                        .recorderController
+                                                        .isRecording
+                                                    ? Colors.red
+                                                    : AppColors.gry,
                                               ),
-                                              recorderController:
-                                                  controller.recorderController,
-                                            )
-                                          : SizedBox(),
-                                      IconButton(
-                                        icon: Icon(
-                                          controller.recorderController
-                                                  .isRecording
-                                              ? Icons.stop
-                                              : Icons.keyboard_voice_sharp,
-                                          color: controller.recorderController
-                                                  .isRecording
-                                              ? Colors.red
-                                              : AppColors.gry,
+                                              onPressed: () {
+                                                controller.recorderController
+                                                        .isRecording
+                                                    ? controller.stopRecording()
+                                                    : controller.startRecording(existingAudio.length);
+                                              },
+                                            ),
+                                            SizedBox(
+                                              width: 5.0,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                controller.multiImagePic(existingImages.length);
+                                              },
+                                              child: Icon(
+                                                Icons.camera_alt_rounded,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        onPressed: () {
-                                          controller.recorderController
-                                                  .isRecording
-                                              ? controller.stopRecording()
-                                              : controller.startRecording();
-                                        },
-                                      ),
-                                      SizedBox(
-                                        width: 5.0,
-                                      ),
-                                      GestureDetector(
-                                        onTap: controller.multiImagePic,
-                                        child: Icon(
-                                          Icons.camera_alt_rounded,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.end,
-                      //   children: [
-                      //     Assets.icons.cameraCircle.svg(),
-                      //     SB.w(10),
-                      // Assets.icons.mic.svg(),
-                      //     SB.w(10)
-                      //   ],
-                      // ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.end,
+                            //   children: [
+                            //     Assets.icons.cameraCircle.svg(),
+                            //     SB.w(10),
+                            // Assets.icons.mic.svg(),
+                            //     SB.w(10)
+                            //   ],
+                            // ),
 
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: AppColors.gry),
-                        ),
-                        child: Column(
-                          children: [
-                            controller.selectedImages.isEmpty
-                                ? SizedBox()
-                                : Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      width: MediaQuery.sizeOf(context).width,
-                                      child: Wrap(
-                                        spacing: 10.0,
-                                        runSpacing: 10.0,
-                                        children: controller.selectedImages
-                                            .map((image) {
-                                          int index = controller.selectedImages
-                                              .indexOf(image);
-                                          return Stack(
-                                            children: [
-                                              InkWell(
-                                                onTap: () {},
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            FullScreenWidget(
-                                                          disposeLevel:
-                                                              DisposeLevel.Low,
-                                                          child: Hero(
-                                                            tag: "",
-                                                            child: ClipRRect(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          16),
-                                                              child: Image.file(
-                                                                image,
-                                                                fit: BoxFit
-                                                                    .contain,
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Column(
+                              children: [
+                                if (controller.selectedImages.isNotEmpty ||
+                                    controller.selectedAudio.isNotEmpty)
+                                  DialougeComponents.labelTile(
+                                    context,
+                                    title: AppStrings.newMedia,
+                                    // isBorder: true,
+                                    // status: '',
+                                  ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(color: AppColors.gry),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      controller.selectedImages.isEmpty
+                                          ? SizedBox()
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: SizedBox(
+                                                width:
+                                                    MediaQuery.sizeOf(context)
+                                                        .width,
+                                                child: Wrap(
+                                                  spacing: 10.0,
+                                                  runSpacing: 10.0,
+                                                  children: controller
+                                                      .selectedImages
+                                                      .map((image) {
+                                                    int index = controller
+                                                        .selectedImages
+                                                        .indexOf(image);
+                                                    return Stack(
+                                                      children: [
+                                                        InkWell(
+                                                          onTap: () {},
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          FullScreenWidget(
+                                                                    disposeLevel:
+                                                                        DisposeLevel
+                                                                            .Low,
+                                                                    child: Hero(
+                                                                      tag: "",
+                                                                      child:
+                                                                          ClipRRect(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(16),
+                                                                        child: Image
+                                                                            .file(
+                                                                          image,
+                                                                          fit: BoxFit
+                                                                              .contain,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Image.file(
+                                                              image,
+                                                              width: 92,
+                                                              height: 92,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          right: 0,
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () =>
+                                                                controller
+                                                                    .removeImage(
+                                                                        index),
+                                                            child: CircleAvatar(
+                                                              radius: 8,
+                                                              backgroundColor:
+                                                                  Colors.red,
+                                                              child: Icon(
+                                                                Icons.close,
+                                                                color: Colors
+                                                                    .white,
+                                                                size: 12,
                                                               ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
+                                                      ],
                                                     );
-                                                  },
-                                                  child: Image.file(
-                                                    image,
-                                                    width: 92,
-                                                    height: 92,
-                                                    fit: BoxFit.cover,
-                                                  ),
+                                                  }).toList(),
                                                 ),
                                               ),
-                                              Positioned(
-                                                right: 0,
-                                                child: GestureDetector(
-                                                  onTap: () => controller
-                                                      .removeImage(index),
-                                                  child: CircleAvatar(
-                                                    radius: 8,
-                                                    backgroundColor: Colors.red,
-                                                    child: Icon(
-                                                      Icons.close,
-                                                      color: Colors.white,
-                                                      size: 12,
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(color: AppColors.gry),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Column(
+                                        children: controller.selectedAudio
+                                            .asMap()
+                                            .entries
+                                            .map((entry) {
+                                          int index = entry.key;
+                                          File audioFile = entry.value;
+                                          return Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  IconButton(
+                                                    icon: Icon(
+                                                      controller.currentlyPlayingIndex ==
+                                                              index
+                                                          ? Icons.pause
+                                                          : Icons.play_arrow,
+                                                      color: Colors.green,
                                                     ),
+                                                    onPressed: () =>
+                                                        controller.playAudio(
+                                                            audioFile, index),
                                                   ),
-                                                ),
+                                                  controller.currentlyPlayingIndex !=
+                                                          index
+                                                      ? Expanded(
+                                                          child: Container(
+                                                            width: MediaQuery
+                                                                    .sizeOf(
+                                                                        context)
+                                                                .width,
+                                                            color: AppColors
+                                                                .primary,
+                                                            height: 2.0,
+                                                          ),
+                                                        )
+                                                      : Expanded(
+                                                          child:
+                                                              AudioFileWaveforms(
+                                                            size: const Size
+                                                                .fromHeight(40),
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            margin:
+                                                                EdgeInsets.zero,
+                                                            playerController:
+                                                                controller
+                                                                    .playerController,
+                                                            enableSeekGesture:
+                                                                true,
+                                                            waveformType:
+                                                                WaveformType
+                                                                    .long,
+                                                            playerWaveStyle:
+                                                                PlayerWaveStyle(
+                                                              fixedWaveColor:
+                                                                  Colors.grey,
+                                                              waveCap: StrokeCap
+                                                                  .square,
+                                                              liveWaveColor:
+                                                                  AppColors
+                                                                      .primary,
+                                                              showSeekLine:
+                                                                  true,
+                                                              seekLineColor:
+                                                                  AppColors.red,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                  IconButton(
+                                                    icon: Icon(Icons.delete,
+                                                        color: Colors.red),
+                                                    onPressed: () => controller
+                                                        .deleteAudio(index),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           );
                                         }).toList(),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: AppColors.gry),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
+                                ),
+                              ],
+                            ),
+                            // Replace the existing ticket media section with this updated code
+
                             Column(
-                              children: controller.selectedAudio
-                                  .asMap()
-                                  .entries
-                                  .map((entry) {
-                                int index = entry.key;
-                                File audioFile = entry.value;
-                                return Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(
-                                            controller.currentlyPlayingIndex ==
-                                                    index
-                                                ? Icons.pause
-                                                : Icons.play_arrow,
-                                            color: Colors.green,
-                                          ),
-                                          onPressed: () => controller.playAudio(
-                                              audioFile, index),
-                                        ),
-                                        controller.currentlyPlayingIndex !=
-                                                index
-                                            ? Expanded(
+                              children: [
+                                if (existingImages.isNotEmpty || existingAudio.isNotEmpty)
+                                  DialougeComponents.labelTile(
+                                    context,
+                                    title: 'Existing Ticket Media',
+                                  ),
+                                if (existingImages.isNotEmpty)
+                                  SizedBox(
+                                    height: 100,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: existingImages.length,
+                                      itemBuilder: (context, index) {
+                                        final mediaItem = existingImages[index];
+                                        final imageUrl = '${Urls.domain}${mediaItem.imagekey}';
+                                        return Stack(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => Get.to(TicketImageFullView(imageUrl: imageUrl)),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
                                                 child: Container(
-                                                  width:
-                                                      MediaQuery.sizeOf(context)
-                                                          .width,
-                                                  color: AppColors.primary,
-                                                  height: 2.0,
-                                                ),
-                                              )
-                                            : Expanded(
-                                                child: AudioFileWaveforms(
-                                                  size:
-                                                      const Size.fromHeight(40),
-                                                  padding: EdgeInsets.zero,
-                                                  margin: EdgeInsets.zero,
-                                                  playerController: controller
-                                                      .playerController,
-                                                  enableSeekGesture: true,
-                                                  waveformType:
-                                                      WaveformType.long,
-                                                  playerWaveStyle:
-                                                      PlayerWaveStyle(
-                                                    fixedWaveColor: Colors.grey,
-                                                    waveCap: StrokeCap.square,
-                                                    liveWaveColor:
-                                                        AppColors.primary,
-                                                    showSeekLine: true,
-                                                    seekLineColor:
-                                                        AppColors.red,
+                                                  width: 80,
+                                                  height: 80,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(color: AppColors.gry),
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: imageUrl,
+                                                    fit: BoxFit.cover,
+                                                    placeholder: (context, url) => Center(
+                                                      child: CircularProgressIndicator(color: AppColors.black),
+                                                    ),
+                                                    errorWidget: (context, url, error) => Icon(Icons.error),
                                                   ),
                                                 ),
                                               ),
-                                        IconButton(
-                                          icon: Icon(Icons.delete,
-                                              color: Colors.red),
-                                          onPressed: () =>
-                                              controller.deleteAudio(index),
-                                        ),
-                                      ],
+                                            ),
+                                            Positioned(
+                                              right: 0,
+                                              top: 0,
+                                              child: GestureDetector(
+                                                onTap: () => controller.removeTicketMedia(task, mediaItem.ticketsMediaId),
+                                                child: CircleAvatar(
+                                                  radius: 12,
+                                                  backgroundColor: Colors.red,
+                                                  child: Icon(
+                                                    Icons.close,
+                                                    color: Colors.white,
+                                                    size: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     ),
-                                  ],
-                                );
-                              }).toList(),
+                                  ),
+                                if (existingAudio.isNotEmpty)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      border: Border.all(color: AppColors.gry),
+                                    ),
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    padding: EdgeInsets.symmetric(vertical: 4),
+                                    child: Column(
+                                      children: existingAudio.asMap().entries.map((entry) {
+                                        final index = entry.key;
+                                        final media = entry.value;
+                                        final audioUrl = '${Urls.domain}/${media.audioKey}';
+                                        return Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Obx(() {
+                                                  if (audioController.isLoading.value &&
+                                                      audioController.currentlyPlayingIndex!.value == index) {
+                                                    return Padding(
+                                                      padding: const EdgeInsets.only(right: 20, top: 5, left: 8),
+                                                      child: SizedBox(
+                                                        width: 20,
+                                                        height: 20,
+                                                        child: const CircularProgressIndicator(color: AppColors.primary),
+                                                      ),
+                                                    );
+                                                  }
+                                                  return IconButton(
+                                                    icon: Icon(
+                                                      audioController.isPlaying.value &&
+                                                          audioController.currentlyPlayingIndex!.value == index
+                                                          ? Icons.pause
+                                                          : Icons.play_arrow,
+                                                      color: Colors.green,
+                                                    ),
+                                                    onPressed: () async =>
+                                                    await audioController.playAudio(audioUrl, index),
+                                                  );
+                                                }),
+                                                Text('Audio ${index + 1}'),
+                                              ],
+                                            ),
+                                            IconButton(
+                                              icon: Icon(Icons.delete, color: Colors.red),
+                                              onPressed: () => controller.removeTicketMedia(
+                                                task,
+                                                media.ticketsMediaId,
+                                                isAudio: true,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            // SB.h(20),
+                            // SB.h(5),
+                          ],
+                        ),
+                        // SB.h(15),
+                        DialougeComponents.labelTile(
+                          context,
+                          // status: '',
+                          // isBorder: true,
+                          title: AppStrings.directory,
+                          titleStyle: context.titleSmall!.copyWith(
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SB.h(10),
+                        DialougeComponents.labelTile(
+                          context,
+                          title: AppStrings.changeMember,
+                          // isBorder: true,
+                          // status: '',
+                        ),
+                        SB.h(10),
+                        // DialougeComponents.nameTile(context, name: "Anthony Roy"),
+
+                        _buildEmployeeDropDown(context,
+                            preSelectedEmployee: preSelectedEmployee),
+
+                        SB.h(10),
+                        // DialougeComponents.dateTile(context,
+                        //     time: '1:03 PM', date: '11/23/2023'),
+                        // SB.h(5),
+                        // DialougeComponents.dateTile(context,
+                        //     label: 'Completion Date:', time: '1:03 PM', date: '11/23/2023'),
+                        // SB.h(10),
+                        DialougeComponents.labelTile(
+                          context,
+                          // status: '',
+                          // isBorder: true,
+                          title: AppStrings.urgent,
+                          titleStyle: context.titleSmall!.copyWith(
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SB.h(10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            RoomMapComponents.radioButton<YesNo>(
+                              context,
+                              YesNo.yes,
+                              selectedUrgent,
+                              AppStrings.yes,
+                              onUrgentChanged,
+                              width: context.width * 0.35,
+                            ),
+                            RoomMapComponents.radioButton<YesNo>(
+                              context,
+                              YesNo.no,
+                              selectedUrgent,
+                              AppStrings.no,
+                              onUrgentChanged,
                             ),
                           ],
                         ),
-                      ),
-                      // SB.h(20),
-                      // SB.h(5),
-                    ],
-                  ),
-                  // SB.h(15),
-                  DialougeComponents.labelTile(
-                    context,
-                    // status: '',
-                    // isBorder: true,
-                    title: AppStrings.directory,
-                    titleStyle: context.titleSmall!.copyWith(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w600,
+                        SB.h(20),
+                        AppButton.primary(
+                          height: 50,
+                          width: context.width,
+                          title: AppStrings.done,
+                          background: AppColors.primary,
+                          onPressed: onDoneTap,
+                        ),
+                        SB.h(10),
+                      ],
                     ),
                   ),
-                  SB.h(10),
-                  DialougeComponents.labelTile(
-                    context,
-                    title: AppStrings.changeMember,
-                    // isBorder: true,
-                    // status: '',
-                  ),
-                  SB.h(10),
-                  // DialougeComponents.nameTile(context, name: "Anthony Roy"),
-
-                  _buildEmployeeDropDown(context,
-                      preSelectedEmployee: preSelectedEmployee),
-
-                  SB.h(10),
-                  // DialougeComponents.dateTile(context,
-                  //     time: '1:03 PM', date: '11/23/2023'),
-                  // SB.h(5),
-                  // DialougeComponents.dateTile(context,
-                  //     label: 'Completion Date:', time: '1:03 PM', date: '11/23/2023'),
-                  // SB.h(10),
-                  DialougeComponents.labelTile(
-                    context,
-                    // status: '',
-                    // isBorder: true,
-                    title: AppStrings.urgent,
-                    titleStyle: context.titleSmall!.copyWith(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SB.h(10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      RoomMapComponents.radioButton<YesNo>(
-                        context,
-                        YesNo.yes,
-                        selectedUrgent,
-                        AppStrings.yes,
-                        onUrgentChanged,
-                        width: context.width * 0.35,
-                      ),
-                      RoomMapComponents.radioButton<YesNo>(
-                        context,
-                        YesNo.no,
-                        selectedUrgent,
-                        AppStrings.no,
-                        onUrgentChanged,
-                      ),
-                    ],
-                  ),
-                  SB.h(20),
-                  AppButton.primary(
-                    height: 50,
-                    width: context.width,
-                    title: AppStrings.done,
-                    background: AppColors.primary,
-                    onPressed: onDoneTap,
-                  ),
-                  SB.h(10),
-                ],
-              ),
-            ),
-          );
+                );
+              });
         });
   }
 

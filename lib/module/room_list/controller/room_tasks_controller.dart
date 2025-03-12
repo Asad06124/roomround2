@@ -12,14 +12,10 @@ import 'package:roomrounds/core/apis/models/room/room_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 import '../../../utils/custom_overlays.dart';
-import '../../emloyee_directory/controller/employee_directory_controller.dart';
 
 class RoomTasksController extends GetxController {
-  // TaskListController({this.roomId});
-  // int? roomId;
-  // String? roomName;
-  // String? templateName;
   Room? room;
+  List<int> removedMediaIds = [];
 
   final TextEditingController _commentsController = TextEditingController();
   var isRecording = false.obs;
@@ -37,29 +33,7 @@ class RoomTasksController extends GetxController {
 
   int? get currentlyPlayingIndex => _currentlyPlayingIndex;
   final PlayerController playerController = PlayerController();
-  List<RoomTask> _tasks = [
-    /*   RoomTask(
-      roomId: 11,
-      assignTemplateTaskId: 322,
-      taskName: 'Tasks 322 true ',
-      taskStatus: false,
-      isCompleted: true,
-    ),
-    RoomTask(
-      roomId: 11,
-      assignTemplateTaskId: 321,
-      taskName: 'Tasks 321 true ',
-      taskStatus: false,
-      isCompleted: true,
-    ),
-    RoomTask(
-      roomId: 11,
-      assignTemplateTaskId: 323,
-      taskName: 'Tasks 323 false ',
-      taskStatus: false,
-      isCompleted: false,
-    ), */
-  ];
+  List<RoomTask> _tasks = [];
 
   void changeSortBy(String? value) {
     if (value != null && value.trim().isNotEmpty) {
@@ -74,14 +48,6 @@ class RoomTasksController extends GetxController {
   }
 
   List<RoomTask> get tasks => _tasks;
-
-  // final List<YesNo> _tasks = [];
-  // List<YesNo> get tasks => _tasks;
-  // final List<String> _tasksTitle = [
-  //   'Arrange audit findings?',
-  //   'Manage audit findings?'
-  // ];
-  // List<String> get tasksTitle => _tasksTitle;
 
   @override
   void onInit() {
@@ -121,8 +87,16 @@ class RoomTasksController extends GetxController {
     update();
   }
 
-  void multiImagePic() async {
+  void multiImagePic(int? existingImages) async {
     final ImageSource? source = await _showImageSourceDialog();
+
+    if (selectedImages.length + (existingImages ?? 0) >= 3) {
+      CustomOverlays.showToastMessage(
+        message: 'You have already selected the maximum of 3 images.',
+        isSuccess: true,
+      );
+      return;
+    }
 
     if (source == null) return;
 
@@ -131,16 +105,7 @@ class RoomTasksController extends GetxController {
         source: ImageSource.camera,
         imageQuality: 80,
       );
-
       if (image == null) return;
-
-      if (selectedImages.length >= 3) {
-        CustomOverlays.showToastMessage(
-          message: 'You have already selected the maximum of 3 images.',
-          isSuccess: true,
-        );
-        return;
-      }
 
       selectedImages.add(File(image.path));
       update();
@@ -149,17 +114,18 @@ class RoomTasksController extends GetxController {
         imageQuality: 80,
         requestFullMetadata: false,
       );
-
       if (images.isEmpty) return;
 
-      int remainingSpace = 3 - selectedImages.length;
+      // Calculate remaining image slots considering existing images.
+      int remainingSpace = 3 - (selectedImages.length + (existingImages ?? 0));
 
-      if (remainingSpace == 0) {
+      if (remainingSpace <= 0) {
         CustomOverlays.showToastMessage(
             message: 'You have already selected the maximum of 3 images.');
         return;
       }
 
+      // Only take images up to the remaining available slots.
       final List<File> newImages =
           images.take(remainingSpace).map((image) => File(image.path)).toList();
 
@@ -205,9 +171,9 @@ class RoomTasksController extends GetxController {
     );
   }
 
-  Future<void> startRecording() async {
+  Future<void> startRecording(int? existingAudios) async {
     if (recorderController.hasPermission) {
-      if (selectedAudio.length >= 3) {
+      if (selectedAudio.length + (existingAudios ?? 0) >= 3) {
         CustomOverlays.showToastMessage(
           message: 'You can only record up to 3 audios.',
           isSuccess: true,
@@ -337,11 +303,72 @@ class RoomTasksController extends GetxController {
       if (completeAt != null) {
         if (completeAt == userSelection || value == YesNo.na) {
           // Update Task
-          _updateTaskStatus(
-            index,
-            task,
-            userSelection,
-          );
+          if (task.ticketData != null) {
+            Get.defaultDialog(
+              backgroundColor: AppColors.white,
+              title: 'Warning!',
+              titleStyle: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.warning_amber_outlined,
+                    color: Colors.orange,
+                    size: 50,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'This task has a ticket associated with it. If you proceed, this ticket will be deleted, and this action cannot be undone.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ],
+              ),
+              radius: 10,
+              confirmTextColor: AppColors.white,
+              cancelTextColor: AppColors.primary,
+              buttonColor: AppColors.primary,
+              confirm: ElevatedButton(
+                onPressed: () {
+                  _updateTaskStatus(index, task, userSelection);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                ),
+                child: Text('Proceed',style: TextStyle(color: AppColors.white),),
+              ),
+              cancel: ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                ),
+                child: Text('Cancel',style: TextStyle(color: AppColors.primary),),
+              ),
+            );
+          } else {
+            _updateTaskStatus(
+              index,
+              task,
+              userSelection,
+            );
+          }
         } else {
           // create ticket
           _showCreateTicketDialog(task);
@@ -458,7 +485,16 @@ class RoomTasksController extends GetxController {
     urgent.value = null;
     assignedTo.value = null;
     selectedAudio.clear();
+    removedMediaIds.clear();
     selectedImages.clear();
+  }
+
+  void removeTicketMedia(RoomTask? task, int? ticketMediaId,
+      {bool isAudio = false}) {
+    if (ticketMediaId != null) {
+      removedMediaIds.add(ticketMediaId);
+      update();
+    }
   }
 
   void _showCreateTicketDialog(RoomTask? task) {
@@ -466,7 +502,6 @@ class RoomTasksController extends GetxController {
     bool showMyManager = profileController.isEmployee;
     int? departmentId = profileController.user?.departmentId;
 
-    // Declare the variable outside the if block.
     Employee? preSelectedEmployee;
 
     if (task?.ticketData != null) {
@@ -493,11 +528,13 @@ class RoomTasksController extends GetxController {
                 title: task?.taskName,
                 preSelectedEmployee: preSelectedEmployee,
                 selectedUrgent: urgent.value,
+                task: task,
                 textFieldController: _commentsController,
                 onUrgentChanged: _onUrgentValueChanged,
                 onSelectItem: _onAssignedToChange,
-                onDoneTap: () {
-                  _createNewTicket(task);
+                onDoneTap: () async {
+                  await _createNewTicket(task);
+                  _fetchTasksList(task?.roomId, _sortBy);
                 },
               );
             });
@@ -511,6 +548,8 @@ class RoomTasksController extends GetxController {
       },
     ).then((_) {
       _clearTicketDialogData();
+      update();
+      task.reactive;
     });
   }
 
@@ -519,7 +558,7 @@ class RoomTasksController extends GetxController {
     update();
   }
 
-  void _createNewTicket(RoomTask? task) async {
+  Future<void> _createNewTicket(RoomTask? task) async {
     // _updateHasData(false);
     int? assignedToId = assignedTo.value?.userId;
     String comments = _commentsController.text.trim();
@@ -538,6 +577,8 @@ class RoomTasksController extends GetxController {
       "AssignTo": '$assignedToId',
       if (task?.ticketData != null)
         'TicketId': task!.ticketData!.ticketId.toString(),
+      if (removedMediaIds.isNotEmpty)
+        'RemoveTicketMediaIds': removedMediaIds.join(','),
     };
 
     var resp = await APIFunction.call(
@@ -554,14 +595,8 @@ class RoomTasksController extends GetxController {
     );
 
     if (resp != null && resp is bool) {
-      if (resp == true) {
-        // Close Dialog
-        // Get.back();
-      }
-      // update();
+      if (resp == true) {}
     }
-
-    // _updateHasData(true);
   }
 
   void _onAssignedToChange(Employee? employee) {

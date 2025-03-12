@@ -31,6 +31,7 @@ class AppStrings {
   static const String auditTempleteTasks = "Audit Template Tasks";
   static const String cannotBeEmpty = "cannot be empty";
   static const String changeMember = "Change Member:";
+  static const String newMedia = "New Media:";
   static const String changePassword = "Change Password";
   static const String clearAll = "Clear All";
   static const String clickHere = "Click here";

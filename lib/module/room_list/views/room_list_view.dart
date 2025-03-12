@@ -133,17 +133,60 @@ class RoomListView extends StatelessWidget {
           } else { */
           bool isCompleted = room.roomStatus == true;
 
-          return EmployeeDirectoryComponents.tile(
-            context,
-            title: room.roomName,
-            onTap: () async {
-              await Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
-              Get.find<RoomListController>().fetchRoomsList(hasData: true);
-            },
-            trailingWidget: RoomListComponents.statusWidget(
-              context,
-              isComplete: isCompleted,
-            ),
+          return Stack(
+            children: [
+              EmployeeDirectoryComponents.tile(
+                context,
+                title: room.roomName,
+                onTap: () async {
+                  await Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
+                  Get.find<RoomListController>().fetchRoomsList(hasData: true);
+                },
+                trailingWidget: RoomListComponents.statusWidget(
+                  context,
+                  isComplete: isCompleted,
+                ),
+              ),
+              if (room.taskProgress?.totalTicketCount != null &&
+                  room.taskProgress?.totalTicketCount != 0)
+                Container(
+                  height: 20,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(15), // Rounded edges
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Ticket",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              Positioned(
+                bottom: 10,
+                child: Container(
+                  height: 20,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(15), // Rounded edges
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "${room.taskProgress!.totalTicketCount! + room.taskProgress!.completedTasksCount!}/${room.taskProgress?.totalTasksCount}",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              )
+            ],
           );
           // }
         },
