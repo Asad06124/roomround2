@@ -166,26 +166,27 @@ class RoomListView extends StatelessWidget {
                     ),
                   ),
                 ),
-              Positioned(
-                bottom: 10,
-                child: Container(
-                  height: 20,
-                  width: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(15), // Rounded edges
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "${room.taskProgress!.totalTicketCount! + room.taskProgress!.completedTasksCount!}/${room.taskProgress?.totalTasksCount}",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+              if (!isCompleted)
+                Positioned(
+                  bottom: 10,
+                  child: Container(
+                    height: 20,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(15), // Rounded edges
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${room.taskProgress!.totalTicketCount! + room.taskProgress!.completedTasksCount!}/${room.taskProgress?.totalTasksCount}",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
-                ),
-              )
+                )
             ],
           );
           // }
