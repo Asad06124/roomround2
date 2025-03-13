@@ -19,7 +19,7 @@ class RoomListController extends GetxController {
     fetchRoomsList();
   }
 
-  void fetchRoomsList({bool hasData = false}) async {
+  Future<void> fetchRoomsList({bool hasData = false}) async {
     int? managerId = profileController.userId;
     bool? roomStatus = getRoomStatus();
     _updateHasData(hasData);

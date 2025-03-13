@@ -1,6 +1,7 @@
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/main_features/components/main_features_components.dart';
 import 'package:roomrounds/module/main_features/controller/main_feature_controller.dart';
+import 'package:roomrounds/module/room_list/controller/room_list_controller.dart';
 
 // ignore: must_be_immutable
 class MainFeaturesView extends StatelessWidget {
@@ -90,11 +91,17 @@ class MainFeaturesView extends StatelessWidget {
                             // height: context.height * 0.55,
                             child: MainFeaturesComponents.mainCards(
                               context,
+                              hasRoom: controller.hasRoom,
                               isGridView: controller.isGridView,
                               features: controller.features,
-                              onPressed: (page) {
+                              onPressed: (page) async {
                                 if (page != null) {
-                                  Get.toNamed(page);
+                                  await Get.toNamed(page);
+                                  RoomListController roomListController =
+                                      Get.find();
+                                  if (roomListController.roomsList.isEmpty) {
+                                    controller.onInit();
+                                  }
                                 }
                               },
                             ),

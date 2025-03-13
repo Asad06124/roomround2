@@ -1,20 +1,26 @@
 import 'package:roomrounds/core/apis/models/feature/main_feature.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
+import '../../room_list/controller/room_list_controller.dart';
+
 class MainFeatureController extends GetxController {
   // UserType _userType = UserType.employee;
 
   bool _isGridView = true;
-
+  RoomListController roomListController = Get.put(RoomListController());
   bool get isGridView => _isGridView;
 
   List<MainFeature> _features = [];
 
   List<MainFeature> get features => _features;
-
+bool hasRoom = false;
   @override
   void onInit() {
     super.onInit();
+    roomListController.fetchRoomsList().then((result){
+      hasRoom = roomListController.roomsList.isNotEmpty;
+      update();
+    });
     _createMainFeatures();
   }
 

@@ -6,6 +6,7 @@ class MainFeaturesComponents {
   static Widget mainCards(
     BuildContext context, {
     bool isGridView = false,
+    bool hasRoom = false,
     List<MainFeature> features = const [],
     required Function(String? page) onPressed,
   }) {
@@ -30,7 +31,7 @@ class MainFeaturesComponents {
             itemBuilder: (context, index) {
               MainFeature feature = features[index];
               return InkWell(
-                child: _boxTile(context, feature),
+                child: _boxTile(context, feature,hasRoom),
                 onTap: () => onPressed(feature.page),
               );
             },
@@ -41,14 +42,14 @@ class MainFeaturesComponents {
             itemBuilder: (context, index) {
               MainFeature feature = features[index];
               return InkWell(
-                child: _rowTile(context, feature),
+                child: _rowTile(context, feature, hasRoom),
                 onTap: () => onPressed(feature.page),
               );
             },
           );
   }
 
-  static Widget _rowTile(BuildContext context, MainFeature? feature) {
+  static Widget _rowTile(BuildContext context, MainFeature? feature, bool hasRoom) {
     if (feature != null) {
       return Container(
         // width: 150,
@@ -57,7 +58,8 @@ class MainFeaturesComponents {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: AppColors.white,
+
+            color: feature.title==AppConstants.appName&&hasRoom?AppColors.green:AppColors.white,
             boxShadow: [
               BoxShadow(
                 blurRadius: 5,
@@ -88,7 +90,7 @@ class MainFeaturesComponents {
     }
   }
 
-  static Widget _boxTile(BuildContext context, MainFeature? feature) {
+  static Widget _boxTile(BuildContext context, MainFeature? feature, bool hasRoom) {
     if (feature != null) {
       return Container(
         padding: const EdgeInsets.only(top: 5),
@@ -103,7 +105,7 @@ class MainFeaturesComponents {
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: AppColors.white,
+                color: feature.title==AppConstants.appName&&hasRoom?AppColors.green:AppColors.white,
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 5,
