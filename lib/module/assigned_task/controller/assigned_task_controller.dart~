@@ -493,6 +493,7 @@ class AssignedTaskController extends GetxController {
 
   void _showFullWidthDialog(Widget child) {
     Get.dialog(
+
       Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 14),
         child: child,

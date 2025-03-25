@@ -49,7 +49,7 @@ class RoomListComponents {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isComplete
+          color: isTicket?AppColors.aqua.withOpacity(0.4):isComplete
               ? AppColors.green.withOpacity(0.5)
               : AppColors.yellowLight.withOpacity(0.4),
           borderRadius: BorderRadius.circular(30),
@@ -60,7 +60,7 @@ class RoomListComponents {
             Text(
               isComplete ? "Completed " : isTicket? "Ticket" : "Incomplete",
               style: context.bodyLarge!.copyWith(
-                color: isComplete ? AppColors.greenDark : AppColors.yellowDark,
+                color: isTicket?AppColors.textPrimary: isComplete ? AppColors.greenDark : AppColors.yellowDark,
                 fontWeight: FontWeight.w600,
               ),
             ),

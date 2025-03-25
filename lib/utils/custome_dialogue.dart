@@ -54,6 +54,7 @@ class CloseTicketDialouge extends StatefulWidget {
 class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
   late int _selectedIndex;
   late EmployeeDirectoryController employeeDirectoryController;
+  bool _hasChanges = false;
 
   @override
   void initState() {
@@ -64,6 +65,13 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
       fetchDepartments: true,
       fetchEmployees: true,
     ));
+
+    // Detect text changes
+    widget.textController?.addListener(() {
+      if (widget.textController!.text != (widget.ticket?.reply ?? '')) {
+        setState(() => _hasChanges = true);
+      }
+    });
   }
 
   @override
@@ -91,7 +99,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DialougeComponents.closeBtn(),
+                DialougeComponents.closeBtn(onCloseTap: _onClosePressed),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: Column(
@@ -157,7 +165,9 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                     (e) => e.employeeName == value,
                                     orElse: () => Employee(
                                         employeeName: '', userId: null),
+
                                   );
+                                  _hasChanges = true;
                                   if (selectedEmployee.userId != null) {
                                     Get.find<AssignedTaskController>()
                                         .setSelectedEmployee(selectedEmployee);
@@ -278,6 +288,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                         onTap: (index) {
                           setState(() {
                             _selectedIndex = index;
+                            _hasChanges = true;
                             widget.onRadioTap!(_selectedIndex);
                           });
                         },
@@ -307,6 +318,65 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
       },
     );
   }
+
+  void _onClosePressed() {
+    if (_hasChanges) {
+      _showUnsavedChangesDialog();
+    } else {
+      Get.back();
+    }
+  }
+
+  void _showUnsavedChangesDialog() {
+    Get.defaultDialog(
+      title: "Unsaved Changes",
+      backgroundColor: AppColors.white,
+      titleStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.redAccent,
+      ),
+      content: Column(
+        children: [
+          Icon(Icons.warning_amber_rounded, size: 50, color: Colors.amber),
+          SizedBox(height: 10),
+          Text(
+            "You have unsaved changes. Are you sure you want to exit without saving?",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.black87),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+      confirm: ElevatedButton.icon(
+        onPressed: () {
+          Get.back(); // Close dialog
+          Get.back(); // Close screen
+        },
+        icon: Icon(Icons.exit_to_app),
+        label: Text("Discard & Exit"),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.redAccent,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+      cancel: OutlinedButton(
+        onPressed: () => Get.back(),
+        child: Text("Cancel"),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          side: BorderSide(color: Colors.grey),
+        ),
+      ),
+    );
+  }
+
 }
 
 class ClosedTicketDialouge extends StatelessWidget {
@@ -2254,7 +2324,7 @@ class DialougeComponents {
   }
 
   static Widget closeBtn(
-      {bool isDeleteBtn = false, GestureTapCallback? onDelete}) {
+      {bool isDeleteBtn = false, GestureTapCallback? onDelete,GestureTapCallback? onCloseTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -2271,7 +2341,7 @@ class DialougeComponents {
           SB.w(15),
         },
         InkWell(
-          onTap: () => Get.back(),
+          onTap: onCloseTap ?? () => Get.back(),
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.white,
