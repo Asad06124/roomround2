@@ -42,7 +42,7 @@
 	<string>We need access to your camera in RoomRounds to upload photos or capture profile photo please grant camera access</string>
 
 	<key>NSMicrophoneUsageDescription</key>
-	<string>We need access to Microphone in RoomRounds to record audio. Please grant permission</string>
+	<string>Roomrounds needs access to the microphone to allow you to record voice notes and add them to your tickets.</string>
 	
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>RoomRounds requires access to your photo library to upload photos or profile images.</string>
