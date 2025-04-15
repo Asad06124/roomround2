@@ -165,7 +165,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                                     (e) => e.employeeName == value,
                                     orElse: () => Employee(
                                         employeeName: '', userId: null),
-
                                   );
                                   _hasChanges = true;
                                   if (selectedEmployee.userId != null) {
@@ -376,7 +375,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
       ),
     );
   }
-
 }
 
 class ClosedTicketDialouge extends StatelessWidget {
@@ -753,16 +751,22 @@ class CreateTicketDialog extends StatelessWidget {
               init: RoomTasksController(),
               builder: (controller) {
                 final existingImages = task?.ticketData?.ticketMedia
-                    ?.where((media) =>
-                (media.imagekey?.isNotEmpty ?? false) &&
-                    !(controller.removedMediaIds.contains(media.ticketsMediaId) ?? false))
-                    .toList() ?? [];
+                        ?.where((media) =>
+                            (media.imagekey?.isNotEmpty ?? false) &&
+                            !(controller.removedMediaIds
+                                    .contains(media.ticketsMediaId) ??
+                                false))
+                        .toList() ??
+                    [];
 
                 final existingAudio = task?.ticketData?.ticketMedia
-                    ?.where((media) =>
-                (media.audioKey?.isNotEmpty ?? false) &&
-                    !(controller.removedMediaIds.contains(media.ticketsMediaId) ?? false))
-                    .toList() ?? [];
+                        ?.where((media) =>
+                            (media.audioKey?.isNotEmpty ?? false) &&
+                            !(controller.removedMediaIds
+                                    .contains(media.ticketsMediaId) ??
+                                false))
+                        .toList() ??
+                    [];
 
                 return SingleChildScrollView(
                   child: Container(
@@ -780,6 +784,63 @@ class CreateTicketDialog extends StatelessWidget {
                         SB.h(10),
                         DialougeComponents.labelTile(context, title: title),
                         SB.h(10),
+
+                        if (task?.action != null) ...[
+                          DialougeComponents.labelTile(
+                            context,
+                            // isBorder: true,
+                            // status: '',
+                            title: AppStrings.action,
+                            titleStyle: context.titleSmall!.copyWith(
+                              color: AppColors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SB.h(10),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.lightWhite,
+                                  borderRadius: BorderRadius.circular(9.0),
+                                  border: Border.all(
+                                    color: AppColors.gry,
+                                  ),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: CustomTextField(
+                                        maxLines: 1,
+                                        borderRadius: 10,
+                                        isRequiredField: false,
+                                        controller: TextEditingController()
+                                          ..text = task?.action ?? "",
+                                        readOnly: true,
+                                        fillColor: AppColors.lightWhite,
+                                        borderColor: AppColors.lightWhite,
+                                        hintText: AppStrings.writeMessage,
+                                        validator: (value) => null,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.end,
+                              //   children: [
+                              //     Assets.icons.cameraCircle.svg(),
+                              //     SB.w(10),
+                              // Assets.icons.mic.svg(),
+                              //     SB.w(10)
+                              //   ],
+                              // ),
+                            ],
+                          ),
+                          SB.h(15),
+                        ],
                         DialougeComponents.labelTile(
                           context,
                           // isBorder: true,
@@ -862,7 +923,8 @@ class CreateTicketDialog extends StatelessWidget {
                                                 controller.recorderController
                                                         .isRecording
                                                     ? controller.stopRecording()
-                                                    : controller.startRecording(existingAudio.length);
+                                                    : controller.startRecording(
+                                                        existingAudio.length);
                                               },
                                             ),
                                             SizedBox(
@@ -870,7 +932,8 @@ class CreateTicketDialog extends StatelessWidget {
                                             ),
                                             GestureDetector(
                                               onTap: () {
-                                                controller.multiImagePic(existingImages.length);
+                                                controller.multiImagePic(
+                                                    existingImages.length);
                                               },
                                               child: Icon(
                                                 Icons.camera_alt_rounded,
@@ -1113,7 +1176,8 @@ class CreateTicketDialog extends StatelessWidget {
 
                             Column(
                               children: [
-                                if (existingImages.isNotEmpty || existingAudio.isNotEmpty)
+                                if (existingImages.isNotEmpty ||
+                                    existingAudio.isNotEmpty)
                                   DialougeComponents.labelTile(
                                     context,
                                     title: 'Existing Ticket Media',
@@ -1126,27 +1190,41 @@ class CreateTicketDialog extends StatelessWidget {
                                       itemCount: existingImages.length,
                                       itemBuilder: (context, index) {
                                         final mediaItem = existingImages[index];
-                                        final imageUrl = '${Urls.domain}${mediaItem.imagekey}';
+                                        final imageUrl =
+                                            '${Urls.domain}${mediaItem.imagekey}';
                                         return Stack(
                                           children: [
                                             GestureDetector(
-                                              onTap: () => Get.to(TicketImageFullView(imageUrl: imageUrl)),
+                                              onTap: () => Get.to(
+                                                  TicketImageFullView(
+                                                      imageUrl: imageUrl)),
                                               child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
                                                 child: Container(
                                                   width: 80,
                                                   height: 80,
                                                   decoration: BoxDecoration(
-                                                    border: Border.all(color: AppColors.gry),
-                                                    borderRadius: BorderRadius.circular(8),
+                                                    border: Border.all(
+                                                        color: AppColors.gry),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
                                                   ),
                                                   child: CachedNetworkImage(
                                                     imageUrl: imageUrl,
                                                     fit: BoxFit.cover,
-                                                    placeholder: (context, url) => Center(
-                                                      child: CircularProgressIndicator(color: AppColors.black),
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                              color: AppColors
+                                                                  .black),
                                                     ),
-                                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Icon(Icons.error),
                                                   ),
                                                 ),
                                               ),
@@ -1155,7 +1233,11 @@ class CreateTicketDialog extends StatelessWidget {
                                               right: 0,
                                               top: 0,
                                               child: GestureDetector(
-                                                onTap: () => controller.removeTicketMedia(task, mediaItem.ticketsMediaId),
+                                                onTap: () => controller
+                                                    .removeTicketMedia(
+                                                        task,
+                                                        mediaItem
+                                                            .ticketsMediaId),
                                                 child: CircleAvatar(
                                                   radius: 12,
                                                   backgroundColor: Colors.red,
@@ -1182,45 +1264,69 @@ class CreateTicketDialog extends StatelessWidget {
                                     margin: EdgeInsets.symmetric(vertical: 8),
                                     padding: EdgeInsets.symmetric(vertical: 4),
                                     child: Column(
-                                      children: existingAudio.asMap().entries.map((entry) {
+                                      children: existingAudio
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
                                         final index = entry.key;
                                         final media = entry.value;
-                                        final audioUrl = '${Urls.domain}/${media.audioKey}';
+                                        final audioUrl =
+                                            '${Urls.domain}/${media.audioKey}';
                                         return Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Row(
                                               children: [
                                                 Obx(() {
-                                                  if (audioController.isLoading.value &&
-                                                      audioController.currentlyPlayingIndex!.value == index) {
+                                                  if (audioController
+                                                          .isLoading.value &&
+                                                      audioController
+                                                              .currentlyPlayingIndex!
+                                                              .value ==
+                                                          index) {
                                                     return Padding(
-                                                      padding: const EdgeInsets.only(right: 20, top: 5, left: 8),
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 20,
+                                                              top: 5,
+                                                              left: 8),
                                                       child: SizedBox(
                                                         width: 20,
                                                         height: 20,
-                                                        child: const CircularProgressIndicator(color: AppColors.primary),
+                                                        child:
+                                                            const CircularProgressIndicator(
+                                                                color: AppColors
+                                                                    .primary),
                                                       ),
                                                     );
                                                   }
                                                   return IconButton(
                                                     icon: Icon(
-                                                      audioController.isPlaying.value &&
-                                                          audioController.currentlyPlayingIndex!.value == index
+                                                      audioController.isPlaying
+                                                                  .value &&
+                                                              audioController
+                                                                      .currentlyPlayingIndex!
+                                                                      .value ==
+                                                                  index
                                                           ? Icons.pause
                                                           : Icons.play_arrow,
                                                       color: Colors.green,
                                                     ),
                                                     onPressed: () async =>
-                                                    await audioController.playAudio(audioUrl, index),
+                                                        await audioController
+                                                            .playAudio(audioUrl,
+                                                                index),
                                                   );
                                                 }),
                                                 Text('Audio ${index + 1}'),
                                               ],
                                             ),
                                             IconButton(
-                                              icon: Icon(Icons.delete, color: Colors.red),
-                                              onPressed: () => controller.removeTicketMedia(
+                                              icon: Icon(Icons.delete,
+                                                  color: Colors.red),
+                                              onPressed: () =>
+                                                  controller.removeTicketMedia(
                                                 task,
                                                 media.ticketsMediaId,
                                                 isAudio: true,
@@ -2324,7 +2430,9 @@ class DialougeComponents {
   }
 
   static Widget closeBtn(
-      {bool isDeleteBtn = false, GestureTapCallback? onDelete,GestureTapCallback? onCloseTap}) {
+      {bool isDeleteBtn = false,
+      GestureTapCallback? onDelete,
+      GestureTapCallback? onCloseTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [

@@ -14,6 +14,7 @@ class RoomTask {
   bool? roomStatus;
   bool? isNA;
   bool? taskStatus;
+  String? action;
   TicketData? ticketData;
   YesNo? userSelection;
 
@@ -29,6 +30,7 @@ class RoomTask {
     this.taskName,
     this.roomStatus,
     this.isNA,
+    this.action,
     this.taskStatus,
     this.userSelection,
     this.ticketData,
@@ -46,6 +48,7 @@ class RoomTask {
     taskName = json['taskName'];
     roomStatus = json['roomStatus'];
     isNA = json['isNA'];
+    action = json['action'];
     taskStatus = json['taskStatus'];
     if (json['ticketData'] != null) {
       ticketData = TicketData.fromJson(json['ticketData']);
@@ -61,6 +64,7 @@ class RoomTask {
     data['isCompleted'] = isCompleted;
     data['taskCompletion'] = taskCompletion;
     data['roomName'] = roomName;
+    data['action'] = action;
     data['taskName'] = taskName;
     data['roomStatus'] = roomStatus;
     data['isNA'] = isNA;

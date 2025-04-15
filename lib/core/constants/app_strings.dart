@@ -40,6 +40,7 @@ class AppStrings {
   static const String closed = "Closed";
   static const String codeSendTo = "Code send to";
   static const String comment = 'Comment';
+    static const String action = 'Action';
   static const String comments = 'Comments';
   static const String complete = "Complete";
   static const String completeTask = 'Complete Task';
