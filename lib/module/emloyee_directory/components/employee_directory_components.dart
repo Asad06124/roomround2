@@ -254,8 +254,7 @@ class ExpandableTextWithGetX extends StatelessWidget {
     this.style,
   });
 
-  final ExpandableTextController _controller =
-      Get.put(ExpandableTextController());
+  final ExpandableTextController _controller = ExpandableTextController();
 
   @override
   Widget build(BuildContext context) {
@@ -272,13 +271,18 @@ class ExpandableTextWithGetX extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Obx(() {
-          return Text(
-            text,
-            maxLines: _controller.isExpanded.value ? null : maxLines,
-            overflow: _controller.isExpanded.value
-                ? TextOverflow.visible
-                : TextOverflow.ellipsis,
-            style: style,
+          return InkWell(
+            onTap: () {
+              _controller.toggle();
+            },
+            child: Text(
+              text,
+              maxLines: _controller.isExpanded.value ? null : maxLines,
+              overflow: _controller.isExpanded.value
+                  ? TextOverflow.visible
+                  : TextOverflow.ellipsis,
+              style: style,
+            ),
           );
         }),
         if (isOverflowing)

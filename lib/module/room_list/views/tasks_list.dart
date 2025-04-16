@@ -204,6 +204,8 @@ class TasksList extends StatelessWidget {
           );
         },
       );
+    
+    
     } else {
       // No Tasks found
       return SettingsComponents.noResultsFound(
