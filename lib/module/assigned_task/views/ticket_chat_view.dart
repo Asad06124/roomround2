@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-
+import 'package:intl/intl.dart';
 import '../../../core/apis/models/chat_model/chat_model.dart';
 import '../../../core/apis/models/tickets/ticket_model.dart';
 import '../../../core/constants/imports.dart';
@@ -134,25 +134,57 @@ class TicketChatView extends StatelessWidget {
                 itemCount: snapshot.data?.length ?? 0,
                 itemBuilder: (context, index) {
                   final message = snapshot.data![index];
+                  final messageDate = message.updatedAt;
 
-                  // System message handling
-                  if (message.type == 'system') {
-                    return _buildSystemMessage(message);
+                  bool showDateHeader = false;
+                  if (index == snapshot.data!.length - 1) {
+                    showDateHeader = true;
+                  } else {
+                    final prevMessageDate = snapshot.data![index + 1].updatedAt;
+                    if (!isSameDay(messageDate, prevMessageDate)) {
+                      showDateHeader = true;
+                    }
                   }
 
-                  return TicketMessageComponents.messageTile(
-                    context,
-                    isSender: isAssignedToMe == false
-                        ? int.parse(message.senderId) != ticket.assignBy
-                        : int.parse(message.senderId) == ticket.assignBy,
-                    msg: message.content,
-                    time: DateTimeExtension.formatTimeOnly(
-                      message.updatedAt.toString(),
-                    ),
-                    isDelivered: message.isDelivered,
-                    isSeen: message.isSeen,
-                    imageUrl: message.imageUrl,
-                    controller: controller,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (showDateHeader)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Text(
+                              getDateLabel(messageDate),
+                              style: const TextStyle(
+                                  color: Colors.black54, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      if (message.type == 'system')
+                        _buildSystemMessage(message)
+                      else
+                        TicketMessageComponents.messageTile(
+                          context,
+                          isSender: isAssignedToMe == false
+                              ? int.parse(message.senderId) != ticket.assignBy
+                              : int.parse(message.senderId) == ticket.assignBy,
+                          msg: message.content,
+                          time: DateTimeExtension.formatTimeOnly(
+                            message.updatedAt.toString(),
+                          ),
+                          isDelivered: message.isDelivered,
+                          isSeen: message.isSeen,
+                          imageUrl: message.imageUrl,
+                          controller: controller,
+                        ),
+                    ],
                   );
                 },
               );
@@ -273,5 +305,20 @@ class TicketChatView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getDateLabel(DateTime date) {
+    final now = DateTime.now();
+    if (isSameDay(date, now)) {
+      return 'Today';
+    } else if (isSameDay(date, now.subtract(Duration(days: 1)))) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('MMM-dd-yyyy').format(date);
+    }
+  }
+
+  bool isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }

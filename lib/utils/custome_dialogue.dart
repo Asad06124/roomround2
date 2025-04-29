@@ -279,6 +279,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
                             );
                           }).toList(),
                         ),
+                      SB.h(10),
                       DialougeComponents.reply(
                         context,
                         sendStatusList: widget.sendStatusList,
