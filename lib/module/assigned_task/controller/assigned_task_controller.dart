@@ -416,6 +416,31 @@ class AssignedTaskController extends GetxController {
     return [];
   }
 
+  Future<bool> deleteTicket(int id) async {
+    Map<String, dynamic> data = {
+      "id": id,
+      "isDeleted": true,
+    };
+
+    var resp = await APIFunction.call(
+      APIMethods.delete,
+      Urls.deleteTicket,
+      dataMap: data,
+      showLoader: true,
+      showErrorMessage: true,
+      showSuccessMessage: true,
+      isGoBack: false,
+    );
+    resp == true
+        ? _openTickets.removeWhere((ticket) => ticket.ticketId == id)
+        : null;
+    resp == true
+        ? _closedTickets.removeWhere((ticket) => ticket.ticketId == id)
+        : null;
+    update();
+    return resp == true;
+  }
+
   void onTicketTap({
     Ticket? ticket,
     TicketsType? type,
