@@ -121,7 +121,7 @@ class AssignedTaskComponents {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: 'Date: ',
+                            text: 'Created: ',
                             style: context.bodyMedium!.copyWith(
                               color: AppColors.black,
                               fontSize: 14,
