@@ -5,6 +5,7 @@ class CustomeDropDown {
     BuildContext context, {
     required List<T> list,
     T? initialItem,
+    bool includeSuffix = false,
     Key? key,
     required Function(T value) onSelect,
     String hintText = AppStrings.select,
@@ -43,6 +44,7 @@ class CustomeDropDown {
         closedHeaderPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: CustomDropdownDecoration(
+          prefixIcon: includeSuffix ? Assets.icons.filter.svg() : null,
           listItemStyle: context.bodyMedium!.copyWith(
             color: textColor,
             fontWeight: FontWeight.w500,

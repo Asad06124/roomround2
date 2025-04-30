@@ -49,18 +49,28 @@ class RoomListComponents {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isTicket?AppColors.aqua.withOpacity(0.4):isComplete
-              ? AppColors.green.withOpacity(0.5)
-              : AppColors.yellowLight.withOpacity(0.4),
+          color: isTicket
+              ? AppColors.aqua.withOpacity(0.4)
+              : isComplete
+                  ? AppColors.green.withOpacity(0.5)
+                  : AppColors.yellowLight.withOpacity(0.4),
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              isComplete ? "Completed " : isTicket? "Ticket" : "Incomplete",
+              isComplete
+                  ? "Completed "
+                  : isTicket
+                      ? "Ticket"
+                      : "Incomplete",
               style: context.bodyLarge!.copyWith(
-                color: isTicket?AppColors.textPrimary: isComplete ? AppColors.greenDark : AppColors.yellowDark,
+                color: isTicket
+                    ? AppColors.textPrimary
+                    : isComplete
+                        ? AppColors.greenDark
+                        : AppColors.yellowDark,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -88,17 +98,17 @@ class RoomListComponents {
         borderRadius: BorderRadius.circular(10),
         color: AppColors.textPrimary,
       ),
-      padding: const EdgeInsets.only(left: 10),
+      // padding: const EdgeInsets.only(left: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Assets.icons.filter.svg(),
-          SB.w(15),
+          // SB.w(15),
           Expanded(
             child: CustomeDropDown.simple<String>(
               context,
               showShadow: false,
+              includeSuffix: true,
               closedShadow: false,
               textColor: AppColors.white,
               closedFillColor: AppColors.textPrimary,

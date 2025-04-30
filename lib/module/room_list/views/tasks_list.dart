@@ -143,14 +143,14 @@ class TasksList extends StatelessWidget {
               child: RoomListComponents.statusWidget(
                 context,
                 isComplete: isTaskCompleted,
-                isTask:true,
+                isTask: true,
                 isTicket: task.ticketData != null,
                 onToggle: () {
                   controller.updateTaskStatus(
                     index,
                     YesNo.no,
                   );
-
+                
                 },
               ),
             ),
@@ -204,8 +204,6 @@ class TasksList extends StatelessWidget {
           );
         },
       );
-    
-    
     } else {
       // No Tasks found
       return SettingsComponents.noResultsFound(

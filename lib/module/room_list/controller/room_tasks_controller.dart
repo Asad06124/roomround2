@@ -55,11 +55,13 @@ class RoomTasksController extends GetxController {
     _getRoomIdAndTasks(_sortBy);
     _currentlyPlayingIndex = null;
     recorderController.checkPermission();
-    playerController.onCompletion.listen((_) {
-      playerController.stopPlayer();
-      _currentlyPlayingIndex = null;
-      update();
-    });
+    playerController.onCompletion.listen(
+      (_) {
+        playerController.stopPlayer();
+        _currentlyPlayingIndex = null;
+        update();
+      },
+    );
 
     playerController.setFinishMode(finishMode: FinishMode.stop);
     playerController.preparePlayer(path: recordedFilePath.toString());
@@ -234,7 +236,7 @@ class RoomTasksController extends GetxController {
     }
   }
 
-  void _fetchTasksList(int? roomId, String sortBy) async {
+  _fetchTasksList(int? roomId, String sortBy) async {
     int? managerId = profileController.userId;
 
     _updateHasData(false);
@@ -346,7 +348,10 @@ class RoomTasksController extends GetxController {
                   ),
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 ),
-                child: Text('Proceed',style: TextStyle(color: AppColors.white),),
+                child: Text(
+                  'Proceed',
+                  style: TextStyle(color: AppColors.white),
+                ),
               ),
               cancel: ElevatedButton(
                 onPressed: () {
@@ -359,7 +364,10 @@ class RoomTasksController extends GetxController {
                   ),
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 ),
-                child: Text('Cancel',style: TextStyle(color: AppColors.primary),),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: AppColors.primary),
+                ),
               ),
             );
           } else {
@@ -439,6 +447,13 @@ class RoomTasksController extends GetxController {
         _tasks[index].taskStatus = resp;
 
         update();
+      }
+      bool allDone = tasks.every((task) =>
+          task.isNA == true ||
+          task.taskStatus == true ||
+          task.ticketData != null);
+      if (allDone) {
+        Get.back(closeOverlays: true);
       }
     }
 
@@ -523,21 +538,30 @@ class RoomTasksController extends GetxController {
       Dialog(
         child: StatefulBuilder(
           builder: (context, setState) {
-            return Obx(() {
-              return CreateTicketDialog(
-                title: task?.taskName,
-                preSelectedEmployee: preSelectedEmployee,
-                selectedUrgent: urgent.value,
-                task: task,
-                textFieldController: _commentsController,
-                onUrgentChanged: _onUrgentValueChanged,
-                onSelectItem: _onAssignedToChange,
-                onDoneTap: () async {
-                  await _createNewTicket(task);
-                  _fetchTasksList(task?.roomId, _sortBy);
-                },
-              );
-            });
+            return Obx(
+              () {
+                return CreateTicketDialog(
+                  title: task?.taskName,
+                  preSelectedEmployee: preSelectedEmployee,
+                  selectedUrgent: urgent.value,
+                  task: task,
+                  textFieldController: _commentsController,
+                  onUrgentChanged: _onUrgentValueChanged,
+                  onSelectItem: _onAssignedToChange,
+                  onDoneTap: () async {
+                    await _createNewTicket(task);
+                    await _fetchTasksList(task?.roomId, _sortBy);
+                    bool allDone = _tasks.every((_task) =>
+                        _task.isNA == true ||
+                        _task.taskStatus == true ||
+                        _task.ticketData != null);
+                    if (allDone) {
+                      Get.back(closeOverlays: true);
+                    }
+                  },
+                );
+              },
+            );
           },
         ),
       ),
@@ -546,11 +570,13 @@ class RoomTasksController extends GetxController {
         "myTeam": showMyTeamMembers,
         "departmentId": departmentId,
       },
-    ).then((_) {
-      _clearTicketDialogData();
-      update();
-      task.reactive;
-    });
+    ).then(
+      (_) {
+        _clearTicketDialogData();
+        update();
+        task.reactive;
+      },
+    );
   }
 
   void removeImage(int index) {

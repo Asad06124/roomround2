@@ -13,16 +13,24 @@ class MainFeatureController extends GetxController {
   List<MainFeature> _features = [];
 
   List<MainFeature> get features => _features;
-bool hasRoom = false;
+  bool hasRoom = false;
   @override
   void onInit() {
     super.onInit();
-    roomListController.fetchRoomsList().then((result){
-      hasRoom = roomListController.roomsList.isNotEmpty;
+    roomListController.fetchRoomsList().then((result) {
+      hasRoom = roomListController.roomsList.isNotEmpty &&
+          roomListController.roomsList.any((room) => room.roomStatus != true);
       update();
     });
     _createMainFeatures();
   }
+  
+void refreshRoomStatus() async {
+  await roomListController.fetchRoomsList();
+  hasRoom = roomListController.roomsList.isNotEmpty &&
+      roomListController.roomsList.any((room) => room.roomStatus != true);
+  update();
+}
 
   changeLayout(bool val) {
     _isGridView = val;
