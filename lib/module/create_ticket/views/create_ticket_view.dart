@@ -369,44 +369,70 @@ class CreateTicketView extends StatelessWidget with Validators {
                           ),
                         ),
                         SB.h(20),
-                        GestureDetector(
-                          onTap: controller.goToMapView,
-                          child: Container(
-                            height: context.height * 0.2,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: AppColors.white,
-                              border: Border.all(
-                                color: AppColors.gry,
-                                width: 1,
+                        Stack(
+                          children: [
+                            GestureDetector(
+                              onTap: controller.goToMapView,
+                              child: Container(
+                                height: context.height * 0.2,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: AppColors.white,
+                                  border: Border.all(
+                                    color: AppColors.gry,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: controller.screenshotImageBytes
+                                              ?.isNotEmpty ==
+                                          true
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: Image.memory(
+                                            controller.screenshotImageBytes!,
+                                            width: context.width,
+                                            // height: 180,
+                                            fit: BoxFit.fill,
+                                          ),
+                                        )
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Assets.icons.locationPinDrop
+                                                .svg(height: 40),
+                                            SB.w(10),
+                                            Text(AppStrings.selectFromMap,
+                                                style: headingTextStyle),
+                                          ],
+                                        ),
+                                ),
                               ),
                             ),
-                            child: Center(
-                              child: controller
-                                          .screenshotImageBytes?.isNotEmpty ==
-                                      true
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.memory(
-                                        controller.screenshotImageBytes!,
-                                        width: context.width,
-                                        // height: 180,
-                                        fit: BoxFit.fill,
+                            controller.screenshotImageBytes?.isNotEmpty == true
+                                ? Positioned(
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        controller.screenshotImageBytes =
+                                            Uint8List(0);
+                                        controller.update();
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 15,
+                                        backgroundColor: Colors.red,
+                                        child: Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                          size: 18,
+                                        ),
                                       ),
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Assets.icons.locationPinDrop
-                                            .svg(height: 40),
-                                        SB.w(10),
-                                        Text(AppStrings.selectFromMap,
-                                            style: headingTextStyle),
-                                      ],
                                     ),
-                            ),
-                          ),
+                                  )
+                                : SizedBox(),
+                          ],
                         ),
                         SB.h(20),
                         Text(AppStrings.urgent, style: headingTextStyle),
