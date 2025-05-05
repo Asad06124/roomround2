@@ -64,7 +64,7 @@ class FloorPlanView extends StatelessWidget {
                             imageUrl: image!,
                             width: context.width,
                             height: context.height,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fill,
                             errorWidget: (p0, p1, p2) =>
                                 _mapPlaceHolderImage(p0),
                           )
