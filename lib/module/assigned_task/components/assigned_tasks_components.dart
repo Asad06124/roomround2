@@ -79,38 +79,42 @@ class AssignedTaskComponents {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (status != null && status.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(right: 5),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Status: ',
-                            style: context.bodyMedium!.copyWith(
-                              color: AppColors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: RichText(
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Status: ',
+                              style: context.bodyMedium!.copyWith(
+                                color: AppColors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          TextSpan(
-                            text: status,
-                            style: context.bodySmall!.copyWith(
-                              color: Colors.transparent,
-                              fontSize: 12,
-                              decoration:
-                                  isUnderline ? TextDecoration.underline : null,
-                              decorationColor:
-                                  isUnderline ? statusTextColor : null,
-                              fontWeight: FontWeight.w400,
-                              shadows: [
-                                Shadow(
-                                  color: statusTextColor,
-                                  offset: Offset(0, isUnderline ? -2 : 0.01),
-                                ),
-                              ],
+                            TextSpan(
+                              text: status,
+                              style: context.bodySmall!.copyWith(
+                                color: Colors.transparent,
+                                fontSize: 12,
+                                decoration: isUnderline
+                                    ? TextDecoration.underline
+                                    : null,
+                                decorationColor:
+                                    isUnderline ? statusTextColor : null,
+                                fontWeight: FontWeight.w400,
+                                shadows: [
+                                  Shadow(
+                                    color: statusTextColor,
+                                    offset: Offset(0, isUnderline ? -2 : 0.01),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -118,6 +122,7 @@ class AssignedTaskComponents {
                   Container(
                     margin: const EdgeInsets.only(right: 5),
                     child: RichText(
+                      // overflow: TextOverflow.ellipsis,
                       text: TextSpan(
                         children: [
                           TextSpan(
