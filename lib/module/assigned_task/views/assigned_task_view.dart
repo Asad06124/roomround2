@@ -225,7 +225,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
                                     Flexible(
                                       child: Text(
                                         controller.startDate != null
-                                            ? DateFormat('dd-MM-yyyy')
+                                            ? DateFormat('MM/dd/yyyy')
                                                 .format(controller.startDate!)
                                             : 'Start',
                                         style: context.bodySmall!.copyWith(
@@ -277,7 +277,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
                                     Flexible(
                                       child: Text(
                                         controller.endDate != null
-                                            ? DateFormat('dd-MM-yyyy')
+                                            ? DateFormat('MM/dd/yyyy')
                                                 .format(controller.endDate!)
                                             : 'End',
                                         style: context.bodySmall!.copyWith(

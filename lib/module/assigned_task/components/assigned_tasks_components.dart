@@ -130,7 +130,7 @@ class AssignedTaskComponents {
                           ),
                           TextSpan(
                             text: ticket.assignDate != null
-                                ? DateFormat('dd/MM/yyyy')
+                                ? DateFormat('MM/dd/yyyy')
                                     .format(DateTime.parse(ticket.assignDate!))
                                 : 'N/A',
                             style: context.bodySmall!.copyWith(

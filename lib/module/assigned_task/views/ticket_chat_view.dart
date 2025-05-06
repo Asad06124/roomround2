@@ -314,7 +314,7 @@ class TicketChatView extends StatelessWidget {
     } else if (isSameDay(date, now.subtract(Duration(days: 1)))) {
       return 'Yesterday';
     } else {
-      return DateFormat('MMM-dd-yyyy').format(date);
+      return DateFormat('MM-dd-yyyy').format(date);
     }
   }
 
