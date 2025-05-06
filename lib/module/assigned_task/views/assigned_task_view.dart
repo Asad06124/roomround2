@@ -1,4 +1,3 @@
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
@@ -394,71 +393,27 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
         bool isManager = profileController.isManager;
         bool showUnderline = !ticket.isClosed! &&
             controller.ticketsType != TicketsType.assignedTo;
-        return !isAssignedMe
-            ? Slidable(
-                endActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  extentRatio: 0.3,
-                  children: [
-                    SlidableAction(
-                      onPressed: (value) {
-                        controller.deleteTicket(ticket.ticketId!);
-                      },
-                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                      foregroundColor: Colors.red,
-                      icon: Icons.delete,
-                      spacing: 0,
-                      label: 'Delete',
-                    ),
-                  ],
-                ),
-                child: AssignedTaskComponents.tile(
-                  context,
-                  title: ticket.ticketName ??
-                      ticket.floorName ??
-                      ticket.assignToName,
-                  status: ticket.isClosed == false || ticket.isClosed == null
-                      ? 'Open'
-                      : ticket.isCompleted == true
-                          ? 'Completed'
-                          : ticket.status!,
-                  isUnderline: showUnderline,
-                  isAssignedToMe: _tabController.index == 0 ? true : false,
-                  onTap: () {
-                    controller.onTicketTap(
-                      type: controller.ticketsType,
-                      ticket: ticket,
-                      isManager: isManager,
-                      isClosed: ticket.isClosed!,
-                    );
-                  },
-                  fillColor: AppColors.getStatusColor(ticket.status ?? 'Open'),
-                  ticket: ticket,
-                ),
-              )
-            : AssignedTaskComponents.tile(
-                context,
-                title: ticket.ticketName ??
-                    ticket.floorName ??
-                    ticket.assignToName,
-                status: ticket.isClosed == false || ticket.isClosed == null
-                    ? 'Open'
-                    : ticket.isCompleted == true
-                        ? 'Completed'
-                        : ticket.status!,
-                isUnderline: showUnderline,
-                isAssignedToMe: _tabController.index == 0 ? true : false,
-                onTap: () {
-                  controller.onTicketTap(
-                    type: controller.ticketsType,
-                    ticket: ticket,
-                    isManager: isManager,
-                    isClosed: ticket.isClosed!,
-                  );
-                },
-                fillColor: AppColors.getStatusColor(ticket.status ?? 'Open'),
-                ticket: ticket,
-              );
+        return AssignedTaskComponents.tile(
+          context,
+          title: ticket.ticketName ?? ticket.floorName ?? ticket.assignToName,
+          status: ticket.isClosed == false || ticket.isClosed == null
+              ? 'Open'
+              : ticket.isCompleted == true
+                  ? 'Completed'
+                  : ticket.status!,
+          isUnderline: showUnderline,
+          isAssignedToMe: _tabController.index == 0 ? true : false,
+          onTap: () {
+            controller.onTicketTap(
+              type: controller.ticketsType,
+              ticket: ticket,
+              isManager: isManager,
+              isClosed: ticket.isClosed!,
+            );
+          },
+          fillColor: AppColors.getStatusColor(ticket.status ?? 'Open'),
+          ticket: ticket,
+        );
       },
     );
   }
