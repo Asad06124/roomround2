@@ -325,7 +325,7 @@ class AssignedTaskController extends GetxController {
   }
 
   void _updateTicketInCache(
-    Ticket ticket,
+    Ticket targetTicket,
     String? reply,
     int? statusId,
     bool? isClosed,
@@ -333,7 +333,7 @@ class AssignedTaskController extends GetxController {
     String? newStatusText,
   ) {
     for (var ticket in _openTickets) {
-      if (ticket.ticketId == ticket.ticketId) {
+      if (ticket.ticketId == targetTicket.ticketId) {
         ticket.reply = reply;
         ticket.statusId = statusId;
         ticket.isClosed = isClosed;
@@ -345,8 +345,9 @@ class AssignedTaskController extends GetxController {
         break;
       }
     }
+
     for (var ticket in _closedTickets) {
-      if (ticket.ticketId == ticket.ticketId) {
+      if (ticket.ticketId == targetTicket.ticketId) {
         ticket.reply = reply;
         ticket.statusId = statusId;
         ticket.isClosed = isClosed;
