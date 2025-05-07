@@ -398,17 +398,39 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
             ? Slidable(
                 endActionPane: ActionPane(
                   motion: const ScrollMotion(),
-                  extentRatio: 0.3,
+                  extentRatio: 0.17,
                   children: [
-                    SlidableAction(
-                      onPressed: (value) {
+                    CustomSlidableAction(
+                      padding: EdgeInsets.only(left: 5, right: 5),
+                      onPressed: (context) {
                         controller.deleteTicket(ticket.ticketId!);
                       },
-                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                      foregroundColor: Colors.red,
-                      icon: Icons.delete,
-                      spacing: 0,
-                      label: 'Delete',
+                      backgroundColor: Colors.transparent,
+                      child: Container(
+                        height: 60,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        // padding: const EdgeInsets.symmetric(horizontal: 10),
+                        width: 55,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color:
+                              AppColors.getStatusColor(ticket.status ?? 'Open'),
+                          borderRadius: BorderRadius.circular(10),
+                          border:
+                              Border.all(color: AppColors.gry.withOpacity(0.5)),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(height: 4),
+                            Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -423,7 +445,7 @@ class _AssignedTasksViewState extends State<AssignedTasksView>
                           ? 'Completed'
                           : ticket.status!,
                   isUnderline: showUnderline,
-                  isAssignedToMe: _tabController.index == 0 ? true : false,
+                  isAssignedToMe: _tabController.index == 0,
                   onTap: () {
                     controller.onTicketTap(
                       type: controller.ticketsType,
