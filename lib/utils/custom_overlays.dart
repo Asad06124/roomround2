@@ -47,13 +47,17 @@ class CustomOverlays {
       {String? title, String? message, bool isSuccess = false}) async {
     dismissToast();
 
-    Get.snackbar(
-      title ?? (isSuccess ? AppStrings.success : AppStrings.error),
-      message ??
-          (isSuccess ? AppStrings.success : AppStrings.somethingWentWrong),
-      colorText: isSuccess ? AppColors.black : AppColors.white,
-      backgroundColor: isSuccess ? AppColors.green : AppColors.red,
-      // animationDuration: Duration(seconds: 2),
-    );
+    !Get.isSnackbarOpen
+        ? Get.snackbar(
+            title ?? (isSuccess ? AppStrings.success : AppStrings.error),
+            message ??
+                (isSuccess
+                    ? AppStrings.success
+                    : AppStrings.somethingWentWrong),
+            colorText: isSuccess ? AppColors.black : AppColors.white,
+            backgroundColor: isSuccess ? AppColors.green : AppColors.red,
+            // animationDuration: Duration(seconds: 2),
+          )
+        : null;
   }
 }

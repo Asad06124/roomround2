@@ -417,6 +417,13 @@ class RoomTasksController extends GetxController {
     RoomTask? task,
     bool value,
   ) async {
+    bool allDone = tasks.every((task) =>
+        task.isNA == true ||
+        task.taskStatus == true ||
+        task.ticketData != null);
+    if (allDone) {
+      Get.back(closeOverlays: true);
+    }
     int? taskId = task?.assignTemplateTaskId;
     int? roomId = getRoomIdByTask(task);
 
@@ -437,7 +444,7 @@ class RoomTasksController extends GetxController {
       // dataMap: data,
       showLoader: true,
       showErrorMessage: true,
-      showSuccessMessage: true,
+      showSuccessMessage: !allDone ? true : false,
       isGoBack: false,
     );
 
@@ -448,13 +455,12 @@ class RoomTasksController extends GetxController {
 
         update();
       }
-      bool allDone = tasks.every((task) =>
-          task.isNA == true ||
-          task.taskStatus == true ||
-          task.ticketData != null);
-      if (allDone) {
-        Get.back(closeOverlays: true);
-      }
+          allDone
+        ? CustomOverlays.showToastMessage(
+            message: 'All tasks have been completed for this room',
+            isSuccess: true,
+            title: 'Success!')
+        : null;
     }
 
     _updateHasData(true);
