@@ -1471,6 +1471,8 @@ class CreateTicketDialog extends StatelessWidget {
                 context,
                 isSelected: true,
                 name: selectedItem.employeeName,
+                employee: selectedItem,
+                department: selectedItem.departmentName,
                 image: '${Urls.domain}${selectedItem.imageKey}',
               );
             },
@@ -1478,6 +1480,9 @@ class CreateTicketDialog extends StatelessWidget {
               return DialougeComponents.nameTile(
                 context,
                 name: item.employeeName,
+                employee: item,
+                department: item.departmentName,
+                // desc: item.departmentName,
                 image: '${Urls.domain}${item.imageKey}',
               );
             },
@@ -2512,10 +2517,14 @@ class DialougeComponents {
       {String? name,
       String? desc,
       String? image,
+      Employee? employee,
+      String? department,
       Widget? trailing,
       bool isFilled = false,
       bool isSelected = false}) {
+    Color roleColor = Color(0xff326FEA);
     return Container(
+      // height: 100,
       decoration: isFilled
           ? BoxDecoration(
               color: AppColors.gry.withOpacity(0.24),
@@ -2525,7 +2534,7 @@ class DialougeComponents {
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // if (image != null && image.trim().isNotEmpty)
           AppImage.network(
@@ -2547,14 +2556,44 @@ class DialougeComponents {
           // ),
           SB.w(6),
           Expanded(
-            child: Text(
-              name ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.bodyLarge!.copyWith(
-                color: isSelected ? AppColors.black : AppColors.textGrey,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      name ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.bodyLarge!.copyWith(
+                        color:
+                            isSelected ? AppColors.black : AppColors.textGrey,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5),
+                      child: Text(
+                        '(${employee?.roleName?.toUpperCase() ?? ''})',
+                        style: context.bodyMedium!.copyWith(
+                          color: roleColor ?? AppColors.darkGrey,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  department ?? '',
+                  maxLines: 1, // Limit to one line
+                  overflow: TextOverflow.ellipsis,
+                  style: context.bodySmall!.copyWith(
+                    color: AppColors.darkGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
           // const Spacer(),
