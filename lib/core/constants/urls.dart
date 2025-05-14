@@ -1,5 +1,5 @@
 class Urls {
-  static const String domain = "http://roomroundapis.rootpointers.net";
+  static const String domain = "https://apis.roomrounds.com";
   static const String apiBaseUrl = "$domain/api";
 
   // Authentication
