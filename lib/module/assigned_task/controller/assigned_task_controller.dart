@@ -111,11 +111,19 @@ class AssignedTaskController extends GetxController {
         // The lookupId from the TicketStatusModel represents a specific status filter.
         // If such a model is found and its lookupId is valid (not null), we add it to the data
         // using the "statusId" key. This way, the API will filter the tickets based on the provided status id.
-        final selectedStatus = _ticketStatusList?.firstWhere(
+       final selectedStatus = _ticketStatusList?.firstWhere(
+          // Find the status object that matches the selected value
           (status) => status.value == selectedStatusValue,
+          // If no match is found, return a default status with null lookupId
           orElse: () => TicketStatusModel(lookupId: null, value: "All"),
         );
+
+        // Only add the statusId to the filter if:
+        // 1. A matching status was found
+        // 2. The matching status has a valid lookupId
         if (selectedStatus != null && selectedStatus.lookupId != null) {
+          // Add the statusId to the filter data
+          // This will be used by the API to filter tickets by their status
           data["statusId"] = selectedStatus.lookupId;
         }
       }
