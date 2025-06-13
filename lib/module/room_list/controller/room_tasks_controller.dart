@@ -16,7 +16,7 @@ import '../../../utils/custom_overlays.dart';
 class RoomTasksController extends GetxController {
   Room? room;
   List<int> removedMediaIds = [];
-
+  var isIssueResolved = false.obs;
   final TextEditingController _commentsController = TextEditingController();
   var isRecording = false.obs;
   var selectedAudio = <File>[].obs;
@@ -34,6 +34,17 @@ class RoomTasksController extends GetxController {
   int? get currentlyPlayingIndex => _currentlyPlayingIndex;
   final PlayerController playerController = PlayerController();
   List<RoomTask> _tasks = [];
+
+  void toggleIssueResolved() {
+    isIssueResolved.value = !isIssueResolved.value;
+    update();
+  }
+
+  // void initializeIssueResolved(bool? ticketResolved) {
+  //   // Treat null as false (you can change this default if needed)
+  //   isIssueResolved.value = ticketResolved ?? false;
+  //   update();
+  // }
 
   void changeSortBy(String? value) {
     if (value != null && value.trim().isNotEmpty) {
@@ -455,12 +466,12 @@ class RoomTasksController extends GetxController {
 
         update();
       }
-          allDone
-        ? CustomOverlays.showToastMessage(
-            message: 'You have completed your RoomRounds',
-            isSuccess: true,
-            title: 'Success!')
-        : null;
+      allDone
+          ? CustomOverlays.showToastMessage(
+              message: 'You have completed your RoomRounds',
+              isSuccess: true,
+              title: 'Success!')
+          : null;
     }
 
     _updateHasData(true);
@@ -536,6 +547,8 @@ class RoomTasksController extends GetxController {
         task.ticketData!.isUrgent == true ? YesNo.yes : YesNo.no,
       );
       _commentsController.text = task.ticketData!.comment ?? '';
+      isIssueResolved.value = task.ticketData?.isIssueResolved ?? false;
+      update();
     } else {
       _onAssignedToChange(null);
     }
@@ -606,7 +619,9 @@ class RoomTasksController extends GetxController {
       "AssignDate": formattedDate,
       "Comment": comments,
       "IsUrgent": '$isUrgent',
-      "AssignTo": '$assignedToId',
+      "isIssueResolved": '${isIssueResolved.value}',
+      "AssignTo":
+          '${isIssueResolved.value ? profileController.userId : assignedToId}',
       if (task?.ticketData != null)
         'TicketId': task!.ticketData!.ticketId.toString(),
       if (removedMediaIds.isNotEmpty)

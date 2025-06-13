@@ -1,3 +1,4 @@
+import 'package:roomrounds/core/apis/models/room/room_task_ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class RoomListComponents {
@@ -40,7 +41,7 @@ class RoomListComponents {
   static Widget statusWidget(
     BuildContext context, {
     bool isComplete = false,
-    bool isTicket = false,
+    TicketData? ticket,
     VoidCallback? onToggle,
     bool? isTask,
   }) {
@@ -49,8 +50,10 @@ class RoomListComponents {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isTicket
-              ? AppColors.aqua.withOpacity(0.4)
+          color: ticket != null
+              ? ticket.isIssueResolved == true
+                  ? AppColors.green.withOpacity(0.5)
+                  : AppColors.aqua.withOpacity(0.4)
               : isComplete
                   ? AppColors.green.withOpacity(0.5)
                   : AppColors.yellowLight.withOpacity(0.4),
@@ -61,12 +64,12 @@ class RoomListComponents {
           children: [
             Text(
               isComplete
-                  ? "Completed "
-                  : isTicket
-                      ? "Ticket"
+                  ? "Completed"
+                  : ticket != null
+                      ? (ticket.isIssueResolved == true ? 'Resolved' : 'Ticket')
                       : "Incomplete",
               style: context.bodyLarge!.copyWith(
-                color: isTicket
+                color: ticket != null
                     ? AppColors.textPrimary
                     : isComplete
                         ? AppColors.greenDark

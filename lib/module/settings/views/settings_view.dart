@@ -7,7 +7,10 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize the controller once
+    final SettingsController controller = Get.put(SettingsController());
     var chatController = Get.find<ChatController>();
+
     return Scaffold(
       appBar: CustomAppbar.simpleAppBar(
         context,
@@ -21,55 +24,67 @@ class SettingsView extends StatelessWidget {
         iconsClor: AppColors.primary,
         isHome: false,
       ),
-      body: GetBuilder<SettingsController>(
-        init: SettingsController(),
-        builder: (controller) {
-          return Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            SettingsComponents.tile(
+              context,
+              title: AppStrings.notificationSettings,
+              onPressed: () {
+                Get.toNamed(AppRoutes.Notification_Setting_View);
+              },
             ),
-            child: Column(
-              children: [
-                SettingsComponents.tile(context,
-                    title: AppStrings.notificationSettings, onPressed: () {
-                  Get.toNamed(AppRoutes.Notification_Setting_View);
-                }),
-                SettingsComponents.tile(context, title: AppStrings.help,
-                    onPressed: () {
-                  Get.toNamed(AppRoutes.Help_Screen);
-                }),
-                SettingsComponents.tile(
-                  context,
-                  title: AppStrings.privacyPolicy.capitalize!,
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.Privacy_Policy_Screen);
-                  },
-                ),
-                SettingsComponents.tile(
-                  context,
-                  title: AppStrings.contactUs,
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.Contact_Us_Screen);
-                  },
-                ),
-                SettingsComponents.tile(
-                  context,
-                  title: AppStrings.rateUs,
-                  onPressed: () {
-                    _showRateUsDialog(context);
-                  },
-                ),
-                SettingsComponents.tile(
-                  context,
-                  title: 'Chat Font Size',
-                  onPressed: () {
-                    _showFontSizeDialog(context, chatController);
-                  },
-                ),
-              ],
+            SettingsComponents.tile(
+              context,
+              title: AppStrings.help,
+              onPressed: () {
+                Get.toNamed(AppRoutes.Help_Screen);
+              },
             ),
-          );
-        },
+            SettingsComponents.tile(
+              context,
+              title: AppStrings.privacyPolicy.capitalize!,
+              onPressed: () {
+                Get.toNamed(AppRoutes.Privacy_Policy_Screen);
+              },
+            ),
+            SettingsComponents.tile(
+              context,
+              title: AppStrings.contactUs,
+              onPressed: () {
+                Get.toNamed(AppRoutes.Contact_Us_Screen);
+              },
+            ),
+            SettingsComponents.tile(
+              context,
+              title: AppStrings.rateUs,
+              onPressed: () {
+                _showRateUsDialog(context);
+              },
+            ),
+            SettingsComponents.tile(
+              context,
+              title: 'Chat Font Size',
+              onPressed: () {
+                _showFontSizeDialog(context, chatController);
+              },
+            ),
+            Spacer(),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () => controller.handleTap(),
+                  child: const SizedBox.shrink(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -133,6 +133,19 @@ class TasksList extends StatelessWidget {
         itemBuilder: (context, index) {
           RoomTask task = list[index];
           bool isTaskCompleted = task.taskStatus ?? false;
+          YesNo getDefaultSelection(RoomTask task) {
+            final bool completeAt = task.taskCompletion ?? false;
+
+            if (task.ticketData != null) {
+              // A ticket was created, so user selected opposite of completeAt
+              return completeAt ? YesNo.no : YesNo.yes;
+            }
+
+            // Otherwise, just use current selection
+            return task.userSelection ?? YesNo.no;
+          }
+
+          final defaultSelection = getDefaultSelection(task);
 
           return EmployeeDirectoryComponents.tile(
             context,
@@ -144,13 +157,12 @@ class TasksList extends StatelessWidget {
                 context,
                 isComplete: isTaskCompleted,
                 isTask: true,
-                isTicket: task.ticketData != null,
+                ticket: task.ticketData,
                 onToggle: () {
                   controller.updateTaskStatus(
                     index,
                     YesNo.no,
                   );
-                
                 },
               ),
             ),
@@ -190,17 +202,29 @@ class TasksList extends StatelessWidget {
                           ),
                         ),
                       )
-                : IgnorePointer(
-                    ignoring: isTaskCompleted,
-                    child: RoomListComponents.yesNoWidget(
-                      context,
-                      task.userSelection,
-                      (newVal) => controller.changeTaskStatus(
-                        index,
-                        newVal,
+                : task.ticketData != null
+                    ? IgnorePointer(
+                        ignoring: isTaskCompleted,
+                        child: RoomListComponents.yesNoWidget(
+                          context,
+                          defaultSelection,
+                          (newVal) => controller.changeTaskStatus(
+                            index,
+                            newVal,
+                          ),
+                        ),
+                      )
+                    : IgnorePointer(
+                        ignoring: isTaskCompleted,
+                        child: RoomListComponents.yesNoWidget(
+                          context,
+                          task.userSelection,
+                          (newVal) => controller.changeTaskStatus(
+                            index,
+                            newVal,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
           );
         },
       );

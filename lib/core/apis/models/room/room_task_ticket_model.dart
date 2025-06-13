@@ -1,12 +1,12 @@
 import '../tickets/ticket_model.dart';
 
-
 class TicketData {
   int? ticketId;
   int? taskId;
   String? taskName;
   String? comment;
   bool? isUrgent;
+  bool? isIssueResolved;
   int? assignedBy;
   String? assignedByName;
   String? assignedByImageKey;
@@ -21,6 +21,7 @@ class TicketData {
     this.taskName,
     this.comment,
     this.isUrgent,
+    this.isIssueResolved,
     this.assignedBy,
     this.assignedByName,
     this.assignedByImageKey,
@@ -36,6 +37,7 @@ class TicketData {
     String? taskName,
     String? comment,
     bool? isUrgent,
+    bool? isIssueResolved,
     int? assignedBy,
     String? assignedByName,
     String? assignedByImageKey,
@@ -50,6 +52,7 @@ class TicketData {
       taskName: taskName ?? this.taskName,
       comment: comment ?? this.comment,
       isUrgent: isUrgent ?? this.isUrgent,
+      isIssueResolved: isIssueResolved ?? this.isIssueResolved,
       assignedBy: assignedBy ?? this.assignedBy,
       assignedByName: assignedByName ?? this.assignedByName,
       assignedByImageKey: assignedByImageKey ?? this.assignedByImageKey,
@@ -66,6 +69,7 @@ class TicketData {
       taskId: json['taskId'],
       taskName: json['taskName'],
       comment: json['comment'],
+      isIssueResolved: json['isIssueResolved'],
       isUrgent: json['isUrgent'],
       assignedBy: json['assignedBy'],
       assignedByName: json['assignedByName'],
@@ -75,7 +79,7 @@ class TicketData {
       assignToImageKey: json['assignToImageKey'],
       ticketMedia: json['ticketMedia'] != null
           ? List<TicketMedia>.from(
-          json['ticketMedia'].map((x) => TicketMedia.fromJson(x)))
+              json['ticketMedia'].map((x) => TicketMedia.fromJson(x)))
           : [],
     );
   }
