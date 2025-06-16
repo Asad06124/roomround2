@@ -258,50 +258,54 @@ class ExpandableTextWithGetX extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final span = TextSpan(text: text, style: style);
-    final tp = TextPainter(
-      text: span,
-      maxLines: maxLines,
-      textDirection: TextDirection.ltr,
-    )..layout(maxWidth: MediaQuery.of(context).size.width);
+    final trimmedText = text.trim();
 
-    final isOverflowing = tp.didExceedMaxLines;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final span = TextSpan(text: trimmedText, style: style);
+        final tp = TextPainter(
+          text: span,
+          maxLines: maxLines,
+          textDirection: TextDirection.ltr,
+          textScaleFactor:
+              MediaQuery.of(context).textScaleFactor, // Match text scaling
+        )..layout(maxWidth: constraints.maxWidth);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Obx(() {
-          return InkWell(
-            onTap: () {
-              _controller.toggle();
-            },
-            child: Text(
-              text,
-              maxLines: _controller.isExpanded.value ? null : maxLines,
-              overflow: _controller.isExpanded.value
-                  ? TextOverflow.visible
-                  : TextOverflow.ellipsis,
-              style: style,
-            ),
-          );
-        }),
-        if (isOverflowing)
-          InkWell(
-            onTap: () {
-              _controller.toggle();
-            },
-            child: Obx(() {
-              return Text(
-                _controller.isExpanded.value ? 'read less' : 'read more',
-                style: style?.copyWith(
-                  color: AppColors.blue,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.underline,
+        final isOverflowing = tp.didExceedMaxLines;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Obx(() {
+              return InkWell(
+                onTap: isOverflowing ? () => _controller.toggle() : null,
+                child: Text(
+                  trimmedText,
+                  maxLines: _controller.isExpanded.value ? null : maxLines,
+                  overflow: _controller.isExpanded.value
+                      ? TextOverflow.visible
+                      : TextOverflow.ellipsis,
+                  style: style,
                 ),
               );
             }),
-          ),
-      ],
+            if (isOverflowing && !_controller.isExpanded.value)
+              InkWell(
+                onTap: () => _controller.toggle(),
+                child: Obx(() {
+                  return Text(
+                    _controller.isExpanded.value ? 'read less' : 'read more',
+                    style: style?.copyWith(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                    ),
+                  );
+                }),
+              ),
+          ],
+        );
+      },
     );
   }
 }
