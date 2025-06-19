@@ -57,6 +57,9 @@ class ChatMessage {
   final bool isSeen;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool? isAdmin;
+  final String? senderName;
+  final String? senderImageUrl;
 
   ChatMessage({
     required this.id,
@@ -70,6 +73,9 @@ class ChatMessage {
     this.isSeen = false,
     required this.createdAt,
     required this.updatedAt,
+    this.isAdmin,
+    this.senderName,
+    this.senderImageUrl,
   });
 
   Map<String, dynamic> toJson() {
@@ -85,6 +91,9 @@ class ChatMessage {
       'isSeen': isSeen,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'isAdmin': isAdmin,
+      'senderName': senderName,
+      'senderImageUrl': senderImageUrl,
     };
   }
 
@@ -101,6 +110,9 @@ class ChatMessage {
       isSeen: json['isSeen'] ?? false,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      isAdmin: json['isAdmin'] ?? false,
+      senderName: json['senderName'],
+      senderImageUrl: json['senderImageUrl'],
     );
   }
 
@@ -117,6 +129,9 @@ class ChatMessage {
     bool? isSeen,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isAdmin,
+    String? senderName,
+    String? senderImageUrl,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -130,6 +145,9 @@ class ChatMessage {
       isSeen: isSeen ?? this.isSeen,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isAdmin: isAdmin ?? this.isAdmin,
+      senderName: senderName ?? this.senderName,
+      senderImageUrl: senderImageUrl ?? this.senderImageUrl,
     );
   }
 }

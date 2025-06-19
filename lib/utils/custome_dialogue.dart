@@ -2101,7 +2101,7 @@ class AssignedThreadDialouge extends StatelessWidget {
                             final media = entry.value;
                             final index = entry.key;
                             final audioUrl =
-                                'http://roomroundapis.rootpointers.net/${media.audioKey}';
+                                'https://roomroundapis.rootpointers.net/${media.audioKey}';
 
                             return Row(
                               children: [

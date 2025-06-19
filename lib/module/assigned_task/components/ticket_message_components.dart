@@ -77,6 +77,9 @@ class TicketMessageComponents {
       bool? isDelivered,
       bool? isSeen,
       String? recieverImageUrl,
+      bool? isAdmin,
+      String? senderName,
+      String? senderImageUrl,
       required TicketChatController controller}) {
     log("profileController Image: $recieverImageUrl");
     return Padding(
@@ -88,8 +91,8 @@ class TicketMessageComponents {
         children: [
           if (isSender) ...{
             AppImage.network(
-              imageUrl: recieverImageUrl != null
-                  ? ('${Urls.domain}$recieverImageUrl')
+              imageUrl: senderImageUrl != null && senderImageUrl.isNotEmpty
+                  ? ('${Urls.domain}$senderImageUrl')
                   : AppImages.personPlaceholder,
               borderRadius: BorderRadius.circular(20),
               fit: BoxFit.cover,
@@ -102,11 +105,23 @@ class TicketMessageComponents {
             crossAxisAlignment:
                 isSender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
             children: [
+              if (isAdmin == true &&
+                  senderName != null &&
+                  senderName.isNotEmpty)
+                Padding(
+                  padding:
+                      const EdgeInsets.only(bottom: 2.0, left: 2.0, right: 2.0),
+                  child: Text(
+                    senderName,
+                    style: context.bodySmall!.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               Container(
-                // width: ,
                 constraints: BoxConstraints(
                   maxWidth: context.width * 0.45, // Maximum width constraint
-                  // minWidth: context.width * 0.30, // Minimum width constraint
                 ),
                 decoration: BoxDecoration(
                   color: isSender
@@ -153,9 +168,8 @@ class TicketMessageComponents {
                               fit: BoxFit.cover,
                               placeholder: (context, url) =>
                                   Center(child: CircularProgressIndicator()),
-                              // Optional placeholder
                               errorWidget: (context, url, error) =>
-                                  Icon(Icons.error), // Optional error widget
+                                  Icon(Icons.error),
                             ),
                           ),
                         ),
@@ -204,9 +218,6 @@ class TicketMessageComponents {
               imageUrl: profileController.user?.image != null
                   ? ('${Urls.domain}${profileController.user?.image}')
                   : AppImages.personPlaceholder,
-              // imageUrl: recieverImageUrl.isNotEmpty
-              //     ? ('${Urls.domain}$recieverImageUrl')
-              //     : AppImages.personPlaceholder,
               borderRadius: BorderRadius.circular(20),
               fit: BoxFit.cover,
               height: 40,

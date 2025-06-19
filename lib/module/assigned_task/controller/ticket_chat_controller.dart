@@ -273,7 +273,7 @@ class TicketChatController extends GetxController {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'http://roomroundapis.rootpointers.net/api/Chats/UploadImage'),
+            'https://roomroundapis.rootpointers.net/api/Chats/UploadImage'),
       );
       var stream = http.ByteStream(imageFile.openRead());
       var length = await imageFile.length();
@@ -289,7 +289,7 @@ class TicketChatController extends GetxController {
       if (response.statusCode == 200) {
         final imagePath = await response.stream.bytesToString();
         final cleanPath = imagePath.replaceAll(RegExp(r'^/+'), '');
-        final imageUrl = 'http://roomroundapis.rootpointers.net/$cleanPath';
+        final imageUrl = 'https://roomroundapis.rootpointers.net/$cleanPath';
         return imageUrl;
       } else {
         final errorResponse = await response.stream.bytesToString();
