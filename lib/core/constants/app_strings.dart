@@ -80,6 +80,7 @@ class AppStrings {
   static const String enterRoomNo = "Enter Room No.";
   static const String error = "Error";
   static const String facilitiesView = "Report An Issue";
+  static const String maintenance = "Maintenance";
   static const String female = "Female";
   static const String forgotPassword = "Forgot Password";
   static const String forgotYourPassword = "Forgot your password?";

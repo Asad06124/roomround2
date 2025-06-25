@@ -24,13 +24,13 @@ class MainFeatureController extends GetxController {
     });
     _createMainFeatures();
   }
-  
-void refreshRoomStatus() async {
-  await roomListController.fetchRoomsList();
-  hasRoom = roomListController.roomsList.isNotEmpty &&
-      roomListController.roomsList.any((room) => room.roomStatus != true);
-  update();
-}
+
+  void refreshRoomStatus() async {
+    await roomListController.fetchRoomsList();
+    hasRoom = roomListController.roomsList.isNotEmpty &&
+        roomListController.roomsList.any((room) => room.roomStatus != true);
+    update();
+  }
 
   changeLayout(bool val) {
     _isGridView = val;
@@ -52,6 +52,12 @@ void refreshRoomStatus() async {
       // page: AppRoutes.ROOM_MAP,
       page: AppRoutes.CREATE_TICKET,
     );
+    MainFeature maintenanceViewFeature = MainFeature(
+      title: AppStrings.maintenance,
+      image: Assets.icons.roomMapView,
+      // page: AppRoutes.ROOM_MAP,
+      page: AppRoutes.CREATE_TICKET,
+    );
     MainFeature assignedTaskFeature = MainFeature(
       title: isManager ? AppStrings.myTicket : AppStrings.assignedTasks,
       image: isManager ? Assets.icons.tickets : Assets.icons.assignedTasks,
@@ -68,6 +74,7 @@ void refreshRoomStatus() async {
         roomRoundFeature,
         facilitiesViewFeature,
         assignedTaskFeature,
+        maintenanceViewFeature,
         employeeDirectoryFeature,
       ];
     } else if (isEmployee) {

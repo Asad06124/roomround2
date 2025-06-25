@@ -2,9 +2,11 @@ class NotificationModel {
   int? notificationId;
   String? notificationTitle;
   String? notificationDescription;
+  String? createdDate;
   int? senderId;
   int? receiverId;
   bool? isRead;
+  bool? isAssignTemplateActive;
   String? senderName;
   String? senderImage;
   String? receiverName;
@@ -14,9 +16,11 @@ class NotificationModel {
       {this.notificationId,
       this.notificationTitle,
       this.notificationDescription,
+      this.createdDate,
       this.senderId,
       this.receiverId,
       this.isRead,
+      this.isAssignTemplateActive,
       this.senderName,
       this.senderImage,
       this.receiverName,
@@ -26,9 +30,11 @@ class NotificationModel {
     notificationId = json['notificationId'];
     notificationTitle = json['notificationTitle'];
     notificationDescription = json['notificationDescription'];
+    createdDate = json['createdDate'];
     senderId = json['senderId'];
     receiverId = json['receiverId'];
     isRead = json['isRead'];
+    isAssignTemplateActive = json['isAssignTemplateActive'];
     senderName = json['senderName'];
     senderImage = json['senderImage'];
     receiverName = json['receiverName'];
@@ -40,9 +46,11 @@ class NotificationModel {
     data['notificationId'] = notificationId;
     data['notificationTitle'] = notificationTitle;
     data['notificationDescription'] = notificationDescription;
+    data['createdDate'] = createdDate;
     data['senderId'] = senderId;
     data['receiverId'] = receiverId;
     data['isRead'] = isRead;
+    data['isAssignTemplateActive'] = isAssignTemplateActive;
     data['senderName'] = senderName;
     data['senderImage'] = senderImage;
     data['receiverName'] = receiverName;

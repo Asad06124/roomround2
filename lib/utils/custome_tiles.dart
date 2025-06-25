@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:roomrounds/core/components/app_image.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
@@ -135,6 +136,7 @@ class CustomeTiles {
       String? description,
       GestureTapCallback? onCloseTap,
       GestureTapCallback? onPressed,
+      String? createdDate,
       int? notificationCount}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
@@ -162,14 +164,33 @@ class CustomeTiles {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title ?? '',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.bodyLarge!.copyWith(
-                          color: AppColors.darkGrey,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.bodyLarge!.copyWith(
+                                color: AppColors.darkGrey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          // show date formated like this 06/10/2023 above is like this 2025-06-24T00:00:06.573
+                          if (createdDate != null && createdDate.isNotEmpty)
+                            Text(
+                              DateFormat('dd/MM/yyyy')
+                                  .format(DateTime.parse(createdDate)),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.bodyLarge!.copyWith(
+                                color: AppColors.darkGrey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                        ],
                       ),
                       if (description != null && description.isNotEmpty)
                         Text(

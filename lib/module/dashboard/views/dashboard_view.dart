@@ -17,6 +17,7 @@ class DashboardView extends StatelessWidget {
             bottomNavigationBar: AppBottomBar(
               activeIcons: controller.activeIcons,
               inactiveIcons: controller.inactiveIcons,
+              
               inactiveLabelStyle:
                   context.bodySmall!.copyWith(color: AppColors.white),
               activeLabelStyle:

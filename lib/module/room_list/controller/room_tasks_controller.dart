@@ -432,9 +432,7 @@ class RoomTasksController extends GetxController {
         task.isNA == true ||
         task.taskStatus == true ||
         task.ticketData != null);
-    if (allDone) {
-      Get.back(closeOverlays: true);
-    }
+
     int? taskId = task?.assignTemplateTaskId;
     int? roomId = getRoomIdByTask(task);
 
@@ -466,11 +464,12 @@ class RoomTasksController extends GetxController {
 
         update();
       }
+      if (allDone) {
+        Get.back(closeOverlays: true);
+      }
       allDone
           ? CustomOverlays.showToastMessage(
-              message: 'You have completed your RoomRounds',
-              isSuccess: true,
-              title: 'Success!')
+              message: 'Template complete', isSuccess: true, title: 'Success!')
           : null;
     }
 

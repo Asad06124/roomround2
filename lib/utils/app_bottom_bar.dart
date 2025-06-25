@@ -199,11 +199,21 @@ class _AppBottomBarState extends State<AppBottomBar>
                             return SizedBox(
                               width: deviceWidth / widget.labels!.length,
                               child: Center(
-                                child: Text(
-                                  widget.labels![index],
-                                  style: widget.activeIndex == index
-                                      ? widget.activeLabelStyle
-                                      : widget.inactiveLabelStyle,
+                                child: Container(
+                                  padding: index == 1
+                                      ? (widget.activeIndex == 1
+                                          ? const EdgeInsets.only(
+                                              top: 0, bottom: 10)
+                                          : const EdgeInsets.only(
+                                              top: 10, bottom: 0))
+                                      : const EdgeInsets.only(
+                                          top: 10, bottom: 0),
+                                  child: Text(
+                                    widget.labels![index],
+                                    style: widget.activeIndex == index
+                                        ? widget.activeLabelStyle
+                                        : widget.inactiveLabelStyle,
+                                  ),
                                 ),
                               ),
                             );

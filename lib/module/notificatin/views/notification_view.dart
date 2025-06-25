@@ -1,6 +1,7 @@
 import 'package:roomrounds/core/apis/models/notifications/notification_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
+import 'package:roomrounds/utils/custom_overlays.dart';
 
 class NotificationView extends StatelessWidget {
   const NotificationView({super.key});
@@ -11,7 +12,6 @@ class NotificationView extends StatelessWidget {
         init: NotificationController(),
         builder: (controller) {
           User? user = profileController.user;
-
           return CustomContainer(
             padding: const EdgeInsets.all(0),
             appBar: CustomAppbar.simpleAppBar(
@@ -104,6 +104,7 @@ class NotificationView extends StatelessWidget {
           return CustomeTiles.notificationTileSimple(context,
               title: notification.notificationTitle,
               description: notification.notificationDescription,
+              createdDate: notification.createdDate,
               onCloseTap: onCloseTap != null
                   ? () => onCloseTap(notification.notificationId)
                   : null, onPressed: () {
@@ -111,7 +112,15 @@ class NotificationView extends StatelessWidget {
                     ?.toLowerCase()
                     .contains('template') ==
                 true) {
-              Get.toNamed(AppRoutes.ROOMS_LIST);
+              if (notification.isAssignTemplateActive == true) {
+                Get.toNamed(AppRoutes.ROOMS_LIST);
+              } else {
+                CustomOverlays.showToastMessage(
+                  title: 'Oh no!',
+                  message: 'Template is not available.',
+                  isSuccess: false,
+                );
+              }
             }
             if (notification.notificationDescription
                         ?.toLowerCase()
