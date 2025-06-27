@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_app_badge/flutter_app_badge.dart' show FlutterAppBadge;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:roomrounds/core/constants/imports.dart';
@@ -10,6 +11,7 @@ import 'package:roomrounds/module/assigned_task/views/ticket_chat_view.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 
 import '../../core/apis/models/tickets/ticket_model.dart';
+import '../../core/services/badge_counter.dart';
 import '../../core/services/get_server_key.dart';
 
 class PushNotificationController {
@@ -17,8 +19,8 @@ class PushNotificationController {
   static String fcmToken = '';
   static bool isPermissionGranted = false;
 
-  static final FlutterLocalNotificationsPlugin
-      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
     // Initialize Firebase
@@ -36,6 +38,10 @@ class PushNotificationController {
 
     // Request notification permissions
     await _grantNotificationPermission();
+
+    // Initialize badge count from shared preferences
+    int badgeCount = await BadgeCounter.getBadgeCount();
+    FlutterAppBadge.count(badgeCount);
 
     // Handle notifications from terminated state
     await _handleTerminatedState();
@@ -66,14 +72,18 @@ class PushNotificationController {
     final RemoteMessage? initialMessage = await fcm.getInitialMessage();
     if (initialMessage != null) {
       debugPrint('App opened from terminated state with notification');
+      // Increment badge count for terminated state notification
+      await BadgeCounter.incrementBadgeCount();
       _handleNotificationClick(initialMessage.data, fromTerminationState: true);
     }
   }
 
   static Future<void> _setupFirebaseMessagingListeners() async {
     // Listen for notifications in the foreground
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.notification != null) {
+        // Increment badge count
+        await BadgeCounter.incrementBadgeCount();
         _showNotification(
           title: message.notification?.title ?? '',
           body: message.notification?.body ?? '',
@@ -101,17 +111,22 @@ class PushNotificationController {
       }
     });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    // Handle notifications when the app is opened from a notification
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      // Reset badge count when app is opened
+      await BadgeCounter.resetBadgeCount();
       _handleNotificationClick(message.data);
     });
   }
 
   static void _onDidReceiveNotificationResponse(
-      NotificationResponse notificationResponse) {
+      NotificationResponse notificationResponse) async {
     if (notificationResponse.notificationResponseType ==
         NotificationResponseType.selectedNotification) {
       if (notificationResponse.payload != null) {
         final payload = jsonDecode(notificationResponse.payload!);
+        // Reset badge count when notification is clicked
+        await BadgeCounter.resetBadgeCount();
         _handleNotificationClick(payload);
       }
     }
@@ -122,8 +137,7 @@ class PushNotificationController {
     required String body,
     required String payload,
   }) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'your_channel_id',
       'Your Channel Name',
       channelDescription: 'Your Channel Description',
@@ -182,20 +196,16 @@ class PushNotificationController {
           );
         });
         break;
-
       case 'TicketCreate':
         Get.find<NotificationController>().fetchNotificationsList();
         Get.toNamed(AppRoutes.NOTIFICATION);
         break;
-
       case 'TicketStatus':
         Get.toNamed(AppRoutes.NOTIFICATION);
         break;
-
       case 'AssignedTemplate':
         Get.toNamed(AppRoutes.ASSIGNED_TASKS);
         break;
-
       default:
         debugPrint('Unhandled notification action: $action');
         break;
@@ -208,7 +218,6 @@ class PushNotificationController {
     required String? body,
     required Map<String, dynamic>? data,
   }) async {
-    // Fetch the server key for sending FCM messages
     String serverKey = await GetServerKey().getServerKeyToken();
     debugPrint("FCM Server Key: $serverKey");
 
@@ -220,7 +229,7 @@ class PushNotificationController {
       'Authorization': 'Bearer $serverKey',
     };
 
-    // Prepare the message payload
+    // Include badge count in the payload for iOS
     final Map<String, dynamic> message = {
       "message": {
         "token": token,
@@ -229,6 +238,14 @@ class PushNotificationController {
           "body": body,
         },
         "data": data,
+        "apns": {
+          // iOS-specific badge count
+          "payload": {
+            "aps": {
+              "badge": await BadgeCounter.getBadgeCount() + 1,
+            },
+          },
+        },
       }
     };
 

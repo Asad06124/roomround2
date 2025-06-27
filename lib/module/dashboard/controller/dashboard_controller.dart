@@ -5,6 +5,7 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/departments_controller.dart';
 import 'package:roomrounds/module/profile/views/profile_view.dart';
 
+import '../../../core/services/badge_counter.dart';
 import '../../../firebase_options.dart';
 import '../../notificatin/controller/notification_controller.dart';
 import '../../push_notification/push_notification.dart';
@@ -63,6 +64,9 @@ class DashBoardController extends GetxController {
 @pragma('vm:entry-point')
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Increment badge count
+  await BadgeCounter.incrementBadgeCount();
+  
   final action = message.data['Screen'];
   if (action == 'Chat') {
     final String chatRoomId = message.data['chatRoomId'];
