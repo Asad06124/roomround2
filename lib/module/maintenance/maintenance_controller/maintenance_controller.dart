@@ -5,10 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
-import 'package:roomrounds/core/apis/models/employee/employee_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
-import 'package:roomrounds/core/constants/app_enum.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:intl/intl.dart';
 
@@ -22,7 +20,7 @@ class MaintenanceController extends GetxController {
   var startDate = Rxn<DateTime>();
   var endDate = Rxn<DateTime>();
 
-  // Properties from MaintenanceTaskDetailController
+  // For Task Details
   var selectedTask = Rx<Ticket?>(null);
   // 0 for Complete Task, 1 for Create Ticket
   var selectedOption = 0.obs;
@@ -37,9 +35,9 @@ class MaintenanceController extends GetxController {
   // For Create Ticket
   final createTicketFormKey = GlobalKey<FormState>();
   final ticketDescriptionController = TextEditingController();
-  var isUrgent = YesNo.no.obs;
+  var isUrgent = false.obs;
   // This would be populated from your employee list
-  var assignedTo = Rx<Employee?>(null);
+  var assignedTo = Rx<String?>(null);
 
   @override
   void onInit() {
@@ -49,41 +47,15 @@ class MaintenanceController extends GetxController {
     getMaintenanceTasks();
   }
 
-  @override
-  void onClose() {
-    commentsController.dispose();
-    ticketDescriptionController.dispose();
-    super.onClose();
-  }
-
-  void initTaskDetails(Ticket task) {
-    selectedTask.value = task;
-    commentsController.text = task.comment ?? '';
-    // Reset other fields when a new task is selected
-    selectedOption.value = 0;
-    imageFile.value = null;
-    audioFile.value = null;
-    documentFile.value = null;
-    ticketDescriptionController.clear();
-    isUrgent.value = YesNo.no;
-    assignedTo.value = null;
-  }
-
-  void clearTaskDetails() {
-    selectedTask.value = null;
-    commentsController.clear();
-    ticketDescriptionController.clear();
-    imageFile.value = null;
-    audioFile.value = null;
-    documentFile.value = null;
-    isUrgent.value = YesNo.no;
-    assignedTo.value = null;
-  }
-
   void resetPagination() {
     currentPage.value = 1;
     hasMorePages.value = true;
-    maintenanceTasks.clear();
+  }
+
+  void updateDateFilters({required DateTime start, required DateTime end}) {
+    startDate.value = start;
+    endDate.value = end;
+    getMaintenanceTasks(refresh: true);
   }
 
   Future<void> getMaintenanceTasks({bool refresh = false}) async {
@@ -104,6 +76,8 @@ class MaintenanceController extends GetxController {
       "pageNo": currentPage.value,
       "size": pageSize,
       "isPagination": true,
+      "startDate": startDate.value?.toIso8601String(),
+      "endDate": endDate.value?.toIso8601String(),
     };
 
     try {
@@ -161,7 +135,86 @@ class MaintenanceController extends GetxController {
     await getMaintenanceTasks(refresh: true);
   }
 
+  Map<String, List<Ticket>> getGroupedMaintenanceTasks() {
+    final now = DateTime.now();
+    final yesterday = now.subtract(const Duration(days: 1));
+    final grouped = <String, List<Ticket>>{};
+
+    for (final task in maintenanceTasks) {
+      if (task.assignDate == null) continue;
+
+      try {
+        final createdAt = DateTime.parse(task.assignDate!);
+        String dateKey;
+
+        if (createdAt.year == now.year &&
+            createdAt.month == now.month &&
+            createdAt.day == now.day) {
+          dateKey = 'Today';
+        } else if (createdAt.year == yesterday.year &&
+            createdAt.month == yesterday.month &&
+            createdAt.day == yesterday.day) {
+          dateKey = 'Yesterday';
+        } else {
+          dateKey = DateFormat('MMMM d, yyyy').format(createdAt);
+        }
+
+        if (!grouped.containsKey(dateKey)) {
+          grouped[dateKey] = [];
+        }
+        grouped[dateKey]!.add(task);
+      } catch (e) {
+        log('Error parsing date for task: $e');
+      }
+    }
+
+    final sortedKeys = grouped.keys.toList()
+      ..sort((a, b) {
+        if (a == 'Today') return -1;
+        if (b == 'Today') return 1;
+        if (a == 'Yesterday') return -1;
+        if (b == 'Yesterday') return 1;
+        try {
+          final dateA = DateFormat('MMMM d, yyyy').parse(a);
+          final dateB = DateFormat('MMMM d, yyyy').parse(b);
+          return dateB.compareTo(dateA);
+        } catch (e) {
+          return 0;
+        }
+      });
+
+    final sortedGrouped = <String, List<Ticket>>{};
+    for (final key in sortedKeys) {
+      sortedGrouped[key] = grouped[key]!;
+    }
+
+    return sortedGrouped;
+  }
+
+  void selectTask(Ticket task) {
+    selectedTask.value = task;
+    commentsController.text = task.comment ?? '';
+    // Reset fields when a new task is selected
+    imageFile.value = null;
+    audioFile.value = null;
+    documentFile.value = null;
+    ticketDescriptionController.clear();
+    isUrgent.value = false;
+    assignedTo.value = null;
+    selectedOption.value = 0;
+  }
+
+  void clearSelectedTask() {
+    selectedTask.value = null;
+    commentsController.clear();
+    imageFile.value = null;
+    audioFile.value = null;
+    documentFile.value = null;
+    ticketDescriptionController.clear();
+  }
+
   // Methods from MaintenanceTaskDetailController
+
   void selectOption(int index) {
     selectedOption.value = index;
   }
@@ -230,12 +283,19 @@ class MaintenanceController extends GetxController {
         dataMap: {
           'taskId': selectedTask.value?.ticketId,
           'description': ticketDescriptionController.text,
-          'isUrgent': isUrgent.value == YesNo.yes,
-          'assignedTo': assignedTo.value?.employeeId,
+          'isUrgent': isUrgent.value,
+          'assignedTo': assignedTo.value,
         },
       );
       */
       Get.back(); // Go back to the maintenance list
     }
+  }
+
+  @override
+  void onClose() {
+    commentsController.dispose();
+    ticketDescriptionController.dispose();
+    super.onClose();
   }
 }
