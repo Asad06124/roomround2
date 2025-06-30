@@ -56,7 +56,7 @@ class MainFeatureController extends GetxController {
       title: AppStrings.maintenance,
       image: Assets.icons.roomMapView,
       // page: AppRoutes.ROOM_MAP,
-      page: AppRoutes.CREATE_TICKET,
+      page: AppRoutes.Maintenance,
     );
     MainFeature assignedTaskFeature = MainFeature(
       title: isManager ? AppStrings.myTicket : AppStrings.assignedTasks,

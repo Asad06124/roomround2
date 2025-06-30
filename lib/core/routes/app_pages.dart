@@ -1,6 +1,7 @@
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/authentications/views/forget_view.dart';
 import 'package:roomrounds/module/create_ticket/views/create_ticket_view.dart';
+import 'package:roomrounds/module/maintenance/views/maintenance_view.dart';
 import 'package:roomrounds/module/profile/change_password/view/change_password_view.dart';
 import 'package:roomrounds/module/profile/views/edit_profile_view.dart';
 import 'package:roomrounds/module/settings/views/contact_view.dart';
@@ -130,6 +131,14 @@ class AppPages {
     GetPage(
       name: AppRoutes.CREATE_TICKET,
       page: () => const CreateTicketView(),
+      transition: transitionType,
+      binding: BindingsBuilder(
+        () {},
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.Maintenance,
+      page: () => const MaintenanceView(),
       transition: transitionType,
       binding: BindingsBuilder(
         () {},

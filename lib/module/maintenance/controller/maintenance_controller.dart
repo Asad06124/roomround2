@@ -4,13 +4,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:intl/intl.dart';
 
 class MaintenanceController extends GetxController {
+  // For Maintenance Task List
   final RxBool isLoading = false.obs;
   final RxBool isLoadingMore = false.obs;
   var maintenanceTasks = <Ticket>[].obs;
@@ -20,7 +21,7 @@ class MaintenanceController extends GetxController {
   var startDate = Rxn<DateTime>();
   var endDate = Rxn<DateTime>();
 
-  // For Task Details
+  // For Maintenance Task Details
   var selectedTask = Rx<Ticket?>(null);
   // 0 for Complete Task, 1 for Create Ticket
   var selectedOption = 0.obs;
@@ -36,7 +37,6 @@ class MaintenanceController extends GetxController {
   final createTicketFormKey = GlobalKey<FormState>();
   final ticketDescriptionController = TextEditingController();
   var isUrgent = false.obs;
-  // This would be populated from your employee list
   var assignedTo = Rx<String?>(null);
 
   @override
@@ -45,6 +45,30 @@ class MaintenanceController extends GetxController {
     endDate.value = DateTime.now();
     startDate.value = endDate.value!.subtract(const Duration(days: 30));
     getMaintenanceTasks();
+  }
+
+  @override
+  void onClose() {
+    commentsController.dispose();
+    ticketDescriptionController.dispose();
+    super.onClose();
+  }
+
+  void selectTask(Ticket task) {
+    selectedTask.value = task;
+    commentsController.text = task.comment ?? '';
+    // Reset other fields when a new task is selected
+    imageFile.value = null;
+    audioFile.value = null;
+    documentFile.value = null;
+    ticketDescriptionController.clear();
+    isUrgent.value = false;
+    assignedTo.value = null;
+    selectedOption.value = 0;
+  }
+
+  void clearSelectedTask() {
+    selectedTask.value = null;
   }
 
   void resetPagination() {
@@ -135,6 +159,53 @@ class MaintenanceController extends GetxController {
     await getMaintenanceTasks(refresh: true);
   }
 
+  void selectOption(int index) {
+    selectedOption.value = index;
+  }
+
+  Future<void> pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await ImagePicker().pickImage(source: source);
+      if (pickedFile != null) {
+        imageFile.value = File(pickedFile.path);
+      }
+    } catch (e) {
+      log('Error picking image: $e');
+    }
+  }
+
+  Future<void> pickDocument() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx'],
+      );
+      if (result != null) {
+        documentFile.value = File(result.files.single.path!);
+      }
+    } catch (e) {
+      log('Error picking document: $e');
+    }
+  }
+
+  void recordAudio() {
+    log('Audio recording started...');
+  }
+
+  void submitCompletion() {
+    if (completeTaskFormKey.currentState!.validate()) {
+      log('Submitting completion...');
+      Get.back(); // Go back to the maintenance list
+    }
+  }
+
+  void submitTicketCreation() {
+    if (createTicketFormKey.currentState!.validate()) {
+      log('Submitting ticket creation...');
+      Get.back(); // Go back to the maintenance list
+    }
+  }
+
   Map<String, List<Ticket>> getGroupedMaintenanceTasks() {
     final now = DateTime.now();
     final yesterday = now.subtract(const Duration(days: 1));
@@ -189,113 +260,5 @@ class MaintenanceController extends GetxController {
     }
 
     return sortedGrouped;
-  }
-
-  void selectTask(Ticket task) {
-    selectedTask.value = task;
-    commentsController.text = task.comment ?? '';
-    // Reset fields when a new task is selected
-    imageFile.value = null;
-    audioFile.value = null;
-    documentFile.value = null;
-    ticketDescriptionController.clear();
-    isUrgent.value = false;
-    assignedTo.value = null;
-    selectedOption.value = 0;
-  }
-
-  void clearSelectedTask() {
-    selectedTask.value = null;
-    commentsController.clear();
-    imageFile.value = null;
-    audioFile.value = null;
-    documentFile.value = null;
-    ticketDescriptionController.clear();
-  }
-
-  // Methods from MaintenanceTaskDetailController
-
-  void selectOption(int index) {
-    selectedOption.value = index;
-  }
-
-  Future<void> pickImage(ImageSource source) async {
-    try {
-      final pickedFile = await ImagePicker().pickImage(source: source);
-      if (pickedFile != null) {
-        imageFile.value = File(pickedFile.path);
-      }
-    } catch (e) {
-      log('Error picking image: $e');
-    }
-  }
-
-  Future<void> pickDocument() async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'doc', 'docx'],
-      );
-      if (result != null) {
-        documentFile.value = File(result.files.single.path!);
-      }
-    } catch (e) {
-      log('Error picking document: $e');
-    }
-  }
-
-  // Placeholder for audio recording logic
-  void recordAudio() {
-    // Implement audio recording logic here
-    log('Audio recording started...');
-  }
-
-  void submitCompletion() {
-    if (completeTaskFormKey.currentState!.validate()) {
-      // Handle submission logic for completing the task
-      log('Submitting completion...');
-      // Example API call
-      /*
-      APIFunction.call(
-        APIMethods.post,
-        'your_completion_endpoint',
-        dataMap: {
-          'taskId': selectedTask.value?.ticketId,
-          'comments': commentsController.text,
-        },
-        imageFile: imageFile.value,
-        audioFile: audioFile.value,
-        otherFile: documentFile.value,
-      );
-      */
-      Get.back(); // Go back to the maintenance list
-    }
-  }
-
-  void submitTicketCreation() {
-    if (createTicketFormKey.currentState!.validate()) {
-      // Handle submission logic for creating a ticket
-      log('Submitting ticket creation...');
-      /*
-      APIFunction.call(
-        APIMethods.post,
-        'your_ticket_creation_endpoint',
-        dataMap: {
-          'taskId': selectedTask.value?.ticketId,
-          'description': ticketDescriptionController.text,
-          'isUrgent': isUrgent.value,
-          'assignedTo': assignedTo.value,
-        },
-      );
-      */
-      Get.back(); // Go back to the maintenance list
-    }
-  }
-
-  @override
-  void onClose() {
-    commentsController.dispose();
-    ticketDescriptionController.dispose();
-    super.onClose();
   }
 }

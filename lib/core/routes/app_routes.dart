@@ -1,5 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:roomrounds/module/maintenance/views/maintenance_view.dart';
+
 abstract class AppRoutes {
   static const SPLASH_SCREEN = "/";
 
@@ -16,6 +18,7 @@ abstract class AppRoutes {
   static const NOTIFICATION = "/notification";
   static const EMPLOYEE_DIRECTORy = '/employee_directory';
   static const CREATE_TICKET = '/create_ticket';
+  static const Maintenance = '/maintenance_view';
   static const ROOM_MAP = '/room_map';
   static const ROOM_MAP_DETAILS = '/room_map_details';
   static const CHAT = '/chat';

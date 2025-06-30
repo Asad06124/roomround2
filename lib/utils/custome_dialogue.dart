@@ -730,6 +730,8 @@ class CreateTicketDialog extends StatelessWidget {
     required this.onSelectItem,
     this.onDoneTap,
     this.preSelectedEmployee,
+    this.showCompleteOnly,
+    this.isReadOnly = false,
     // this.onImagePicked,
   });
 
@@ -741,6 +743,8 @@ class CreateTicketDialog extends StatelessWidget {
   final TextEditingController? textFieldController;
   final dynamic Function(Employee) onSelectItem;
   final GestureTapCallback? onDoneTap;
+  final bool? showCompleteOnly;
+  final bool isReadOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -1348,90 +1352,93 @@ class CreateTicketDialog extends StatelessWidget {
                         ),
                         // SB.h(15),
                         // SB.h(15),
-                        GestureDetector(
-                          onTap: controller.toggleIssueResolved,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                controller.isIssueResolved.value
-                                    ? Icons.check_box
-                                    : Icons.check_box_outline_blank,
-                                color: AppColors.primary,
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                'Issue Resolved by Me',
-                                style: context.bodyLarge!.copyWith(
-                                  color: AppColors.black,
+                        if (showCompleteOnly == null ||
+                            showCompleteOnly == false) ...[
+                          GestureDetector(
+                            onTap: controller.toggleIssueResolved,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  controller.isIssueResolved.value
+                                      ? Icons.check_box
+                                      : Icons.check_box_outline_blank,
+                                  color: AppColors.primary,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (!controller.isIssueResolved.value) ...[
-                          SB.h(10),
-                          DialougeComponents.labelTile(
-                            context,
-                            // status: '',
-                            // isBorder: true,
-                            title: AppStrings.directory,
-                            titleStyle: context.titleSmall!.copyWith(
-                              color: AppColors.black,
-                              fontWeight: FontWeight.w600,
+                                const SizedBox(width: 3),
+                                Text(
+                                  'Issue Resolved by Me',
+                                  style: context.bodyLarge!.copyWith(
+                                    color: AppColors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SB.h(3),
-                          DialougeComponents.labelTile(
-                            context,
-                            title: AppStrings.changeMember,
-                            // isBorder: true,
-                            // status: '',
-                          ),
-                          SB.h(10),
-                          // DialougeComponents.nameTile(context, name: "Anthony Roy"),
-
-                          _buildEmployeeDropDown(context,
-                              preSelectedEmployee: preSelectedEmployee),
-
-                          SB.h(10),
-                          // DialougeComponents.dateTile(context,
-                          //     time: '1:03 PM', date: '11/23/2023'),
-                          // SB.h(5),
-                          // DialougeComponents.dateTile(context,
-                          //     label: 'Completion Date:', time: '1:03 PM', date: '11/23/2023'),
-                          // SB.h(10),
-                          DialougeComponents.labelTile(
-                            context,
-                            // status: '',
-                            // isBorder: true,
-                            title: AppStrings.urgent,
-                            titleStyle: context.titleSmall!.copyWith(
-                              color: AppColors.black,
-                              fontWeight: FontWeight.w600,
+                          if (!controller.isIssueResolved.value) ...[
+                            SB.h(10),
+                            DialougeComponents.labelTile(
+                              context,
+                              // status: '',
+                              // isBorder: true,
+                              title: AppStrings.directory,
+                              titleStyle: context.titleSmall!.copyWith(
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          SB.h(10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              RoomMapComponents.radioButton<YesNo>(
-                                context,
-                                YesNo.yes,
-                                selectedUrgent,
-                                AppStrings.yes,
-                                onUrgentChanged,
-                                width: context.width * 0.35,
+                            SB.h(3),
+                            DialougeComponents.labelTile(
+                              context,
+                              title: AppStrings.changeMember,
+                              // isBorder: true,
+                              // status: '',
+                            ),
+                            SB.h(10),
+                            // DialougeComponents.nameTile(context, name: "Anthony Roy"),
+
+                            _buildEmployeeDropDown(context,
+                                preSelectedEmployee: preSelectedEmployee),
+
+                            SB.h(10),
+                            // DialougeComponents.dateTile(context,
+                            //     time: '1:03 PM', date: '11/23/2023'),
+                            // SB.h(5),
+                            // DialougeComponents.dateTile(context,
+                            //     label: 'Completion Date:', time: '1:03 PM', date: '11/23/2023'),
+                            // SB.h(10),
+                            DialougeComponents.labelTile(
+                              context,
+                              // status: '',
+                              // isBorder: true,
+                              title: AppStrings.urgent,
+                              titleStyle: context.titleSmall!.copyWith(
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w600,
                               ),
-                              RoomMapComponents.radioButton<YesNo>(
-                                context,
-                                YesNo.no,
-                                selectedUrgent,
-                                AppStrings.no,
-                                onUrgentChanged,
-                              ),
-                            ],
-                          ),
+                            ),
+                            SB.h(10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                RoomMapComponents.radioButton<YesNo>(
+                                  context,
+                                  YesNo.yes,
+                                  selectedUrgent,
+                                  AppStrings.yes,
+                                  onUrgentChanged,
+                                  width: context.width * 0.35,
+                                ),
+                                RoomMapComponents.radioButton<YesNo>(
+                                  context,
+                                  YesNo.no,
+                                  selectedUrgent,
+                                  AppStrings.no,
+                                  onUrgentChanged,
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
                         SB.h(20),
                         AppButton.primary(
@@ -1517,7 +1524,6 @@ class CreateTicketDialog extends StatelessWidget {
         });
   }
 }
-
 ///////////////// Manager Side dialogue //////////////////////////
 
 class ThreadTicketDialouge extends StatelessWidget {
