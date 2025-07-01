@@ -218,11 +218,10 @@ class _MaintenanceViewState extends State<MaintenanceView> {
                       task.assignDate!.isNotEmpty) ...[
                     SB.h(4),
                     Text(
-                      'Created: ' +
-                          (task.assignDate != null
+                      'Created: ${task.assignDate != null
                               ? DateFormat('MM/dd/yyyy')
                                   .format(DateTime.parse(task.assignDate!))
-                              : AppStrings.na),
+                              : AppStrings.na}',
                       style: context.bodySmall!.copyWith(
                         color: AppColors.gry,
                       ),

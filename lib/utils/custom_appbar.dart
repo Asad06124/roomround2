@@ -98,6 +98,7 @@ class CustomAppbar {
                             color: AppColors.white,
                           )
                         : txtStyle,
+                        overflow: TextOverflow.ellipsis,
                   ),
                 const Spacer(),
                 Row(

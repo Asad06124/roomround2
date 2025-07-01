@@ -365,7 +365,6 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
       ),
       cancel: OutlinedButton(
         onPressed: () => Get.back(),
-        child: Text("Cancel"),
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.black,
           shape: RoundedRectangleBorder(
@@ -373,6 +372,7 @@ class _CloseTicketDialougeState extends State<CloseTicketDialouge> {
           ),
           side: BorderSide(color: Colors.grey),
         ),
+        child: Text("Cancel"),
       ),
     );
   }

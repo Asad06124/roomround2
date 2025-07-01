@@ -569,10 +569,10 @@ class RoomTasksController extends GetxController {
                   onDoneTap: () async {
                     await _createNewTicket(task);
                     await _fetchTasksList(task?.roomId, _sortBy);
-                    bool allDone = _tasks.every((_task) =>
-                        _task.isNA == true ||
-                        _task.taskStatus == true ||
-                        _task.ticketData != null);
+                    bool allDone = _tasks.every((task) =>
+                        task.isNA == true ||
+                        task.taskStatus == true ||
+                        task.ticketData != null);
                     if (allDone) {
                       Get.back(closeOverlays: true);
                     }

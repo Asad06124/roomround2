@@ -1,6 +1,5 @@
 // ignore_for_file: constant_identifier_names
 
-import 'package:roomrounds/module/maintenance/views/maintenance_view.dart';
 
 abstract class AppRoutes {
   static const SPLASH_SCREEN = "/";
