@@ -54,7 +54,7 @@ class MainFeatureController extends GetxController {
     );
     MainFeature maintenanceViewFeature = MainFeature(
       title: AppStrings.maintenance,
-      image: Assets.icons.roomMapView,
+      image: Assets.icons.maintenance,
       // page: AppRoutes.ROOM_MAP,
       page: AppRoutes.Maintenance,
     );

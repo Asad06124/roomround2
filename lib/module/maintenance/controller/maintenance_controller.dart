@@ -5,15 +5,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:roomrounds/core/apis/api_function.dart';
-import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
-import 'package:roomrounds/core/apis/models/tickets/tickets_list_model.dart';
+import 'package:roomrounds/core/apis/models/maintenance_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class MaintenanceController extends GetxController {
   // For Maintenance Task List
   final RxBool isLoading = false.obs;
   final RxBool isLoadingMore = false.obs;
-  var maintenanceTasks = <Ticket>[].obs;
+  var maintenanceTasks = <MaintenanceTask>[].obs;
   var currentPage = 1.obs;
   var hasMorePages = true.obs;
   final int pageSize = 10;
@@ -21,7 +20,7 @@ class MaintenanceController extends GetxController {
   var endDate = Rxn<DateTime>();
 
   // For Maintenance Task Details
-  var selectedTask = Rx<Ticket?>(null);
+  var selectedTask = Rx<MaintenanceTask?>(null);
   // 0 for Complete Task, 1 for Create Ticket
   var selectedOption = 0.obs;
 
@@ -41,8 +40,9 @@ class MaintenanceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    endDate.value = DateTime.now();
-    startDate.value = endDate.value!.subtract(const Duration(days: 30));
+    startDate.value = DateTime.now();
+    endDate.value = startDate.value!.add(const Duration(days: 30));
+
     getMaintenanceTasks();
   }
 
@@ -53,9 +53,9 @@ class MaintenanceController extends GetxController {
     super.onClose();
   }
 
-  void selectTask(Ticket task) {
+  void selectTask(MaintenanceTask task) {
     selectedTask.value = task;
-    commentsController.text = task.comment ?? '';
+    commentsController.text = task.maintenanceTaskCompletes?.comment ?? '';
     // Reset other fields when a new task is selected
     imageFile.value = null;
     audioFile.value = null;
@@ -106,18 +106,35 @@ class MaintenanceController extends GetxController {
     try {
       final resp = await APIFunction.call(
         APIMethods.post,
-        Urls.getAllTickets,
+        '/maintenanceTasks/getMaintenanceActive',
         dataMap: data,
-        fromJson: TicketsListModel.fromJson,
+        fromJson: MaintenanceTask.fromJson,
         showLoader: false,
       );
 
-      if (resp != null && resp is TicketsListModel) {
-        final newTasks = resp.tickets ?? [];
+      log('resp type: ${resp.runtimeType}');
+      if (resp != null) {
+        List<MaintenanceTask> newTasks;
+        if (resp is List<MaintenanceTask>) {
+          newTasks = resp;
+        } else if (resp is List) {
+          try {
+            newTasks = resp.map((e) => e as MaintenanceTask).toList();
+          } catch (e) {
+            log('Error casting resp to List<MaintenanceTask>: $e');
+            newTasks = [];
+          }
+        } else {
+          newTasks = [];
+        }
+
+        // Log task order
+        log('newTasks order: ${newTasks.map((t) => "${t.maintenanceTaskName} - ${t.occurrenceDate}").toList()}');
 
         if (newTasks.isEmpty) {
           hasMorePages.value = false;
         } else {
+          log('newTasks: ${newTasks.length}');
           if (refresh || currentPage.value == 1) {
             maintenanceTasks.assignAll(newTasks);
           } else {
@@ -205,16 +222,18 @@ class MaintenanceController extends GetxController {
     }
   }
 
-  Map<String, List<Ticket>> getGroupedMaintenanceTasks() {
+  Map<String, List<MaintenanceTask>> getGroupedMaintenanceTasks() {
     final now = DateTime.now();
     final yesterday = now.subtract(const Duration(days: 1));
-    final grouped = <String, List<Ticket>>{};
+    final tomorrow = now.add(const Duration(days: 1));
+    final grouped = <String, List<MaintenanceTask>>{};
 
+    // Group tasks by date
     for (final task in maintenanceTasks) {
-      if (task.assignDate == null) continue;
+      if (task.occurrenceDate == null) continue;
 
       try {
-        final createdAt = DateTime.parse(task.assignDate!);
+        final createdAt = DateTime.parse(task.occurrenceDate!);
         String dateKey;
 
         if (createdAt.year == now.year &&
@@ -225,6 +244,10 @@ class MaintenanceController extends GetxController {
             createdAt.month == yesterday.month &&
             createdAt.day == yesterday.day) {
           dateKey = 'Yesterday';
+        } else if (createdAt.year == tomorrow.year &&
+            createdAt.month == tomorrow.month &&
+            createdAt.day == tomorrow.day) {
+          dateKey = 'Tomorrow';
         } else {
           dateKey = DateFormat('MMMM d, yyyy').format(createdAt);
         }
@@ -238,22 +261,39 @@ class MaintenanceController extends GetxController {
       }
     }
 
-    final sortedKeys = grouped.keys.toList()
+    // Sort tasks within each group by occurrenceDate (ascending)
+    grouped.forEach((key, tasks) {
+      tasks.sort((a, b) {
+        final dateA = DateTime.parse(a.occurrenceDate!);
+        final dateB = DateTime.parse(b.occurrenceDate!);
+        return dateA.compareTo(dateB); // Ascending order within group
+      });
+    });
+
+    // Define the order of keys: Today, Yesterday, Tomorrow, then other dates
+    final sortedKeys = <String>[];
+    if (grouped.containsKey('Today')) sortedKeys.add('Today');
+    if (grouped.containsKey('Yesterday')) sortedKeys.add('Yesterday');
+    if (grouped.containsKey('Tomorrow')) sortedKeys.add('Tomorrow');
+
+    // Add other dates in ascending order
+    final otherKeys = grouped.keys
+        .where((key) => !['Today', 'Yesterday', 'Tomorrow'].contains(key))
+        .toList()
       ..sort((a, b) {
-        if (a == 'Today') return -1;
-        if (b == 'Today') return 1;
-        if (a == 'Yesterday') return -1;
-        if (b == 'Yesterday') return 1;
         try {
           final dateA = DateFormat('MMMM d, yyyy').parse(a);
           final dateB = DateFormat('MMMM d, yyyy').parse(b);
-          return dateB.compareTo(dateA);
+          return dateA.compareTo(dateB); // Ascending order
         } catch (e) {
           return 0;
         }
       });
 
-    final sortedGrouped = <String, List<Ticket>>{};
+    sortedKeys.addAll(otherKeys);
+
+    // Create sorted grouped map
+    final sortedGrouped = <String, List<MaintenanceTask>>{};
     for (final key in sortedKeys) {
       sortedGrouped[key] = grouped[key]!;
     }

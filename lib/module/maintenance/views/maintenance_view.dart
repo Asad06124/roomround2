@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/maintenance/controller/maintenance_controller.dart';
 import 'package:roomrounds/module/maintenance/views/maintenance_task_detail_view.dart';
+import 'package:roomrounds/core/apis/models/maintenance_task_model.dart';
 
 class MaintenanceView extends StatefulWidget {
   const MaintenanceView({super.key});
@@ -14,8 +13,7 @@ class MaintenanceView extends StatefulWidget {
 }
 
 class _MaintenanceViewState extends State<MaintenanceView> {
-  final MaintenanceController maintenanceController =
-      Get.put(MaintenanceController());
+  final MaintenanceController controller = Get.put(MaintenanceController());
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -24,32 +22,199 @@ class _MaintenanceViewState extends State<MaintenanceView> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent * 0.8) {
-        maintenanceController.loadMoreMaintenanceTasks();
+        controller.loadMoreMaintenanceTasks();
       }
     });
   }
 
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light(),
+          child: child!,
+        );
+      },
+      helpText: 'Select Start Date',
+      context: context,
+      initialDate: controller.startDate.value ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        controller.startDate.value = picked;
+        if (controller.endDate.value != null &&
+            picked.isAfter(controller.endDate.value!)) {
+          controller.endDate.value = null;
+        }
+        _selectEndDate(context);
+      });
+    }
+  }
+
+  Future<void> _selectEndDate(BuildContext context) async {
+    if (controller.startDate.value == null) {
+      _showDateError('Please select start date first');
+      return;
+    }
+
+    final DateTime? picked = await showDatePicker(
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.from(
+            colorScheme: ColorScheme(
+              brightness: Brightness.dark,
+              primary: Colors.white,
+              onPrimary: Colors.blueGrey.shade700,
+              secondary: Colors.tealAccent.shade700,
+              onSecondary: Colors.black,
+              error: Colors.redAccent,
+              onError: Colors.white,
+              surface: Colors.blueGrey.shade800,
+              onSurface: Colors.white,
+            ),
+          ).copyWith(
+            dialogBackgroundColor: Colors.blueGrey.shade800,
+          ),
+          child: child!,
+        );
+      },
+      helpText: 'Select End Date',
+      context: context,
+      initialDate: controller.endDate.value ?? controller.startDate.value!,
+      firstDate: controller.startDate.value!,
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      if (picked.isBefore(controller.startDate.value!)) {
+        _showDateError('End date cannot be before start date');
+        return;
+      }
+      setState(() {
+        controller.endDate.value = picked;
+      });
+      controller.updateDateFilters(
+          start: controller.startDate.value!, end: picked);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CustomContainer(
+    return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: CustomAppbar.simpleAppBar(
         context,
-        height: 140,
-        isBackButtun: true,
-        titleStyle: context.titleLarge,
+        height: 70,
+        backButtunColor: AppColors.primary,
         title: AppStrings.maintenance,
-        showNotificationIcon: false,
-        showMailIcon: false,
+        showMailIcon: true,
+        showNotificationIcon: true,
+        notificationActive: true,
+        titleStyle: context.titleLarge!.copyWith(color: AppColors.primary),
+        iconsClor: AppColors.primary,
         isHome: false,
-        decriptionWidget: CustomAppbar.appBatTile(
-          context,
-          name: profileController.user?.username,
-          desc: profileController.user?.role,
-        ),
+        isBackButtun: true,
       ),
-      padding: EdgeInsets.zero,
-      child: Column(
+      // padding: EdgeInsets.zero,
+      body: Column(
         children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: GestureDetector(
+                    onTap: () => _selectStartDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightWhite,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: AppColors.primary.withOpacity(0.1)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 16, color: AppColors.primary),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              controller.startDate.value != null
+                                  ? DateFormat('MM/dd/yyyy')
+                                      .format(controller.startDate.value!)
+                                  : 'Start',
+                              style: context.bodySmall!.copyWith(
+                                color: controller.startDate.value != null
+                                    ? AppColors.textPrimary
+                                    : AppColors.gry,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Text(
+                    '-',
+                    style: TextStyle(color: AppColors.gry),
+                  ),
+                ),
+                Flexible(
+                  child: GestureDetector(
+                    onTap: () => controller.endDate.value == null &&
+                            controller.startDate.value == null
+                        ? _showDateError('Select start date first')
+                        : _selectEndDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightWhite,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: AppColors.primary.withOpacity(0.1)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 16, color: AppColors.primary),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              controller.endDate.value != null
+                                  ? DateFormat('MM/dd/yyyy')
+                                      .format(controller.endDate.value!)
+                                  : 'End',
+                              style: context.bodySmall!.copyWith(
+                                color: controller.endDate.value != null
+                                    ? AppColors.textPrimary
+                                    : AppColors.gry,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // SB.w(10),
+              ],
+            ),
+          ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
@@ -61,14 +226,12 @@ class _MaintenanceViewState extends State<MaintenanceView> {
                 color: AppColors.white,
               ),
               child: Obx(() {
-                if (maintenanceController.isLoading.value &&
-                    maintenanceController.maintenanceTasks.isEmpty) {
+                if (controller.isLoading.value &&
+                    controller.maintenanceTasks.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final groupedTasks =
-                    maintenanceController.getGroupedMaintenanceTasks();
-
+                final groupedTasks = controller.getGroupedMaintenanceTasks();
                 if (groupedTasks.isEmpty) {
                   return Center(
                     child: Text(
@@ -135,7 +298,7 @@ class _MaintenanceViewState extends State<MaintenanceView> {
                     }),
                     SliverToBoxAdapter(
                       child: Obx(() {
-                        if (maintenanceController.isLoadingMore.value) {
+                        if (controller.isLoadingMore.value) {
                           return const Padding(
                             padding: EdgeInsets.all(16.0),
                             child: Center(child: CircularProgressIndicator()),
@@ -154,17 +317,20 @@ class _MaintenanceViewState extends State<MaintenanceView> {
     );
   }
 
-  Widget _maintenanceTaskTile(BuildContext context, Ticket task) {
+  Widget _maintenanceTaskTile(BuildContext context, MaintenanceTask task) {
     // Determine status and color
     String statusLabel;
     Color statusColor;
     Color statusTextColor;
 
-    if (task.isCompleted == true) {
+    final isCompleted = task.maintenanceTaskCompletes?.isCompleted ?? false;
+    final hasTicket = task.ticketData != null;
+
+    if (isCompleted) {
       statusLabel = AppStrings.completed;
       statusColor = AppColors.green.withOpacity(0.15);
       statusTextColor = AppColors.greenDark;
-    } else if ((task.status?.toLowerCase() ?? '').contains('ticket')) {
+    } else if (hasTicket) {
       statusLabel = 'Ticket Created';
       statusColor = AppColors.blue.withOpacity(0.15);
       statusTextColor = AppColors.blue;
@@ -202,26 +368,24 @@ class _MaintenanceViewState extends State<MaintenanceView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    task.ticketName ?? AppStrings.na,
+                    task.maintenanceTaskName ?? AppStrings.na,
                     style: context.titleSmall!.copyWith(
                       color: AppColors.textPrimary,
                     ),
                   ),
                   SB.h(4),
                   Text(
-                    '${task.roomName ?? AppStrings.na} - ${task.status ?? AppStrings.status}',
+                    '${task.recurrencePatternName ?? AppStrings.na} - ${isCompleted ? AppStrings.completed : hasTicket ? 'Ticket Created' : AppStrings.pendingFirst}',
                     style: context.bodyMedium!.copyWith(
                       color: AppColors.darkGrey,
                     ),
                   ),
-                  if (task.assignDate != null &&
-                      task.assignDate!.isNotEmpty) ...[
+                  if (task.occurrenceDate != null &&
+                      task.occurrenceDate!.isNotEmpty) ...[
                     SB.h(4),
                     Text(
-                      'Created: ${task.assignDate != null
-                              ? DateFormat('MM/dd/yyyy')
-                                  .format(DateTime.parse(task.assignDate!))
-                              : AppStrings.na}',
+                      'Created: '
+                      '${DateFormat('MM/dd/yyyy').format(DateTime.parse(task.occurrenceDate!))}',
                       style: context.bodySmall!.copyWith(
                         color: AppColors.gry,
                       ),
@@ -253,8 +417,8 @@ class _MaintenanceViewState extends State<MaintenanceView> {
 
   Widget _buildDateRangeDisplay(BuildContext context) {
     return Obx(() {
-      if (maintenanceController.startDate.value == null ||
-          maintenanceController.endDate.value == null) {
+      if (controller.startDate.value == null ||
+          controller.endDate.value == null) {
         return const SizedBox.shrink();
       }
       return Container(
@@ -270,7 +434,7 @@ class _MaintenanceViewState extends State<MaintenanceView> {
               ),
             ),
             Text(
-              '${DateFormat('MMM d, yyyy').format(maintenanceController.startDate.value!)} - ${DateFormat('MMM d, yyyy').format(maintenanceController.endDate.value!)}',
+              '${DateFormat('MMM d, yyyy').format(controller.startDate.value!)} - ${DateFormat('MMM d, yyyy').format(controller.endDate.value!)}',
               style: context.bodyMedium!.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -286,9 +450,9 @@ class _MaintenanceViewState extends State<MaintenanceView> {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       initialDateRange: DateTimeRange(
-        start: maintenanceController.startDate.value ??
+        start: controller.startDate.value ??
             DateTime.now().subtract(const Duration(days: 30)),
-        end: maintenanceController.endDate.value ?? DateTime.now(),
+        end: controller.endDate.value ?? DateTime.now(),
       ),
       firstDate: DateTime(2000),
       lastDate: DateTime.now().add(const Duration(days: 365)),
@@ -306,11 +470,18 @@ class _MaintenanceViewState extends State<MaintenanceView> {
     );
 
     if (picked != null) {
-      maintenanceController.updateDateFilters(
+      controller.updateDateFilters(
         start: picked.start,
         end: picked.end,
       );
     }
+  }
+
+  void _showDateError(String message) {
+    Get.snackbar('Date Error', message,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white);
   }
 
   @override
@@ -360,4 +531,3 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
     return true;
   }
 }
-

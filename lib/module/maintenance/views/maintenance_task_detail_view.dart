@@ -1,11 +1,11 @@
 import 'package:roomrounds/module/maintenance/controller/maintenance_controller.dart';
 
 import 'package:flutter/cupertino.dart';
-import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
+import 'package:roomrounds/core/apis/models/maintenance_task_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
 class MaintenanceTaskDetailView extends StatelessWidget {
-  final Ticket task;
+  final MaintenanceTask task;
 
   const MaintenanceTaskDetailView({super.key, required this.task});
 
@@ -18,7 +18,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
         context,
         height: 100,
         isBackButtun: true,
-        title: task.ticketName ?? 'Task Details',
+        title: task.maintenanceTaskName ?? 'Task Details',
       ),
       padding: EdgeInsets.zero,
       child: Column(
@@ -83,7 +83,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: CreateTicketDialog(
-            title: task.ticketName,
+            title: task.maintenanceTaskName,
             task:
                 null, // You may need to adapt this if your dialog expects a RoomTask
             preSelectedEmployee: null,
@@ -107,7 +107,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: CreateTicketDialog(
-          title: task.ticketName,
+          title: task.maintenanceTaskName,
           task:
               null, // You may need to adapt this if your dialog expects a RoomTask
           preSelectedEmployee: null,

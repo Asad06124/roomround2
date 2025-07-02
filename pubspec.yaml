@@ -45,7 +45,7 @@ dependencies:
 #  firebase_storage: ^12.3.7
   flutter:
     sdk: flutter
-#  flutter_gen: ^5.8.0
+  flutter_gen: ^5.8.0
 #  flutter_launcher_icons: ^0.14.1
   flutter_svg: ^2.0.17
   fluttertoast: ^8.2.12
@@ -84,8 +84,8 @@ dependency_overrides:
   win32: ^5.5.4
 
 dev_dependencies:
-#  build_runner: 2.4.13
-#  flutter_gen_runner: 5.8.0
+  build_runner: 2.4.13
+  flutter_gen_runner: 5.8.0
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter

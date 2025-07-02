@@ -87,6 +87,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/mail.svg
   SvgGenImage get mail => const SvgGenImage('assets/icons/mail.svg');
 
+  /// File path: assets/icons/maintenance.svg
+  SvgGenImage get maintenance =>
+      const SvgGenImage('assets/icons/maintenance.svg');
+
   /// File path: assets/icons/marker.svg
   SvgGenImage get marker => const SvgGenImage('assets/icons/marker.svg');
 
@@ -147,6 +151,7 @@ class $AssetsIconsGen {
         locationPinDrop,
         lock,
         mail,
+        maintenance,
         marker,
         mic,
         person,
@@ -207,6 +212,10 @@ class Assets {
 
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const String shorebird = 'shorebird.yaml';
+
+  /// List of all assets
+  static List<String> get values => [shorebird];
 }
 
 class AssetGenImage {
