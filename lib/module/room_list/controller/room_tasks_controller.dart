@@ -274,7 +274,20 @@ class RoomTasksController extends GetxController {
     if (resp != null && resp is List && resp.isNotEmpty) {
       _tasks = List.from(resp);
     }
-
+// bool allDone = _tasks.every((task) =>
+    //     task.isNA == true ||
+    //     task.taskStatus == true ||
+    //     task.ticketData != null);
+    // if (allDone) {
+    //   Get.closeAllSnackbars();
+    //   Get.back(closeOverlays: true);
+    //   allDone
+    //       ? CustomOverlays.showToastMessage(
+    //           message: 'Template completed',
+    //           isSuccess: true,
+    //           title: 'Success!')
+    //       : null;
+    // }
     _updateHasData(true);
   }
 
@@ -465,12 +478,13 @@ class RoomTasksController extends GetxController {
         update();
       }
       if (allDone) {
-        Get.back(closeOverlays: true);
+        Get.closeAllSnackbars();
+        CustomOverlays.showToastMessage(
+            message: 'Template completed', isSuccess: true, title: 'Success!');
+        Future.delayed(Duration(milliseconds: 500), () {
+          Get.back(closeOverlays: true);
+        });
       }
-      allDone
-          ? CustomOverlays.showToastMessage(
-              message: 'Template complete', isSuccess: true, title: 'Success!')
-          : null;
     }
 
     _updateHasData(true);
@@ -548,6 +562,13 @@ class RoomTasksController extends GetxController {
       _commentsController.text = task.ticketData!.comment ?? '';
       isIssueResolved.value = task.ticketData?.isIssueResolved ?? false;
       update();
+    } else if (task?.taskDepartmentManager != null) {
+      preSelectedEmployee = Employee(
+        userId: task!.taskDepartmentManager!.userId,
+        employeeName: task.taskDepartmentManager!.userName,
+        imageKey: task.taskDepartmentManager!.imageKey,
+      );
+      _onAssignedToChange(preSelectedEmployee);
     } else {
       _onAssignedToChange(null);
     }
@@ -568,13 +589,21 @@ class RoomTasksController extends GetxController {
                   onSelectItem: _onAssignedToChange,
                   onDoneTap: () async {
                     await _createNewTicket(task);
+
                     await _fetchTasksList(task?.roomId, _sortBy);
                     bool allDone = _tasks.every((task) =>
                         task.isNA == true ||
                         task.taskStatus == true ||
                         task.ticketData != null);
                     if (allDone) {
-                      Get.back(closeOverlays: true);
+                      Get.closeAllSnackbars();
+                      Future.delayed(Duration(milliseconds: 500), () {
+                        Get.back(closeOverlays: true);
+                      });
+                      CustomOverlays.showToastMessage(
+                          message: 'Template completed',
+                          isSuccess: true,
+                          title: 'Success!');
                     }
                   },
                 );
@@ -627,13 +656,32 @@ class RoomTasksController extends GetxController {
         'RemoveTicketMediaIds': removedMediaIds.join(','),
     };
 
+    // Determine if this is the last incomplete task
+    bool isLastTask = false;
+    if (task != null) {
+      // Simulate the state after this ticket is created
+      final List<RoomTask> simulatedTasks = List.from(_tasks);
+      final int idx = simulatedTasks.indexWhere(
+          (t) => t.assignTemplateTaskId == task.assignTemplateTaskId);
+      if (idx != -1) {
+        simulatedTasks[idx] = RoomTask.fromJson({
+          ...task.toJson(),
+          'ticketData': {
+            'ticketId': 1
+          } // Use a dummy ticketId to indicate ticket exists
+        });
+      }
+      isLastTask = simulatedTasks.every((t) =>
+          t.isNA == true || t.taskStatus == true || t.ticketData != null);
+    }
+
     var resp = await APIFunction.call(
       APIMethods.post,
       Urls.saveTicket,
       dataMap: data,
       showLoader: true,
       showErrorMessage: true,
-      showSuccessMessage: true,
+      showSuccessMessage: !isLastTask,
       audioKey: 'AudiosList',
       imageKey: 'ImagesList',
       imageListFile: selectedImages,
@@ -641,7 +689,9 @@ class RoomTasksController extends GetxController {
     );
 
     if (resp != null && resp is bool) {
-      if (resp == true) {}
+      if (resp == true) {
+        debugPrint("Ticket created successfully..");
+      }
     }
   }
 

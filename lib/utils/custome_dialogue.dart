@@ -13,6 +13,7 @@ import 'package:roomrounds/module/assigned_task/controller/assigned_task_control
 import 'package:roomrounds/module/assigned_task/views/ticket_image_full_view.dart';
 import 'package:roomrounds/module/create_ticket/controller/audio_controller.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
+import 'package:roomrounds/module/emloyee_directory/components/employee_directory_components.dart';
 
 import '../core/apis/models/room/room_task_model.dart';
 import '../module/emloyee_directory/controller/departments_controller.dart';
@@ -808,6 +809,8 @@ class CreateTicketDialog extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
                                 decoration: BoxDecoration(
                                   color: AppColors.lightWhite,
                                   borderRadius: BorderRadius.circular(9.0),
@@ -819,17 +822,13 @@ class CreateTicketDialog extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
-                                      child: CustomTextField(
-                                        maxLines: 1,
-                                        borderRadius: 10,
-                                        isRequiredField: false,
-                                        controller: TextEditingController()
-                                          ..text = task?.action ?? "",
-                                        readOnly: true,
-                                        fillColor: AppColors.lightWhite,
-                                        borderColor: AppColors.lightWhite,
-                                        hintText: AppStrings.writeMessage,
-                                        validator: (value) => null,
+                                      child: ExpandableTextWithGetX(
+                                        text: task?.action ?? "",
+                                        maxLines: 3,
+                                        style: context.bodyLarge!.copyWith(
+                                          color: AppColors.black,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                   ],

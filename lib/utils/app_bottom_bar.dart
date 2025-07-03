@@ -201,7 +201,7 @@ class _AppBottomBarState extends State<AppBottomBar>
                               child: Center(
                                 child: Container(
                                   padding: index == 1
-                                      ? (widget.activeIndex == 1
+                                      ? (index == 1
                                           ? const EdgeInsets.only(
                                               top: 0, bottom: 10)
                                           : const EdgeInsets.only(

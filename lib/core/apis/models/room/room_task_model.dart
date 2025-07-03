@@ -18,6 +18,7 @@ class RoomTask {
   String? action;
   TicketData? ticketData;
   YesNo? userSelection;
+  TaskDepartmentManager? taskDepartmentManager;
 
   RoomTask({
     // this.assignTemplateRoomId,
@@ -36,6 +37,7 @@ class RoomTask {
     this.taskStatus,
     this.userSelection,
     this.ticketData,
+    this.taskDepartmentManager,
   });
 
   RoomTask.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,10 @@ class RoomTask {
     taskStatus = json['taskStatus'];
     if (json['ticketData'] != null) {
       ticketData = TicketData.fromJson(json['ticketData']);
+    }
+    if (json['taskDepartmentManager'] != null) {
+      taskDepartmentManager =
+          TaskDepartmentManager.fromJson(json['taskDepartmentManager']);
     }
   }
 
@@ -76,6 +82,31 @@ class RoomTask {
     if (ticketData != null) {
       data['ticketData'] = ticketData!.toJson();
     }
+    if (taskDepartmentManager != null) {
+      data['taskDepartmentManager'] = taskDepartmentManager!.toJson();
+    }
+    return data;
+  }
+}
+
+class TaskDepartmentManager {
+  int? userId;
+  String? userName;
+  String? imageKey;
+
+  TaskDepartmentManager({this.userId, this.userName, this.imageKey});
+
+  TaskDepartmentManager.fromJson(Map<String, dynamic> json) {
+    userId = json['userId'];
+    userName = json['userName'];
+    imageKey = json['imageKey'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userId'] = userId;
+    data['userName'] = userName;
+    data['imageKey'] = imageKey;
     return data;
   }
 }

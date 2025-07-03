@@ -1,5 +1,5 @@
 // import 'package:roomrounds/core/constants/imports.dart';
-
+// 
 // class EmployeeDirectoryComponents {
 //   static Widget tile(BuildContext context,
 //       {String? title,
@@ -103,25 +103,25 @@
 //     );
 //   }
 // }
-
+// 
 // class _ExpandableText extends StatefulWidget {
 //   final String text;
 //   final int maxLines;
 //   final TextStyle? style;
-
+// 
 //   const _ExpandableText({
 //     required this.text,
 //     required this.maxLines,
 //     this.style,
 //   });
-
+// 
 //   @override
 //   State<_ExpandableText> createState() => _ExpandableTextState();
 // }
-
+// 
 // class _ExpandableTextState extends State<_ExpandableText> {
 //   bool _isExpanded = false;
-
+// 
 //   @override
 //   Widget build(BuildContext context) {
 //     final span = TextSpan(text: widget.text, style: widget.style);
@@ -130,9 +130,9 @@
 //       maxLines: widget.maxLines,
 //       textDirection: TextDirection.ltr,
 //     )..layout(maxWidth: MediaQuery.of(context).size.width);
-
+// 
 //     final isOverflowing = tp.didExceedMaxLines;
-
+// 
 //     return Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
 //       children: [

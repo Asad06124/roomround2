@@ -181,7 +181,7 @@ class CustomeTiles {
                           // show date formated like this 06/10/2023 above is like this 2025-06-24T00:00:06.573
                           if (createdDate != null && createdDate.isNotEmpty)
                             Text(
-                              DateFormat('dd/MM/yyyy')
+                              DateFormat('MM/dd/yyyy')
                                   .format(DateTime.parse(createdDate)),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
