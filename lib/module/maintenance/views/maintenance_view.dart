@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:roomrounds/core/apis/models/tickets/ticket_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/maintenance/controller/maintenance_controller.dart';
 import 'package:roomrounds/module/maintenance/views/maintenance_task_detail_view.dart';
