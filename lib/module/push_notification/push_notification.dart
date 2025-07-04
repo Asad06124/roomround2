@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_app_badge/flutter_app_badge.dart' show FlutterAppBadge;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/assigned_task/views/ticket_chat_view.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
@@ -29,8 +30,17 @@ class PushNotificationController {
     // Configure local notifications
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings iosInitializationSettings =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: androidSettings);
+        InitializationSettings(
+      android: androidSettings,
+      iOS: iosInitializationSettings,
+    );
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
@@ -51,6 +61,9 @@ class PushNotificationController {
   }
 
   static Future<void> _grantNotificationPermission() async {
+    await [
+      Permission.notification,
+    ].request();
     NotificationSettings settings = await fcm.requestPermission(
       alert: true,
       badge: true,
@@ -149,8 +162,15 @@ class PushNotificationController {
       importance: Importance.max,
       priority: Priority.high,
     );
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidDetails);
+    const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          presentBanner: true,
+          presentList: true,
+        ));
 
     await _flutterLocalNotificationsPlugin.show(
       0,

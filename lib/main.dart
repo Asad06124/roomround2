@@ -11,9 +11,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DataStorageHelper.init();
   await GetStorage.init();
-
-  _initControllers();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  _initControllers();
   runApp(MyApp());
 }
 
@@ -46,6 +45,6 @@ class MyApp extends StatelessWidget {
       navigatorObservers: [routeObserver],
     );
   }
-
 }
+
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
