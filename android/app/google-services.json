@@ -1,13 +1,14 @@
 {
   "project_info": {
     "project_number": "341571332062",
+    "firebase_url": "https://roomround-34b5f-default-rtdb.firebaseio.com",
     "project_id": "roomround-34b5f",
     "storage_bucket": "roomround-34b5f.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:341571332062:android:550ee1fd4b4ef459199f4f",
+        "mobilesdk_app_id": "1:341571332062:android:0f428688a3974822199f4f",
         "android_client_info": {
           "package_name": "com.roomrounds.llc"
         }
