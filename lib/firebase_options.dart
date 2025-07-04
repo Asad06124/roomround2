@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -51,9 +48,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAwebguXKIzQbiq5L9W4TlM3q7yy8W6GEY',
-    appId: '1:341571332062:android:550ee1fd4b4ef459199f4f',
+    appId: '1:341571332062:android:0f428688a3974822199f4f',
     messagingSenderId: '341571332062',
     projectId: 'roomround-34b5f',
+    databaseURL: 'https://roomround-34b5f-default-rtdb.firebaseio.com',
     storageBucket: 'roomround-34b5f.firebasestorage.app',
   );
 
@@ -62,7 +60,19 @@ class DefaultFirebaseOptions {
     appId: '1:341571332062:ios:59aafe0324a5216d199f4f',
     messagingSenderId: '341571332062',
     projectId: 'roomround-34b5f',
+    databaseURL: 'https://roomround-34b5f-default-rtdb.firebaseio.com',
     storageBucket: 'roomround-34b5f.firebasestorage.app',
     iosBundleId: 'com.roomrounds.llc',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCIUEqa6tnMi6-PATB6WuOks1Ypm8VyLO0',
+    appId: '1:341571332062:web:b0b7a6c23e09e150199f4f',
+    messagingSenderId: '341571332062',
+    projectId: 'roomround-34b5f',
+    authDomain: 'roomround-34b5f.firebaseapp.com',
+    databaseURL: 'https://roomround-34b5f-default-rtdb.firebaseio.com',
+    storageBucket: 'roomround-34b5f.firebasestorage.app',
+  );
+
 }

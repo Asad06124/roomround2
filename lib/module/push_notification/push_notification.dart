@@ -19,8 +19,8 @@ class PushNotificationController {
   static String fcmToken = '';
   static bool isPermissionGranted = false;
 
-  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin
+      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
     // Initialize Firebase
@@ -55,6 +55,10 @@ class PushNotificationController {
       alert: true,
       badge: true,
       sound: true,
+      announcement: false,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
     );
 
     await fcm.setForegroundNotificationPresentationOptions(
@@ -137,7 +141,8 @@ class PushNotificationController {
     required String body,
     required String payload,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       'your_channel_id',
       'Your Channel Name',
       channelDescription: 'Your Channel Description',
