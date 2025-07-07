@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_app_badge/flutter_app_badge.dart' show FlutterAppBadge;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -17,15 +16,14 @@ import '../../core/services/get_server_key.dart';
 
 class PushNotificationController {
   static final FirebaseMessaging fcm = FirebaseMessaging.instance;
-  static String fcmToken = '';
-  static bool isPermissionGranted = false;
-
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static bool isPermissionGranted = false;
 
   static Future<void> initialize() async {
     // Initialize Firebase
     await Firebase.initializeApp();
+  await BadgeCounter.initialize();
 
     // Configure local notifications
     const AndroidInitializationSettings androidSettings =
@@ -41,6 +39,7 @@ class PushNotificationController {
       android: androidSettings,
       iOS: iosInitializationSettings,
     );
+
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
@@ -49,9 +48,8 @@ class PushNotificationController {
     // Request notification permissions
     await _grantNotificationPermission();
 
-    // Initialize badge count from shared preferences
-    int badgeCount = await BadgeCounter.getBadgeCount();
-    FlutterAppBadge.count(badgeCount);
+    // Reset badge count on app launch
+    await BadgeCounter.resetBadgeCount();
 
     // Handle notifications from terminated state
     await _handleTerminatedState();
@@ -61,9 +59,8 @@ class PushNotificationController {
   }
 
   static Future<void> _grantNotificationPermission() async {
-    await [
-      Permission.notification,
-    ].request();
+    // Request permissions for notifications
+    await [Permission.notification].request();
     NotificationSettings settings = await fcm.requestPermission(
       alert: true,
       badge: true,
@@ -74,6 +71,7 @@ class PushNotificationController {
       provisional: false,
     );
 
+    // Set foreground notification options
     await fcm.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
@@ -86,53 +84,55 @@ class PushNotificationController {
   }
 
   static Future<void> _handleTerminatedState() async {
+    // Handle notifications when app is opened from terminated state
     final RemoteMessage? initialMessage = await fcm.getInitialMessage();
     if (initialMessage != null) {
       debugPrint('App opened from terminated state with notification');
-      // Increment badge count for terminated state notification
       await BadgeCounter.incrementBadgeCount();
-      _handleNotificationClick(initialMessage.data, fromTerminationState: true);
+      await _handleNotificationClick(initialMessage.data,
+          fromTerminationState: true);
     }
   }
 
   static Future<void> _setupFirebaseMessagingListeners() async {
-    // Listen for notifications in the foreground
+    // Handle foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.notification != null) {
-        // Increment badge count
+        // Increment badge count for new notification
         await BadgeCounter.incrementBadgeCount();
-        _showNotification(
+        await _showNotification(
           title: message.notification?.title ?? '',
           body: message.notification?.body ?? '',
           payload: jsonEncode(message.data),
         );
       }
 
+      // Handle specific notification actions
       final action = message.data['Screen'];
-
       if (action == 'Chat') {
         final String chatRoomId = message.data['chatRoomId'];
         final String msgId = message.data['msgId'];
-
-        FirebaseFirestore.instance
-            .collection('chatrooms')
-            .doc(chatRoomId)
-            .collection('messages')
-            .doc(msgId)
-            .update({'isDelivered': true}).catchError((error) {
-          print('Error updating isDelivered: $error');
-        });
+        try {
+          await FirebaseFirestore.instance
+              .collection('chatrooms')
+              .doc(chatRoomId)
+              .collection('messages')
+              .doc(msgId)
+              .update({'isDelivered': true});
+        } catch (error) {
+          debugPrint('Error updating isDelivered: $error');
+        }
       } else if (action == 'TicketCreate' || action == 'TicketStatus') {
         Get.find<NotificationController>()
             .fetchNotificationsList(forceRefresh: true);
       }
     });
 
-    // Handle notifications when the app is opened from a notification
+    // Handle notifications when app is opened from background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       // Reset badge count when app is opened
       await BadgeCounter.resetBadgeCount();
-      _handleNotificationClick(message.data);
+      await _handleNotificationClick(message.data);
     });
   }
 
@@ -144,7 +144,7 @@ class PushNotificationController {
         final payload = jsonDecode(notificationResponse.payload!);
         // Reset badge count when notification is clicked
         await BadgeCounter.resetBadgeCount();
-        _handleNotificationClick(payload);
+        await _handleNotificationClick(payload);
       }
     }
   }
@@ -162,15 +162,17 @@ class PushNotificationController {
       importance: Importance.max,
       priority: Priority.high,
     );
-    const NotificationDetails notificationDetails = NotificationDetails(
-        android: androidDetails,
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-          presentBanner: true,
-          presentList: true,
-        ));
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        presentBanner: true,
+        presentList: true,
+        badgeNumber: await BadgeCounter.getBadgeCount(),
+      ),
+    );
 
     await _flutterLocalNotificationsPlugin.show(
       0,
@@ -187,39 +189,35 @@ class PushNotificationController {
     switch (action) {
       case 'Chat':
         Get.offAndToNamed(AppRoutes.DASHBOARD);
-        Future.delayed(const Duration(milliseconds: 500), () {
-          Get.toNamed(AppRoutes.MESSAGE);
-        });
-        Future.delayed(const Duration(milliseconds: 500), () {
-          Get.toNamed(
-            AppRoutes.CHAT,
-            preventDuplicates: false,
-            arguments: {
-              'receiverId': data['senderId'],
-              'receiverImgUrl': data['receiverImgUrl'],
-              'receiverDeviceToken': data['receiverDeviceToken'],
-              'name': data['senderName'],
-            },
-          );
-        });
+        await Future.delayed(const Duration(milliseconds: 500));
+        Get.toNamed(AppRoutes.MESSAGE);
+        await Future.delayed(const Duration(milliseconds: 500));
+        Get.toNamed(
+          AppRoutes.CHAT,
+          preventDuplicates: false,
+          arguments: {
+            'receiverId': data['senderId'],
+            'receiverImgUrl': data['receiverImgUrl'],
+            'receiverDeviceToken': data['receiverDeviceToken'],
+            'name': data['senderName'],
+          },
+        );
         break;
       case 'ticketChat':
         Get.offAndToNamed(AppRoutes.DASHBOARD);
-        Future.delayed(const Duration(milliseconds: 500), () {
-          Get.toNamed(AppRoutes.ASSIGNED_TASKS);
-        });
-        Future.delayed(const Duration(milliseconds: 500), () {
-          Get.to(
-            TicketChatView(
-              ticketId: data['chatRoomId'],
-              receiverId: data['receiverId'],
-              ticket: Ticket.fromJson(jsonDecode(data['ticket'])),
-              senderId: data['senderId'],
-              ticketTitle: data['ticketTitle'],
-              isAssignedToMe: data['isAssignedToMe'] == "true",
-            ),
-          );
-        });
+        await Future.delayed(const Duration(milliseconds: 500));
+        Get.toNamed(AppRoutes.ASSIGNED_TASKS);
+        await Future.delayed(const Duration(milliseconds: 500));
+        Get.to(
+          TicketChatView(
+            ticketId: data['chatRoomId'],
+            receiverId: data['receiverId'],
+            ticket: Ticket.fromJson(jsonDecode(data['ticket'])),
+            senderId: data['senderId'],
+            ticketTitle: data['ticketTitle'],
+            isAssignedToMe: data['isAssignedToMe'] == "true",
+          ),
+        );
         break;
       case 'TicketCreate':
         Get.find<NotificationController>().fetchNotificationsList();
@@ -254,20 +252,16 @@ class PushNotificationController {
       'Authorization': 'Bearer $serverKey',
     };
 
-    // Include badge count in the payload for iOS
     final Map<String, dynamic> message = {
       "message": {
         "token": token,
-        "notification": {
-          "title": title,
-          "body": body,
-        },
+        "notification": {"title": title, "body": body},
         "data": data,
         "apns": {
-          // iOS-specific badge count
           "payload": {
             "aps": {
-              "badge": await BadgeCounter.getBadgeCount() + 1,
+              "sound": "default",
+              "content-available": 1,
             },
           },
         },

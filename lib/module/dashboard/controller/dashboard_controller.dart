@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/services/badge_counter.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/departments_controller.dart';
 import 'package:roomrounds/module/profile/views/profile_view.dart';
 
-import '../../../core/services/badge_counter.dart';
 import '../../../firebase_options.dart';
 import '../../notificatin/controller/notification_controller.dart';
 import '../../push_notification/push_notification.dart';
@@ -61,12 +61,14 @@ class DashBoardController extends GetxController {
   }
 }
 
+// Background handler - iOS will handle badge natively
 @pragma('vm:entry-point')
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // Increment badge count
-  await BadgeCounter.incrementBadgeCount();
+  BadgeCounter.incrementBadgeCount();
+  print('[Background] Received notification: ${message.notification?.title}');
   
+  // Badge is handled natively on iOS, just handle the data
   final action = message.data['Screen'];
   if (action == 'Chat') {
     final String chatRoomId = message.data['chatRoomId'];
@@ -86,6 +88,5 @@ Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
 
 Future<void> initnotification() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
-
   await PushNotificationController.initialize();
 }

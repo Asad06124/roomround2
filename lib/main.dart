@@ -5,7 +5,9 @@ import 'package:roomrounds/core/routes/app_pages.dart';
 import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
+import 'core/services/badge_counter.dart';
 import 'firebase_options.dart';
+// main.dart
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +15,11 @@ void main() async {
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   _initControllers();
+  // await BadgeCounter.initialize();
+
+  // Reset badge count on app launch
+//  await BadgeCounter.resetBadgeCount();
+
   runApp(MyApp());
 }
 

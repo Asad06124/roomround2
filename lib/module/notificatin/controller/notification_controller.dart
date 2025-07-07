@@ -2,6 +2,8 @@ import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/notifications/notification_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
+import '../../../core/services/badge_counter.dart';
+
 class NotificationController extends GetxController
     with WidgetsBindingObserver {
   bool hasData = false;
@@ -26,6 +28,8 @@ class NotificationController extends GetxController
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+       BadgeCounter.syncBadgeCount();
+
       fetchNotificationsList(forceRefresh: true);
     }
   }

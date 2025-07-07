@@ -82,7 +82,7 @@ flutter_launcher_icons:
   ios: true # can specify file name here e.g. "My-Launcher-Icon"
 
 dependency_overrides:
-  win32: ^5.5.4
+  # win32: ^5.5.4
 
 dev_dependencies:
   build_runner: 2.4.13
