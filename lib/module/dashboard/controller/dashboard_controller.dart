@@ -65,7 +65,7 @@ class DashBoardController extends GetxController {
 @pragma('vm:entry-point')
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  BadgeCounter.incrementBadgeCount();
+  // BadgeCountService.incrementBadgeCount();
   print('[Background] Received notification: ${message.notification?.title}');
   
   // Badge is handled natively on iOS, just handle the data

@@ -7,6 +7,7 @@ import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
 import 'core/services/badge_counter.dart';
 import 'firebase_options.dart';
+import 'module/push_notification/push_notification.dart';
 // main.dart
 
 void main() async {
@@ -18,7 +19,7 @@ void main() async {
   // await BadgeCounter.initialize();
 
   // Reset badge count on app launch
-//  await BadgeCounter.resetBadgeCount();
+//  await BadgeCountService.resetBadgeCount();
 
   runApp(MyApp());
 }

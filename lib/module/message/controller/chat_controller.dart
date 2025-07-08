@@ -325,7 +325,7 @@ class ChatController extends GetxController {
           "msgId": messageId,
           "receiverImgUrl": receiverImgUrl,
           "receiverDeviceToken": serverKey,
-        },
+        }, userId: receiverId,
       ).catchError((e) {
         print('Error sending notification: $e');
       });

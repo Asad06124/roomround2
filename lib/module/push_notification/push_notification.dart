@@ -7,12 +7,43 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:roomrounds/core/constants/imports.dart';
+import 'package:roomrounds/core/services/badge_counter.dart';
 import 'package:roomrounds/module/assigned_task/views/ticket_chat_view.dart';
 import 'package:roomrounds/module/notificatin/controller/notification_controller.dart';
 
 import '../../core/apis/models/tickets/ticket_model.dart';
-import '../../core/services/badge_counter.dart';
+// import '../../core/services/badge_counter.dart';
 import '../../core/services/get_server_key.dart';
+
+class BadgeCountService {
+  static final _firestore = FirebaseFirestore.instance;
+  static final _collection = _firestore.collection('badge_counts');
+
+  static Future<int> getBadgeCount(String userId) async {
+    final doc = await _collection.doc(userId).get();
+    if (doc.exists && doc.data() != null && doc.data()!.containsKey('count')) {
+      return doc['count'] as int;
+    }
+    return 0;
+  }
+
+  static Future<int> incrementBadgeCount(String userId) async {
+    final docRef = _collection.doc(userId);
+    final doc = await docRef.get();
+    int current = 0;
+    if (doc.exists && doc.data() != null && doc.data()!.containsKey('count')) {
+      current = doc['count'] as int;
+    }
+    final newCount = current + 1;
+    await docRef.set({'count': newCount});
+    return newCount;
+  }
+
+  static Future<void> resetBadgeCount(String userId) async {
+    BadgeCounter.resetBadgeCount();
+    await _collection.doc(userId).set({'count': 0});
+  }
+}
 
 class PushNotificationController {
   static final FirebaseMessaging fcm = FirebaseMessaging.instance;
@@ -23,7 +54,7 @@ class PushNotificationController {
   static Future<void> initialize() async {
     // Initialize Firebase
     await Firebase.initializeApp();
-  await BadgeCounter.initialize();
+    // await BadgeCounter.initialize();
 
     // Configure local notifications
     const AndroidInitializationSettings androidSettings =
@@ -49,7 +80,7 @@ class PushNotificationController {
     await _grantNotificationPermission();
 
     // Reset badge count on app launch
-    await BadgeCounter.resetBadgeCount();
+    // await BadgeCounter.resetBadgeCount();
 
     // Handle notifications from terminated state
     await _handleTerminatedState();
@@ -88,7 +119,7 @@ class PushNotificationController {
     final RemoteMessage? initialMessage = await fcm.getInitialMessage();
     if (initialMessage != null) {
       debugPrint('App opened from terminated state with notification');
-      await BadgeCounter.incrementBadgeCount();
+      // await BadgeCounter.incrementBadgeCount();
       await _handleNotificationClick(initialMessage.data,
           fromTerminationState: true);
     }
@@ -99,7 +130,7 @@ class PushNotificationController {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.notification != null) {
         // Increment badge count for new notification
-        await BadgeCounter.incrementBadgeCount();
+        // await BadgeCounter.incrementBadgeCount();
         await _showNotification(
           title: message.notification?.title ?? '',
           body: message.notification?.body ?? '',
@@ -131,7 +162,7 @@ class PushNotificationController {
     // Handle notifications when app is opened from background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       // Reset badge count when app is opened
-      await BadgeCounter.resetBadgeCount();
+      // await BadgeCounter.resetBadgeCount();
       await _handleNotificationClick(message.data);
     });
   }
@@ -143,7 +174,7 @@ class PushNotificationController {
       if (notificationResponse.payload != null) {
         final payload = jsonDecode(notificationResponse.payload!);
         // Reset badge count when notification is clicked
-        await BadgeCounter.resetBadgeCount();
+        // await BadgeCounter.resetBadgeCount();
         await _handleNotificationClick(payload);
       }
     }
@@ -170,7 +201,7 @@ class PushNotificationController {
         presentSound: true,
         presentBanner: true,
         presentList: true,
-        badgeNumber: await BadgeCounter.getBadgeCount(),
+        // badgeNumber: await BadgeCounter.getBadgeCount(),
       ),
     );
 
@@ -240,6 +271,7 @@ class PushNotificationController {
     required String? title,
     required String? body,
     required Map<String, dynamic>? data,
+    required String? userId, // Add userId param
   }) async {
     String serverKey = await GetServerKey().getServerKeyToken();
     debugPrint("FCM Server Key: $serverKey");
@@ -252,6 +284,12 @@ class PushNotificationController {
       'Authorization': 'Bearer $serverKey',
     };
 
+    // Get and increment badge count for this user
+    int badgeCount = 1;
+    if (userId != null) {
+      badgeCount = await BadgeCountService.incrementBadgeCount(userId);
+    }
+
     final Map<String, dynamic> message = {
       "message": {
         "token": token,
@@ -262,6 +300,7 @@ class PushNotificationController {
             "aps": {
               "sound": "default",
               "content-available": 1,
+              "badge": badgeCount,
             },
           },
         },
@@ -284,5 +323,10 @@ class PushNotificationController {
     } catch (e) {
       debugPrint("Error sending notification: $e");
     }
+  }
+
+  /// Call this to reset badge count for a user (e.g., when opening the app or notification)
+  static Future<void> clearBadgeCountForUser(String userId) async {
+    await BadgeCountService.resetBadgeCount(userId);
   }
 }

@@ -226,7 +226,7 @@ class TicketChatController extends GetxController {
           "receiverDeviceToken": ticket.assignBy.toString() != senderId
               ? ticket.assignToFCMToken
               : ticket.assignByFCMToken,
-        },
+        }, userId: receiverId,
       ).catchError((e) {
         print('Error sending notification: $e');
       });
