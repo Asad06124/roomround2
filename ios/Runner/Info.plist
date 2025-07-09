@@ -9,8 +9,6 @@
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>remote-notification</string>
-			<string>background-fetch</string>
-			<string>push-to-talk</string>
 		</array>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
