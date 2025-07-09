@@ -31,7 +31,7 @@ if (keystorePropertiesFile.exists()) {
 }
 android {
     namespace "com.roomrounds.llc"
-    compileSdk = 35
+    compileSdkVersion 35
     ndkVersion = "25.1.8937393"
 
     compileOptions {
@@ -83,7 +83,7 @@ flutter {
 }
 
 dependencies {
-    def exoplayer_version = "...specify-version-here...."
+    def exoplayer_version = "2.19.1"
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
     implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer_version"
@@ -91,6 +91,6 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoplayer_version"
     implementation 'androidx.window:window:1.0.0'
     implementation 'androidx.window:window-java:1.0.0'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 
 }
