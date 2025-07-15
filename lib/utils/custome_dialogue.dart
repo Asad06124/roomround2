@@ -13,7 +13,6 @@ import 'package:roomrounds/module/assigned_task/controller/assigned_task_control
 import 'package:roomrounds/module/assigned_task/views/ticket_image_full_view.dart';
 import 'package:roomrounds/module/create_ticket/controller/audio_controller.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/employee_directory_controller.dart';
-import 'package:roomrounds/module/emloyee_directory/components/employee_directory_components.dart';
 
 import '../core/apis/models/room/room_task_model.dart';
 import '../module/emloyee_directory/controller/departments_controller.dart';

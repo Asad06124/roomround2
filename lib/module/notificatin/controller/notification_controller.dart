@@ -2,7 +2,6 @@ import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/notifications/notification_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
-import '../../../core/services/badge_counter.dart';
 import '../../push_notification/push_notification.dart';
 
 class NotificationController extends GetxController

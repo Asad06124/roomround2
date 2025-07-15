@@ -74,6 +74,9 @@ dependencies:
   # record: ^5.2.0
   # record: ^5.2.0
 
+  http_parser: any
+  rxdart: any
+  vector_graphics: any
 flutter_launcher_icons:
   image_path: "assets/images/app_logo.png"
   # image_path_android: "assets/images/app_logo.png"

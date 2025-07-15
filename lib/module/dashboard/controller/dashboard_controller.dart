@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:roomrounds/core/constants/imports.dart';
-import 'package:roomrounds/core/services/badge_counter.dart';
 import 'package:roomrounds/module/emloyee_directory/controller/departments_controller.dart';
 import 'package:roomrounds/module/profile/views/profile_view.dart';
 
