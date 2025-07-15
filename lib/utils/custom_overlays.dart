@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:roomrounds/core/constants/app_colors.dart';
 import 'package:roomrounds/core/constants/app_strings.dart';
+import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/core/constants/utilities.dart';
 import 'package:roomrounds/utils/custom_loader.dart';
 
@@ -61,3 +62,22 @@ class CustomOverlays {
         : null;
   }
 }
+
+// class CustomLoader extends StatelessWidget {
+//   const CustomLoader({super.key, this.isDialog = false});
+
+//   final bool isDialog;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Center(
+//       child: CircularProgressIndicator(
+//         strokeWidth: 2,
+//         backgroundColor: AppColors.white,
+//         valueColor: AlwaysStoppedAnimation<Color>(
+//           AppColors.primary,
+//         ),
+//       ),
+//     );
+//   }
+// }
