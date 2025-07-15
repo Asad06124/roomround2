@@ -759,8 +759,7 @@ class CreateTicketDialog extends StatelessWidget {
                         ?.where((media) =>
                             (media.imagekey?.isNotEmpty ?? false) &&
                             !(controller.removedMediaIds
-                                    .contains(media.ticketsMediaId) ??
-                                false))
+                                    .contains(media.ticketsMediaId)))
                         .toList() ??
                     [];
 
@@ -768,8 +767,7 @@ class CreateTicketDialog extends StatelessWidget {
                         ?.where((media) =>
                             (media.audioKey?.isNotEmpty ?? false) &&
                             !(controller.removedMediaIds
-                                    .contains(media.ticketsMediaId) ??
-                                false))
+                                    .contains(media.ticketsMediaId)))
                         .toList() ??
                     [];
 
@@ -1782,8 +1780,9 @@ class AssignedThreadDialouge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('ticket....: ${ticket?.toJson()}');
-    bool isUrgent = ticket?.isUrgent == true;
+    if (kDebugMode) {
+      print('ticket....: ${ticket?.toJson()}');
+    }
     DateTime? dateTime = ticket?.assignDate?.toDateTime();
     String? date, time;
     if (dateTime != null) {
@@ -2608,7 +2607,7 @@ class DialougeComponents {
                       child: Text(
                         '(${employee?.roleName?.toUpperCase() ?? ''})',
                         style: context.bodyMedium!.copyWith(
-                          color: roleColor ?? AppColors.darkGrey,
+                          color: roleColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

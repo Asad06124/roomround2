@@ -9,9 +9,8 @@ import '../../../core/apis/models/employee/employee_model.dart';
 import '../../emloyee_directory/controller/employee_directory_controller.dart';
 
 class MessageView extends GetView<EmployeeDirectoryController> {
-  MessageView({super.key});
+  const MessageView({super.key});
 
-  Future<List<EmployeeWithLiveChat>>? _cachedFuture;
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +57,17 @@ class MessageView extends GetView<EmployeeDirectoryController> {
                 String currentUserId =
                     profileController.user!.userId.toString();
 
-                if (controller.hasData && _cachedFuture == null) {
-                  _cachedFuture = chatController.setupLiveChats(
+                Future<List<EmployeeWithLiveChat>>? cachedFuture;
+                if (controller.hasData) {
+                  cachedFuture = chatController.setupLiveChats(
                       controller.searchResults, currentUserId);
                 }
 
                 return controller.hasData
                     ? FutureBuilder<List<EmployeeWithLiveChat>>(
-                        future: _cachedFuture,
+                        future: cachedFuture,
                         builder: (context, snapshot) {
-                          if (_cachedFuture == null) {
+                          if (cachedFuture == null) {
                             return const CustomLoader();
                           }
 

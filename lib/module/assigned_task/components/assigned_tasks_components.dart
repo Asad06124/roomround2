@@ -161,9 +161,6 @@ class AssignedTaskComponents {
                 GestureDetector(
                   onTap: () {
                     // String currentUserId = profileController.user!.userId.toString();
-                    String? image = isAssignedToMe
-                        ? ticket.assignByImage
-                        : ticket.assignToImage;
                     int? receiverId =
                         isAssignedToMe ? ticket.assignBy : ticket.assignTo;
                     int? senderId =

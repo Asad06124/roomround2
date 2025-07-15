@@ -22,7 +22,7 @@ class ChatView extends StatelessWidget {
         name = Get.arguments['name'] ?? '',
         senderId = profileController.user!.userId.toString();
 
-  LayerLink link = LayerLink();
+ final LayerLink link = LayerLink();
 
   @override
   Widget build(BuildContext context) {
