@@ -14,10 +14,6 @@ void main() async {
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   _initControllers();
-  // await BadgeCounter.initialize();
-
-  // Reset badge count on app launch
-//  await BadgeCountService.resetBadgeCount();
 
   runApp(MyApp());
 }
