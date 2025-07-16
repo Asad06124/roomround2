@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/assigned_task/controller/ticket_chat_controller.dart';
+import 'package:roomrounds/module/maintenance/controller/maintenance_task_chat_controller.dart';
 
 import '../../../core/apis/models/tickets/ticket_model.dart';
 import '../../../core/components/app_image.dart';
@@ -80,7 +81,7 @@ class TicketMessageComponents {
       bool? isAdmin,
       String? senderName,
       String? senderImageUrl,
-      required TicketChatController controller}) {
+      required dynamic controller}) {
     log("profileController Image: $recieverImageUrl");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -237,7 +238,7 @@ class TicketCustomePainterDialouge extends StatefulWidget {
   GestureTapCallback? onTap;
   Widget child;
   final String ticketId;
-  final Ticket ticket;
+  final dynamic ticket;
   final String receiverId;
   final String senderId;
 
@@ -262,7 +263,17 @@ class TicketCustomePainterDialouge extends StatefulWidget {
 
 class _TicketCustomePainterDialougeState
     extends State<TicketCustomePainterDialouge> {
-  var chatController = Get.find<TicketChatController>();
+  dynamic chatController;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      chatController = Get.find<TicketChatController>();
+    } catch (_) {
+      chatController = Get.find<MaintenanceTaskChatController>();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

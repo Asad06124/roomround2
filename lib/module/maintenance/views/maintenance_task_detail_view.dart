@@ -9,6 +9,8 @@ import 'package:roomrounds/module/assigned_task/views/ticket_image_full_view.dar
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:roomrounds/utils/custom_overlays.dart';
+import 'package:roomrounds/module/maintenance/views/maintenance_task_chat_view.dart';
+import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
 class _DownloadProgressDialog extends StatelessWidget {
   final ValueNotifier<double> progressNotifier;
@@ -72,6 +74,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(MaintenanceController());
+    final profileController = Get.put(ProfileController());
 
     // Helper to determine file type
     bool isImage(String url) {
@@ -345,6 +348,44 @@ class MaintenanceTaskDetailView extends StatelessWidget {
             ),
           ),
           // --- End Task Details Section ---
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.chat),
+                label: const Text('Open Task Chat'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  final userId =
+                      profileController.user?.userId.toString() ?? '';
+                  final assignToId =
+                      task.maintenanceTaskAssigns?.userId?.toString() ?? '';
+                  final assignById =
+                      userId; // fallback to current user if not available
+                  final isAssignedToMe = assignToId == userId;
+                  final chatSenderId = isAssignedToMe ? assignToId : assignById;
+                  final chatReceiverId =
+                      isAssignedToMe ? assignById : assignToId;
+                  Get.to(() => MaintenanceTaskChatView(
+                        taskId: task.maintenanceTaskId?.toString() ?? '',
+                        receiverId: chatReceiverId,
+                        senderId: chatSenderId,
+                        task: task,
+                        taskTitle: task.maintenanceTaskName ?? 'Task Chat',
+                        isAssignedToMe: isAssignedToMe,
+                      ));
+                },
+              ),
+            ),
+          ),
           Expanded(
             child: Container(), // Placeholder for additional content
           ),

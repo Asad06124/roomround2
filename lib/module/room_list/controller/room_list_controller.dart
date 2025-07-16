@@ -17,6 +17,9 @@ class RoomListController extends GetxController {
 
   VoidCallback? onAllRoomsCompleted;
 
+  // Flag to indicate if returning from task list view
+  bool fromTaskList = false;
+
   @override
   void onInit() {
     super.onInit();
@@ -54,7 +57,7 @@ class RoomListController extends GetxController {
     _updateHasData(true);
     bool allRoomsCompleted = roomsList.isNotEmpty &&
         roomsList.every((room) => room.roomStatus == true);
-    if (allRoomsCompleted) {
+    if (allRoomsCompleted && fromTaskList) {
       onAllRoomsCompleted?.call();
       Get.back(closeOverlays: true);
       CustomOverlays.showToastMessage(
@@ -62,7 +65,7 @@ class RoomListController extends GetxController {
         isSuccess: true,
         title: 'Success!',
       );
-      
+      fromTaskList = false; // Reset the flag
     }
     update();
   }

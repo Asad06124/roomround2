@@ -14,16 +14,6 @@ class RoomListView extends StatelessWidget {
     return GetBuilder<RoomListController>(
         init: RoomListController(),
         builder: (controller) {
-          controller.onAllRoomsCompleted = () {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              CustomOverlays.showToastMessage(
-                message: 'Template complete',
-                isSuccess: true,
-                title: 'Success!',
-              );
-              Get.back();
-            });
-          };
           User? user = profileController.user;
           List<Room> roomsList = controller.roomsList;
 
@@ -151,7 +141,9 @@ class RoomListView extends StatelessWidget {
                 title: room.roomName,
                 onTap: () async {
                   await Get.toNamed(AppRoutes.TASKS_LISTS, arguments: room);
-                  Get.find<RoomListController>().fetchRoomsList(hasData: true);
+                  final controller = Get.find<RoomListController>();
+                  controller.fromTaskList = true;
+                  controller.fetchRoomsList(hasData: true);
                 },
                 trailingWidget: RoomListComponents.statusWidget(
                   context,
