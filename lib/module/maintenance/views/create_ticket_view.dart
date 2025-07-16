@@ -12,29 +12,32 @@ class CreateTicketView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(MaintenanceTaskController());
-    return CustomContainer(
-      appBar: CustomAppbar.simpleAppBar(
-        context,
-        height: 100,
-        isBackButtun: true,
-        title: task.maintenanceTaskName ?? 'Create Ticket',
-      ),
-      padding: EdgeInsets.zero,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: controller.createTicketFormKey,
-            child: CreateTicketDialog(
-              title: task.maintenanceTaskName,
-              task: null,
-              preSelectedEmployee: controller.assignedTo.value,
-              selectedUrgent: controller.isUrgent.value,
-              textFieldController: controller.ticketDescriptionController,
-              onUrgentChanged: (val) => controller.isUrgent.value = val,
-              onSelectItem: (emp) => controller.assignedTo.value = emp,
-              onDoneTap: controller.submitTicketCreation,
+    final controller = Get.put(MaintenanceTaskController(), tag: 'maintenance');
+
+    return ScaffoldMessenger(
+      child: CustomContainer(
+        appBar: CustomAppbar.simpleAppBar(
+          context,
+          height: 100,
+          isBackButtun: true,
+          title: task.maintenanceTaskName ?? 'Create Ticket',
+        ),
+        padding: EdgeInsets.zero,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: controller.createTicketFormKey,
+              child: Obx(() => CreateTicketDialog(
+                    title: task.maintenanceTaskName,
+                    task: null,
+                    preSelectedEmployee: controller.assignedTo.value,
+                    selectedUrgent: controller.isUrgent.value,
+                    textFieldController: controller.ticketDescriptionController,
+                    onUrgentChanged: (val) => controller.isUrgent.value = val,
+                    onSelectItem: (emp) => controller.assignedTo.value = emp,
+                    onDoneTap: () => controller.submitTicketCreation(task),
+                  )),
             ),
           ),
         ),

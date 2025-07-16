@@ -34,7 +34,7 @@ class CompleteTaskView extends StatelessWidget {
               textFieldController: controller.commentsController,
               onUrgentChanged: (val) => controller.isUrgent.value = val,
               onSelectItem: (emp) => controller.assignedTo.value = emp,
-              onDoneTap: controller.submitCompletion,
+              onDoneTap: () => controller.submitCompletion(task),
               showCompleteOnly: true,
             ),
           ),

@@ -144,10 +144,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
       if (isImage(url)) {
         Get.to(() => TicketImageFullView(imageUrl: url));
       } else if (isPdf(url)) {
-        // For simplicity, open in browser. For local file, download then open.
         openDocument(url);
-        // To use PDFViewerScreen, you need to download the file and pass the local path.
-        // Get.to(() => PDFViewerScreen(url: localPath));
       } else {
         openDocument(url);
       }
