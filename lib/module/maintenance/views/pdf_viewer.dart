@@ -3,7 +3,7 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class PDFViewerScreen extends StatelessWidget {
   final String url;
-  const PDFViewerScreen({Key? key, required this.url}) : super(key: key);
+  const PDFViewerScreen({super.key, required this.url});
 
   @override
   Widget build(BuildContext context) {

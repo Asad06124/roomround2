@@ -480,7 +480,7 @@ class RoomTasksController extends GetxController {
       if (allDone) {
         Get.closeAllSnackbars();
         CustomOverlays.showToastMessage(
-            message: 'Template completed', isSuccess: true, title: 'Success!');
+            message: 'You have completed your RoomRounds', isSuccess: true, title: 'Success!');
         Future.delayed(Duration(milliseconds: 500), () {
           Get.back(closeOverlays: true);
         });
@@ -589,7 +589,6 @@ class RoomTasksController extends GetxController {
                   onSelectItem: _onAssignedToChange,
                   onDoneTap: () async {
                     await _createNewTicket(task);
-
                     await _fetchTasksList(task?.roomId, _sortBy);
                     bool allDone = _tasks.every((task) =>
                         task.isNA == true ||
@@ -601,9 +600,7 @@ class RoomTasksController extends GetxController {
                         Get.back(closeOverlays: true);
                       });
                       CustomOverlays.showToastMessage(
-                          message: 'Template completed',
-                          isSuccess: true,
-                          title: 'Success!');
+                          message: 'You have completed your RoomRounds', isSuccess: true, title: 'Success!');
                     }
                   },
                 );

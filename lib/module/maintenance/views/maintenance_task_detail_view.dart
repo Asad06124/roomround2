@@ -12,7 +12,7 @@ import 'package:roomrounds/utils/custom_overlays.dart';
 
 class _DownloadProgressDialog extends StatelessWidget {
   final ValueNotifier<double> progressNotifier;
-  const _DownloadProgressDialog({super.key, required this.progressNotifier});
+  const _DownloadProgressDialog({required this.progressNotifier});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
     final controller = Get.put(MaintenanceController());
 
     // Helper to determine file type
-    bool _isImage(String url) {
+    bool isImage(String url) {
       final lower = url.toLowerCase();
       return lower.endsWith('.png') ||
           lower.endsWith('.jpg') ||
@@ -82,13 +82,13 @@ class MaintenanceTaskDetailView extends StatelessWidget {
           lower.endsWith('.gif');
     }
 
-    bool _isPdf(String url) => url.toLowerCase().endsWith('.pdf');
+    bool isPdf(String url) => url.toLowerCase().endsWith('.pdf');
 
-    Future<void> _openDocument(String url) async {
+    Future<void> openDocument(String url) async {
       await launchUrl(Uri.parse(url));
     }
 
-    Future<void> _downloadFile(BuildContext context, String url) async {
+    Future<void> downloadFile(BuildContext context, String url) async {
       final progressNotifier = ValueNotifier<double>(0.0);
       try {
         final dio = Dio();
@@ -137,16 +137,16 @@ class MaintenanceTaskDetailView extends StatelessWidget {
       }
     }
 
-    void _viewDocument(BuildContext context, String url) {
-      if (_isImage(url)) {
+    void viewDocument(BuildContext context, String url) {
+      if (isImage(url)) {
         Get.to(() => TicketImageFullView(imageUrl: url));
-      } else if (_isPdf(url)) {
+      } else if (isPdf(url)) {
         // For simplicity, open in browser. For local file, download then open.
-        _openDocument(url);
+        openDocument(url);
         // To use PDFViewerScreen, you need to download the file and pass the local path.
         // Get.to(() => PDFViewerScreen(url: localPath));
       } else {
-        _openDocument(url);
+        openDocument(url);
       }
     }
 
@@ -164,7 +164,6 @@ class MaintenanceTaskDetailView extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          // --- Task Details Section ---
           Card(
             margin: const EdgeInsets.all(16),
             shape:
@@ -307,9 +306,9 @@ class MaintenanceTaskDetailView extends StatelessWidget {
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              icon: Icon(_isPdf(fullDocUrl)
+                              icon: Icon(isPdf(fullDocUrl)
                                   ? Icons.picture_as_pdf
-                                  : _isImage(fullDocUrl)
+                                  : isImage(fullDocUrl)
                                       ? Icons.image
                                       : Icons.insert_drive_file),
                               label: const Text('View'),
@@ -320,7 +319,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8)),
                               ),
                               onPressed: () =>
-                                  _viewDocument(context, fullDocUrl),
+                                  viewDocument(context, fullDocUrl),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -335,7 +334,7 @@ class MaintenanceTaskDetailView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8)),
                               ),
                               onPressed: () =>
-                                  _downloadFile(context, fullDocUrl!),
+                                  downloadFile(context, fullDocUrl),
                             ),
                           ),
                         ],

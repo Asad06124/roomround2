@@ -2,6 +2,8 @@ import 'package:roomrounds/core/apis/api_function.dart';
 import 'package:roomrounds/core/apis/models/room/room_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 
+import '../../../utils/custom_overlays.dart';
+
 class RoomListController extends GetxController {
   RoomType _roomType = RoomType.allRooms;
 
@@ -12,6 +14,8 @@ class RoomListController extends GetxController {
   List<Room> _roomsList = [];
 
   List<Room> get roomsList => _roomsList;
+
+  VoidCallback? onAllRoomsCompleted;
 
   @override
   void onInit() {
@@ -48,6 +52,19 @@ class RoomListController extends GetxController {
       _roomsList = [];
     }
     _updateHasData(true);
+    bool allRoomsCompleted = roomsList.isNotEmpty &&
+        roomsList.every((room) => room.roomStatus == true);
+    if (allRoomsCompleted) {
+      onAllRoomsCompleted?.call();
+      Get.back(closeOverlays: true);
+      CustomOverlays.showToastMessage(
+        message: 'Template complete',
+        isSuccess: true,
+        title: 'Success!',
+      );
+      
+    }
+    update();
   }
 
   void changeRoomType(String text) {

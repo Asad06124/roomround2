@@ -4,6 +4,7 @@ import 'package:roomrounds/core/apis/models/room/room_model.dart';
 import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/room_list/components/room_list_components.dart';
 import 'package:roomrounds/module/room_list/controller/room_list_controller.dart';
+import 'package:roomrounds/utils/custom_overlays.dart';
 
 class RoomListView extends StatelessWidget {
   const RoomListView({super.key});
@@ -13,6 +14,16 @@ class RoomListView extends StatelessWidget {
     return GetBuilder<RoomListController>(
         init: RoomListController(),
         builder: (controller) {
+          controller.onAllRoomsCompleted = () {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CustomOverlays.showToastMessage(
+                message: 'Template complete',
+                isSuccess: true,
+                title: 'Success!',
+              );
+              Get.back();
+            });
+          };
           User? user = profileController.user;
           List<Room> roomsList = controller.roomsList;
 
