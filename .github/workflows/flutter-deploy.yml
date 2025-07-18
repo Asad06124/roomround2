@@ -260,12 +260,12 @@ jobs:
 
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
 
       - name: Build Signed APK
         run: |
           flutter build apk --release \
-          --dart-define=KEYSTORE_PATH=android/app/keystore.jks \
+          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
           --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
           --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
           --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
@@ -487,12 +487,12 @@ jobs:
 
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
 
       - name: Build Signed APK
         run: |
           flutter build apk --release \
-          --dart-define=KEYSTORE_PATH=android/app/keystore.jks \
+          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
           --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
           --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
           --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
