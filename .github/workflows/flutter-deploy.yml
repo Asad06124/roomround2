@@ -3,27 +3,31 @@
 #
 # ```mermaid
 # flowchart TD
-#   %% Phase 1: Initial Jobs (run in parallel)
-#   subgraph Phase1["🔹 Phase 1: Initial Tasks (Parallel)"]
-#     VSET["🧱 Version Setup"]
-#     PCOM["🔍 Parse Commit"]
-#     VSEC["🔐 Validate Secrets"]
+#   %% Phase 1: Three separate matrices (run in parallel)
+#   subgraph VersionMatrix["🧱 Version Matrix"]
+#     VERSION_SETUP["Version Setup 📋"]
 #   end
 #
-#   %% Phase 2: Patch Matrix
-#   subgraph PatchMatrix["📦 Patch Matrix"]
+#   subgraph ParseMatrix["🔍 Parse Matrix"]
+#     PARSE_COMMIT["Parse Commit 📝"]
+#   end
+#
+#   subgraph SecretsMatrix["🔐 Secrets Matrix"]
+#     VALIDATE_SECRETS["Validate Secrets 🔑"]
+#   end
+#
+#   %% Phase 2: Three matrices with subtasks
+#   subgraph PatchMatrix["🏖️ Patch Matrix"]
 #     PATCH_ANDROID["Patch Android 🤖"]
 #     PATCH_IOS["Patch iOS 🍏"]
 #   end
 #
-#   %% Phase 2: Release Matrix
-#   subgraph ReleaseMatrix["📦 Release Matrix"]
+#   subgraph ReleaseMatrix["🚀 Release Matrix"]
 #     RELEASE_ANDROID["Release Android 🚀🤖"]
 #     RELEASE_IOS["Release iOS 🚀🍏"]
 #   end
 #
-#   %% Phase 2: Standard Build Matrix
-#   subgraph StandardMatrix["📦 Standard Build Matrix"]
+#   subgraph StandardMatrix["📦 Standard Matrix"]
 #     BUILD_APK["Build APK 📱"]
 #     BUILD_IPA["Build IPA 🍎"]
 #   end
@@ -31,20 +35,20 @@
 #   %% Phase 3: Pipeline Status
 #   PIPELINE_STATUS["📊 Pipeline Status"]
 #
-#   %% Flow: All Phase 1 jobs must complete before any matrix jobs start
-#   VSET --> PatchMatrix
-#   VSET --> ReleaseMatrix
-#   VSET --> StandardMatrix
+#   %% Flow: All Phase 1 matrices must complete before any Phase 2 matrix starts
+#   VersionMatrix --> PatchMatrix
+#   VersionMatrix --> ReleaseMatrix
+#   VersionMatrix --> StandardMatrix
 #
-#   PCOM --> PatchMatrix
-#   PCOM --> ReleaseMatrix
-#   PCOM --> StandardMatrix
+#   ParseMatrix --> PatchMatrix
+#   ParseMatrix --> ReleaseMatrix
+#   ParseMatrix --> StandardMatrix
 #
-#   VSEC --> PatchMatrix
-#   VSEC --> ReleaseMatrix
-#   VSEC --> StandardMatrix
+#   SecretsMatrix --> PatchMatrix
+#   SecretsMatrix --> ReleaseMatrix
+#   SecretsMatrix --> StandardMatrix
 #
-#   %% All matrix jobs feed into final status
+#   %% All Phase 2 matrices feed into final status
 #   PatchMatrix --> PIPELINE_STATUS
 #   ReleaseMatrix --> PIPELINE_STATUS
 #   StandardMatrix --> PIPELINE_STATUS
@@ -53,17 +57,21 @@
 name: 🚀 Flutter CI/CD Pipeline with Shorebird
 
 # 🚀 CI/CD Pipeline Flow - Three Phase Structure
+# PHASE 1: Three separate matrices (run in parallel)
 #        ┌────────────────────┐   ┌────────────────────┐   ┌──────────────────────┐
-#        │  🧱 Version Setup  │   │  🔍 Parse Commit   │   │ 🔐 Validate Secrets  │
-#        │     (Phase 1)      │   │     (Phase 1)      │   │     (Phase 1)        │
+#        │   🧱 Version       │   │   🔍 Parse         │   │ 🔐 Secrets           │
+#        │     Matrix         │   │     Matrix         │   │   Matrix             │
+#        │ ┌────────────────┐ │   │ ┌────────────────┐ │   │ ┌──────────────────┐ │
+#        │ │ Version Setup  │ │   │ │ Parse Commit   │ │   │ │ Validate Secrets │ │
+#        │ └────────────────┘ │   │ └────────────────┘ │   │ └──────────────────┘ │
 #        └─────────┬──────────┘   └─────────┬──────────┘   └─────────┬────────────┘
 #                  │                        │                        │
 #                  └────────────┬───────────┴────────────┬──────────┘
 #                               │                        │
 #                               ▼                        ▼
+# PHASE 2: Three matrices with subtasks (run in parallel after Phase 1)
 #        ┌────────────────────────────────┐ ┌────────────────────────────┐ ┌──────────────────────────────┐
-#        │       Patch Matrix             │ │      Release Matrix         │ │      Standard Matrix          │
-#        │        (Phase 2)               │ │       (Phase 2)             │ │       (Phase 2)               │
+#        │      🏖️ Patch Matrix          │ │     🚀 Release Matrix       │ │     📦 Standard Matrix        │
 #        │ ┌────────────┬────────────┐   │ │ ┌────────────┬────────────┐ │ │ ┌────────────┬────────────┐ │
 #        │ │ Patch      │ Patch      │   │ │ │ Release    │ Release    │ │ │ │ Standard   │ Standard   │ │
 #        │ │ Android    │ iOS        │   │ │ │ Android    │ iOS        │ │ │ │ APK        │ IPA        │ │
@@ -73,9 +81,9 @@ name: 🚀 Flutter CI/CD Pipeline with Shorebird
 #                     └────────────┬─────────────────────┴──────────────┬──────────────┘
 #                                  │                                     │
 #                                  ▼                                     ▼
+# PHASE 3: Final status (runs after all Phase 2 matrices complete)
 #                        ┌────────────────────────────┐
 #                        │   📊 Pipeline Status       │
-#                        │       (Phase 3)            │
 #                        └────────────────────────────┘
 
 on:
