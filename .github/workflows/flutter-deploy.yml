@@ -108,6 +108,8 @@ jobs:
     if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'android' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-android-release-ios') }}
     runs-on: ubuntu-latest
     continue-on-error: true
+    env:
+      PATH: "$HOME/.shorebird/bin:$PATH"  # Persist PATH for all steps
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -128,17 +130,14 @@ jobs:
 
       - name: Install Shorebird CLI
         run: |
-          curl -s https://install.shorebird.dev | bash
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird --version
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shorebirdtech/shorebird/releases/latest/download/shorebird-installer.sh | bash
+          shorebird --version || { echo "Shorebird CLI installation failed"; exit 1; }
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Create Shorebird patch for Android
-        run: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird patch android --release-version latest
+        run: shorebird patch android --release-version latest
 
       - name: Upload artifact
         if: always()
@@ -168,6 +167,8 @@ jobs:
     if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'ios' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-ios-release-android') }}
     runs-on: macos-latest
     continue-on-error: true
+    env:
+      PATH: "$HOME/.shorebird/bin:$PATH"  # Persist PATH for all steps
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -182,8 +183,7 @@ jobs:
       - name: Install Shorebird CLI
         run: |
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shorebirdtech/shorebird/releases/latest/download/shorebird-installer.sh | bash
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird --version
+          shorebird --version || { echo "Shorebird CLI installation failed"; exit 1; }
 
       - name: Install dependencies
         run: |
@@ -191,9 +191,7 @@ jobs:
           cd ios && pod install
 
       - name: Create Shorebird patch for iOS
-        run: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird patch ios --release-version latest
+        run: shorebird patch ios --release-version latest
 
       - name: Upload artifact
         if: always()
@@ -355,7 +353,7 @@ jobs:
         with:
           name: android-release-failure-logs
           path: android-release-failure.log
-          retention-days: 7
+          retention-days: 4
 
   ios-release:
     needs: [parse-commit, validate-secrets]
@@ -439,7 +437,7 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: iOS IPA Release - ${{ github.sha }}
-          body: > 
+          body: >
             Attached is the iOS IPA release for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
