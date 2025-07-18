@@ -1,6 +1,9 @@
 name: 🚀 Flutter CI/CD Pipeline with Shorebird
 
 # 🚀 CI/CD Pipeline Flow
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# 🔹 LEVEL 1: INITIALIZATION (Run in Parallel)
+# ═══════════════════════════════════════════════════════════════════════════════════════
 #        ┌────────────────────┐   ┌────────────────────┐   ┌──────────────────────┐
 #        │  Setup & Version   │   │    Parse Commit    │   │   Validate Secrets   │
 #        └─────────┬──────────┘   └─────────┬──────────┘   └─────────┬────────────┘
@@ -8,16 +11,31 @@ name: 🚀 Flutter CI/CD Pipeline with Shorebird
 #                  └────────────┬───────────┴────────────┬──────────┘
 #                               │                        │
 #                               ▼                        ▼
-#        ┌────────────────────────────┐ ┌────────────────────────────┐ ┌──────────────────────────────┐
-#        │   Android / iOS Patch      │ │   Android / iOS Release     │ │    Standard APK / IPA Build  │
-#        └────────────┬───────────────┘ └────────────┬───────────────┘ └────────────┬────────────────┘
-#                     │                               │                              │
-#                     └────────────┬──────────────────┴──────────────┬──────────────┘
-#                                  │                                 │
-#                                  ▼                                 ▼
-#                        ┌────────────────────────────┐
-#                        │      Pipeline Status        │
-#                        └────────────────────────────┘
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# 🔹 LEVEL 2: BUILD OPERATIONS (Run in Parallel after Level 1 completes)
+# ═══════════════════════════════════════════════════════════════════════════════════════
+#     ┌─────────────────────────────┐  ┌─────────────────────────────┐  ┌─────────────────────────────┐
+#     │      🏖️ PATCH MATRIX        │  │     🚀 RELEASE MATRIX       │  │   📦 STANDARD BUILD MATRIX  │
+#     │                             │  │                             │  │                             │
+#     │  ┌─────────────────────────┐ │  │  ┌─────────────────────────┐ │  │  ┌─────────────────────────┐ │
+#     │  │   📱 Patch Android     │ │  │  │   📱 Release Android   │ │  │  │   📦 Standard Android  │ │
+#     │  └─────────────────────────┘ │  │  └─────────────────────────┘ │  │  └─────────────────────────┘ │
+#     │                             │  │                             │  │                             │
+#     │  ┌─────────────────────────┐ │  │  ┌─────────────────────────┐ │  │  ┌─────────────────────────┐ │
+#     │  │   🍎 Patch iOS         │ │  │  │   🍎 Release iOS       │ │  │  │   📱 Standard iOS      │ │
+#     │  └─────────────────────────┘ │  │  └─────────────────────────┘ │  │  └─────────────────────────┘ │
+#     │                             │  │                             │  │                             │
+#     └─────────────┬───────────────┘  └─────────────┬───────────────┘  └─────────────┬───────────────┘
+#                   │                                │                                │
+#                   └────────────────┬───────────────┴────────────────┬───────────────┘
+#                                    │                                │
+#                                    ▼                                ▼
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# 🔹 LEVEL 3: PIPELINE STATUS (Runs after all Level 2 jobs complete)
+# ═══════════════════════════════════════════════════════════════════════════════════════
+#                          ┌────────────────────────────┐
+#                          │    📊 Pipeline Status      │
+#                          └────────────────────────────┘
 
 on:
   push:
@@ -201,34 +219,21 @@ jobs:
           echo "✅ All required secrets are present"
 
   # ═══════════════════════════════════════════════════════════════════════════════════════
-  # 🔹 LEVEL 2: BUILD JOBS (Run in Parallel after Level 1 completes)
+  # 🔹 LEVEL 2: BUILD OPERATIONS (Run in Parallel after Level 1 completes)
   # ═══════════════════════════════════════════════════════════════════════════════════════
 
-  # 🏖️ Android / iOS Patch Operations
-  android-ios-patch:
-    name: 🏖️ Android / iOS Patch
+  # 🏖️ Patch Android
+  patch-android:
+    name: 📱 Patch Android
     needs: [setup-and-version, parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.should_run_patch_android == 'true' || needs.parse-commit.outputs.should_run_patch_ios == 'true' }}
-    strategy:
-      matrix:
-        include:
-          - platform: android
-            condition: ${{ needs.parse-commit.outputs.should_run_patch_android == 'true' }}
-            runner: ubuntu-latest
-            emoji: 📱
-          - platform: ios  
-            condition: ${{ needs.parse-commit.outputs.should_run_patch_ios == 'true' }}
-            runner: macos-latest
-            emoji: 🍎
-    runs-on: ${{ matrix.runner }}
-    # if: ${{ matrix.condition }}
+    if: ${{ needs.parse-commit.outputs.should_run_patch_android == 'true' }}
+    runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: ☕ Set up Java (Android only)
-        if: matrix.platform == 'android'
+      - name: ☕ Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
@@ -251,52 +256,77 @@ jobs:
         run: shorebird --version
 
       - name: 📦 Install dependencies
-        run: |
-          flutter pub get
-          if [ "${{ matrix.platform }}" == "ios" ]; then
-            cd ios && pod install
-          fi
+        run: flutter pub get
 
       - name: 🚀 Create Shorebird patch
         env:
           SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
-        run: shorebird patch ${{ matrix.platform }} --release-version latest
+        run: shorebird patch android --release-version latest
 
       - name: 📤 Upload artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-patch-${{ needs.setup-and-version.outputs.version }}
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/ios/ipa/*.ipa
+          name: android-patch-${{ needs.setup-and-version.outputs.version }}
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 7
 
-  # 🚀 Android / iOS Release Operations  
-  android-ios-release:
-    name: 🚀 Android / iOS Release
+  # 🏖️ Patch iOS
+  patch-ios:
+    name: 🍎 Patch iOS
     needs: [setup-and-version, parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.should_run_release_android == 'true' || needs.parse-commit.outputs.should_run_release_ios == 'true' }}
-    strategy:
-      matrix:
-        include:
-          - platform: android
-            condition: ${{ needs.parse-commit.outputs.should_run_release_android == 'true' }}
-            runner: ubuntu-latest
-            emoji: 📱
-          - platform: ios
-            condition: ${{ needs.parse-commit.outputs.should_run_release_ios == 'true' }}
-            runner: macos-latest
-            emoji: 🍎
-    runs-on: ${{ matrix.runner }}
-                        #  if: ${{ matrix.condition }}
+    if: ${{ needs.parse-commit.outputs.should_run_patch_ios == 'true' }}
+    runs-on: macos-latest
     continue-on-error: true
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: ☕ Set up Java (Android only)
-        if: matrix.platform == 'android'
+      - name: 🔧 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 🏖️ Setup Shorebird CLI
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: ✅ Verify Shorebird Installation
+        run: shorebird --version
+
+      - name: 📦 Install dependencies
+        run: |
+          flutter pub get
+          cd ios && pod install
+
+      - name: 🚀 Create Shorebird patch
+        env:
+          SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
+        run: shorebird patch ios --release-version latest
+
+      - name: 📤 Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-patch-${{ needs.setup-and-version.outputs.version }}
+          path: build/ios/ipa/*.ipa
+          retention-days: 7
+
+  # 🚀 Release Android
+  release-android:
+    name: 📱 Release Android
+    needs: [setup-and-version, parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.should_run_release_android == 'true' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
@@ -318,23 +348,8 @@ jobs:
       - name: ✅ Verify Shorebird Installation
         run: shorebird --version
 
-      - name: 💎 Set up Ruby (iOS only)
-        if: matrix.platform == 'ios'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3.0'
-          bundler-cache: true
-
-      - name: 🏃 Install Fastlane (iOS only)
-        if: matrix.platform == 'ios'
-        run: gem install fastlane
-
       - name: 📦 Install dependencies
-        run: |
-          flutter pub get
-          if [ "${{ matrix.platform }}" == "ios" ]; then
-            cd ios && pod install
-          fi
+        run: flutter pub get
 
       - name: 🔢 Bump version
         run: |
@@ -349,12 +364,108 @@ jobs:
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
 
       - name: 🔐 Decode Android Keystore
-        if: matrix.platform == 'android'
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
 
-      - name: 🔐 Fastlane Match Setup (iOS only)
-        if: matrix.platform == 'ios'
+      - name: 🚀 Create Shorebird release
+        env:
+          SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
+        run: |
+          # Create Shorebird release with APK
+          shorebird release android \
+          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
+          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+          
+          # Create AAB using Shorebird
+          shorebird release android --artifact=aab \
+          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
+          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
+      - name: 📤 Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-${{ needs.setup-and-version.outputs.version }}
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+          retention-days: 7
+
+      - name: 📧 Send Release Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: 📱 Android Release (Shorebird) - ${{ needs.setup-and-version.outputs.version }}
+          body: |
+            🚀 Android Release (Shorebird) for version ${{ needs.setup-and-version.outputs.version }}
+            ⏰ Build time: ${{ needs.setup-and-version.outputs.timestamp }}
+            📝 Commit: ${{ github.sha }}
+            
+            ✨ This release supports over-the-air updates via Shorebird
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+
+  # 🚀 Release iOS
+  release-ios:
+    name: 🍎 Release iOS
+    needs: [setup-and-version, parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.should_run_release_ios == 'true' }}
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 🏖️ Setup Shorebird CLI
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: ✅ Verify Shorebird Installation
+        run: shorebird --version
+
+      - name: 💎 Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.0'
+          bundler-cache: true
+
+      - name: 🏃 Install Fastlane
+        run: gem install fastlane
+
+      - name: 📦 Install dependencies
+        run: |
+          flutter pub get
+          cd ios && pod install
+
+      - name: 🔢 Bump version
+        run: |
+          dart pub global activate cider
+          dart pub global run cider bump build
+          NEW_VERSION=$(dart pub global run cider version)
+          echo "🆕 New version: $NEW_VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pubspec.yaml
+          git commit -m "Bump version to $NEW_VERSION [skip ci]"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+
+      - name: 🔐 Fastlane Match Setup
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
@@ -365,28 +476,9 @@ jobs:
       - name: 🚀 Create Shorebird release
         env:
           SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
-        run: |
-          if [ "${{ matrix.platform }}" == "android" ]; then
-            # Create Shorebird release with APK
-            shorebird release android \
-            --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
-            --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
-            --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
-            --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-            
-            # Create AAB using Shorebird
-            shorebird release android --artifact=aab \
-            --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
-            --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
-            --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
-            --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-          else
-            # iOS release
-            shorebird release ios --export-options-plist=ios/Runner/ExportOptions.plist
-          fi
+        run: shorebird release ios --export-options-plist=ios/Runner/ExportOptions.plist
 
-      - name: ✈️ Deploy to TestFlight (iOS only)
-        if: matrix.platform == 'ios'
+      - name: ✈️ Deploy to TestFlight
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
@@ -399,11 +491,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-release-${{ needs.setup-and-version.outputs.version }}
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
-            build/ios/ipa/*.ipa
+          name: ios-release-${{ needs.setup-and-version.outputs.version }}
+          path: build/ios/ipa/*.ipa
           retention-days: 7
 
       - name: 📧 Send Release Notification
@@ -414,9 +503,9 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: ${{ matrix.emoji }} ${{ matrix.platform }} Release (Shorebird) - ${{ needs.setup-and-version.outputs.version }}
+          subject: 🍎 iOS Release (Shorebird) - ${{ needs.setup-and-version.outputs.version }}
           body: |
-            🚀 ${{ matrix.platform }} Release (Shorebird) for version ${{ needs.setup-and-version.outputs.version }}
+            🚀 iOS Release (Shorebird) for version ${{ needs.setup-and-version.outputs.version }}
             ⏰ Build time: ${{ needs.setup-and-version.outputs.timestamp }}
             📝 Commit: ${{ github.sha }}
             
@@ -424,28 +513,16 @@ jobs:
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
-  # 📦 Standard APK / IPA Build Operations (Always Run)
-  standard-apk-ipa-build:
-    name: 📦 Standard APK / IPA Build
+  # 📦 Standard Android Build
+  standard-android-build:
+    name: 📦 Standard Android Build
     needs: [setup-and-version, parse-commit, validate-secrets]
-    strategy:
-      matrix:
-        include:
-          - platform: android
-            runner: ubuntu-latest
-            emoji: 📦
-            artifact_name: APK
-          - platform: ios
-            runner: macos-latest  
-            emoji: 📱
-            artifact_name: IPA
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: ☕ Set up Java (Android only)
-        if: matrix.platform == 'android'
+      - name: ☕ Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
@@ -459,62 +536,29 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 💎 Set up Ruby (iOS only)
-        if: matrix.platform == 'ios'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3.0'
-          bundler-cache: true
-
-      - name: 🏃 Install Fastlane (iOS only)
-        if: matrix.platform == 'ios'
-        run: gem install fastlane
-
       - name: 📦 Install dependencies
-        run: |
-          flutter pub get
-          if [ "${{ matrix.platform }}" == "ios" ]; then
-            cd ios && pod install
-          fi
+        run: flutter pub get
 
       - name: 🔐 Decode Android Keystore
-        if: matrix.platform == 'android'
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
 
-      - name: 🔐 Fastlane Match Setup (iOS only)
-        if: matrix.platform == 'ios'
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
-        run: |
-          cd ios
-          bundle exec fastlane match appstore
-
       - name: 🔨 Build Standard Release
         run: |
-          if [ "${{ matrix.platform }}" == "android" ]; then
-            flutter build apk --release \
-            --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
-            --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
-            --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
-            --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-          else
-            flutter build ipa --release \
-            --export-options-plist=ios/Runner/ExportOptions.plist
-          fi
+          flutter build apk --release \
+          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
+          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
 
       - name: 📤 Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-standard-${{ needs.setup-and-version.outputs.version }}-${{ needs.setup-and-version.outputs.timestamp }}
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/ios/ipa/*.ipa
+          name: android-standard-${{ needs.setup-and-version.outputs.version }}-${{ needs.setup-and-version.outputs.timestamp }}
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 7
 
-      - name: 📊 Check APK size (Android only)
-        if: matrix.platform == 'android'
+      - name: 📊 Check APK size
         id: apk-size
         run: |
           APK_SIZE=$(stat -c %s build/app/outputs/flutter-apk/app-release.apk)
@@ -525,8 +569,8 @@ jobs:
             echo "large_apk=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: ☁️ Upload to Google Drive (Android - if large)
-        if: matrix.platform == 'android' && steps.apk-size.outputs.large_apk == 'true'
+      - name: ☁️ Upload to Google Drive (if large)
+        if: steps.apk-size.outputs.large_apk == 'true'
         uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.3.1
         with:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
@@ -545,20 +589,88 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: ${{ matrix.emoji }} Standard ${{ matrix.artifact_name }} Build - ${{ needs.setup-and-version.outputs.version }}
+          subject: 📦 Standard Android APK Build - ${{ needs.setup-and-version.outputs.version }}
           body: |
-            🔨 Standard ${{ matrix.artifact_name }} Build (Flutter)
+            🔨 Standard Android APK Build (Flutter)
             📋 Version: ${{ needs.setup-and-version.outputs.version }}
             ⏰ Build time: ${{ needs.setup-and-version.outputs.timestamp }}
             📝 Commit: ${{ github.sha }}
             
             ⚠️ Note: This is a standard Flutter build (No Shorebird OTA support)
-            ${{ matrix.platform == 'android' && steps.apk-size.outputs.large_apk == 'true' && format('📥 Download from Google Drive: {0}', steps.drive-upload.outputs.web_view_link) || '' }}
+            ${{ steps.apk-size.outputs.large_apk == 'true' && format('📥 Download from Google Drive: {0}', steps.drive-upload.outputs.web_view_link) || '' }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
-          attachments: |
-            ${{ matrix.platform == 'android' && 'build/app/outputs/flutter-apk/app-release.apk' || '' }}
-            ${{ matrix.platform == 'ios' && 'build/ios/ipa/*.ipa' || '' }}
+          attachments: build/app/outputs/flutter-apk/app-release.apk
+
+  # 📦 Standard iOS Build
+  standard-ios-build:
+    name: 📱 Standard iOS Build
+    needs: [setup-and-version, parse-commit, validate-secrets]
+    runs-on: macos-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 💎 Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.0'
+          bundler-cache: true
+
+      - name: 🏃 Install Fastlane
+        run: gem install fastlane
+
+      - name: 📦 Install dependencies
+        run: |
+          flutter pub get
+          cd ios && pod install
+
+      - name: 🔐 Fastlane Match Setup
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
+        run: |
+          cd ios
+          bundle exec fastlane match appstore
+
+      - name: 🔨 Build Standard Release
+        run: |
+          flutter build ipa --release \
+          --export-options-plist=ios/Runner/ExportOptions.plist
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-standard-${{ needs.setup-and-version.outputs.version }}-${{ needs.setup-and-version.outputs.timestamp }}
+          path: build/ios/ipa/*.ipa
+          retention-days: 7
+
+      - name: 📧 Send Standard Build Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: 📱 Standard iOS IPA Build - ${{ needs.setup-and-version.outputs.version }}
+          body: |
+            🔨 Standard iOS IPA Build (Flutter)
+            📋 Version: ${{ needs.setup-and-version.outputs.version }}
+            ⏰ Build time: ${{ needs.setup-and-version.outputs.timestamp }}
+            📝 Commit: ${{ github.sha }}
+            
+            ⚠️ Note: This is a standard Flutter build (No Shorebird OTA support)
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+          attachments: build/ios/ipa/*.ipa
 
   # ═══════════════════════════════════════════════════════════════════════════════════════
   # 🔹 LEVEL 3: PIPELINE STATUS (Runs after all Level 2 jobs complete)
@@ -567,7 +679,7 @@ jobs:
   # 📊 Pipeline Status
   pipeline-status:
     name: 📊 Pipeline Status
-    needs: [setup-and-version, parse-commit, validate-secrets, android-ios-patch, android-ios-release, standard-apk-ipa-build]
+    needs: [setup-and-version, parse-commit, validate-secrets, patch-android, patch-ios, release-android, release-ios, standard-android-build, standard-ios-build]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -610,28 +722,55 @@ jobs:
           BODY="$BODY│ LEVEL 2 - BUILD OPERATIONS                                                              │\n"
           BODY="$BODY└─────────────────────────────────────────────────────────────────────────────────────┘\n"
           
-          if [ "${{ needs.android-ios-patch.result }}" == "success" ]; then
-            BODY="$BODY✅ Android / iOS Patch: Success\n"
-          elif [ "${{ needs.android-ios-patch.result }}" == "failure" ]; then
-            BODY="$BODY❌ Android / iOS Patch: Failed\n"
-          elif [ "${{ needs.android-ios-patch.result }}" == "skipped" ]; then
-            BODY="$BODY⏭️ Android / iOS Patch: Skipped\n"
+          # Patch operations
+          if [ "${{ needs.patch-android.result }}" == "success" ]; then
+            BODY="$BODY✅ Patch Android: Success\n"
+          elif [ "${{ needs.patch-android.result }}" == "failure" ]; then
+            BODY="$BODY❌ Patch Android: Failed\n"
+          elif [ "${{ needs.patch-android.result }}" == "skipped" ]; then
+            BODY="$BODY⏭️ Patch Android: Skipped\n"
           fi
           
-          if [ "${{ needs.android-ios-release.result }}" == "success" ]; then
-            BODY="$BODY✅ Android / iOS Release: Success\n"
-          elif [ "${{ needs.android-ios-release.result }}" == "failure" ]; then
-            BODY="$BODY❌ Android / iOS Release: Failed\n"
-          elif [ "${{ needs.android-ios-release.result }}" == "skipped" ]; then
-            BODY="$BODY⏭️ Android / iOS Release: Skipped\n"
+          if [ "${{ needs.patch-ios.result }}" == "success" ]; then
+            BODY="$BODY✅ Patch iOS: Success\n"
+          elif [ "${{ needs.patch-ios.result }}" == "failure" ]; then
+            BODY="$BODY❌ Patch iOS: Failed\n"
+          elif [ "${{ needs.patch-ios.result }}" == "skipped" ]; then
+            BODY="$BODY⏭️ Patch iOS: Skipped\n"
           fi
           
-          if [ "${{ needs.standard-apk-ipa-build.result }}" == "success" ]; then
-            BODY="$BODY✅ Standard APK / IPA Build: Success\n"
-          elif [ "${{ needs.standard-apk-ipa-build.result }}" == "failure" ]; then
-            BODY="$BODY❌ Standard APK / IPA Build: Failed\n"
-          elif [ "${{ needs.standard-apk-ipa-build.result }}" == "skipped" ]; then
-            BODY="$BODY⏭️ Standard APK / IPA Build: Skipped\n"
+          # Release operations
+          if [ "${{ needs.release-android.result }}" == "success" ]; then
+            BODY="$BODY✅ Release Android: Success\n"
+          elif [ "${{ needs.release-android.result }}" == "failure" ]; then
+            BODY="$BODY❌ Release Android: Failed\n"
+          elif [ "${{ needs.release-android.result }}" == "skipped" ]; then
+            BODY="$BODY⏭️ Release Android: Skipped\n"
+          fi
+          
+          if [ "${{ needs.release-ios.result }}" == "success" ]; then
+            BODY="$BODY✅ Release iOS: Success\n"
+          elif [ "${{ needs.release-ios.result }}" == "failure" ]; then
+            BODY="$BODY❌ Release iOS: Failed\n"
+          elif [ "${{ needs.release-ios.result }}" == "skipped" ]; then
+            BODY="$BODY⏭️ Release iOS: Skipped\n"
+          fi
+          
+          # Standard builds
+          if [ "${{ needs.standard-android-build.result }}" == "success" ]; then
+            BODY="$BODY✅ Standard Android Build: Success\n"
+          elif [ "${{ needs.standard-android-build.result }}" == "failure" ]; then
+            BODY="$BODY❌ Standard Android Build: Failed\n"
+          elif [ "${{ needs.standard-android-build.result }}" == "skipped" ]; then
+            BODY="$BODY⏭️ Standard Android Build: Skipped\n"
+          fi
+          
+          if [ "${{ needs.standard-ios-build.result }}" == "success" ]; then
+            BODY="$BODY✅ Standard iOS Build: Success\n"
+          elif [ "${{ needs.standard-ios-build.result }}" == "failure" ]; then
+            BODY="$BODY❌ Standard iOS Build: Failed\n"
+          elif [ "${{ needs.standard-ios-build.result }}" == "skipped" ]; then
+            BODY="$BODY⏭️ Standard iOS Build: Skipped\n"
           fi
           
           echo "body<<EOF" >> $GITHUB_OUTPUT
