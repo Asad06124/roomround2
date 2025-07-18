@@ -128,7 +128,7 @@ jobs:
 
       - name: Install Shorebird CLI
         run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shorebirdtech/shorebird/releases/latest/download/shorebird-installer.sh | bash
+          curl -s https://install.shorebird.dev | bash
           export PATH="$HOME/.shorebird/bin:$PATH"
           shorebird --version
 
