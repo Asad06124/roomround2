@@ -19,3 +19,4 @@ samples, guidance on mobile development, and a full API reference.
 ## Important Commands
 -  Build Runner / Flutter_gen
     dart run build_runner build
+   
