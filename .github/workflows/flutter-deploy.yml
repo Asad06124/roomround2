@@ -294,7 +294,7 @@ jobs:
         with:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
           filename: build/app/outputs/flutter-apk/app-release.apk
-          folderId: 1550YXKoQby6y8A5VcVkzV3f-rPgQEkmc
+          folderId: 0ANYm83GKkrjgUk9PVA
           name: app-release-${{ github.sha }}.apk
           overwrite: true
         id: drive-upload
@@ -520,7 +520,7 @@ jobs:
         with:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
           filename: build/app/outputs/flutter-apk/app-release.apk
-          folderId: 1550YXKoQby6y8A5VcVkzV3f-rPgQEkmc
+          folderId: 0ANYm83GKkrjgUk9PVA
           name: app-release-${{ github.sha }}.apk
           overwrite: true
         id: drive-upload
