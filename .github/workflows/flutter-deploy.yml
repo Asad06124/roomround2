@@ -229,8 +229,8 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════════════════
   # 🔹 PHASE 2: BUILD MATRICES
   # ═══════════════════════════════════════════════════════════════════════════════════════
-  patch-ios-android:
-    name: 🏖️ Patch iOS/Android
+  Patch:
+    name: 🏖️ Patch
     needs: [version-setup, parse-commit, validate-secrets]
     if: ${{ needs.parse-commit.outputs.should_run_patch_android == 'true' || needs.parse-commit.outputs.should_run_patch_ios == 'true' }}
     strategy:
@@ -611,7 +611,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════════════════
   pipeline-status:
     name: 📊 Pipeline Status
-    needs: [version-setup, parse-commit, validate-secrets, patch-ios-android, release-matrix, standard-matrix]
+    needs: [version-setup, parse-commit, validate-secrets, Patch, release-matrix, standard-matrix]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
