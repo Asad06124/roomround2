@@ -10,6 +10,9 @@ on:
       - main
       - Asad/chat
 
+permissions:
+  contents: write
+
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
   FLUTTER_VERSION: '3.24.0'
@@ -243,16 +246,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Get version and timestamp
+        id: version-info
+        run: |
+          VERSION=$(dart pub global run cider version)
+          TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Timestamp: $TIMESTAMP"
+
       - name: Bump version
         run: |
           dart pub global run cider bump build
           NEW_VERSION=$(dart pub global run cider version)
           echo "New version: $NEW_VERSION"
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add pubspec.yaml
           git commit -m "Bump version to $NEW_VERSION [skip ci]"
-          git push origin main
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
 
       - name: Decode Keystore
         run: |
@@ -266,12 +279,22 @@ jobs:
           --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
           --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
 
+      - name: Build Signed AAB for Google Play
+        run: |
+          flutter build appbundle --release \
+          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
+          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
       - name: Upload artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: android-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: android-release-${{ steps.version-info.outputs.version }}
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
           retention-days: 7
 
       - name: Check APK size
@@ -291,8 +314,9 @@ jobs:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
           parent_folder_id: 0ANYm83GKkrjgUk9PVA
           target: build/app/outputs/flutter-apk/app-release.apk
-          name: app-release-${{ github.sha }}.apk
-          override: true
+          name: app-release-${{ steps.version-info.outputs.version }} (${{ steps.version-info.outputs.timestamp }}).apk
+          override: false
+          replace_mode: add_new
         id: drive-upload
 
       - name: Send APK via Gmail (if small)
@@ -304,8 +328,11 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Release - ${{ github.sha }}
-          body: Attached is the Android APK release for commit ${{ github.sha }}.
+          subject: Android APK Release - ${{ steps.version-info.outputs.version }}
+          body: |
+            Android APK Release for version ${{ steps.version-info.outputs.version }}
+            Build time: ${{ steps.version-info.outputs.timestamp }}
+            Commit: ${{ github.sha }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/app/outputs/flutter-apk/app-release.apk
@@ -319,14 +346,18 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Release - ${{ github.sha }} (Google Drive)
+          subject: Android APK Release - ${{ steps.version-info.outputs.version }} (Google Drive)
           body: |
-            The Android APK release for commit ${{ github.sha }} is too large for email.
+            Android APK Release for version ${{ steps.version-info.outputs.version }}
+            Build time: ${{ steps.version-info.outputs.timestamp }}
+            Commit: ${{ github.sha }}
             
-            Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
+            The APK file is too large for email attachment.
             
-            File ID: ${{ steps.drive-upload.outputs.file_id }}
-            File Name: ${{ steps.drive-upload.outputs.file_name }}
+            📥 Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
+            
+            📄 File Name: ${{ steps.drive-upload.outputs.file_name }}
+            🆔 File ID: ${{ steps.drive-upload.outputs.file_id }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
@@ -339,7 +370,7 @@ jobs:
         with:
           serviceAccountJson: google_play_credentials.json
           packageName: com.asad.yourapp  # Replace with your app's package name
-          releaseFiles: build/app/outputs/flutter-apk/app-release.apk
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
 
       - name: Capture logs
@@ -390,6 +421,16 @@ jobs:
           flutter pub get
           cd ios && pod install
 
+      - name: Get version and timestamp
+        id: version-info
+        run: |
+          VERSION=$(dart pub global run cider version)
+          TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Timestamp: $TIMESTAMP"
+
       - name: Bump version
         run: |
           dart pub global run cider bump build
@@ -400,7 +441,7 @@ jobs:
           git add pubspec.yaml
           git commit -m "Bump version to $NEW_VERSION [skip ci]"
           git push origin main
-
+          
       - name: Fastlane Match Setup
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -417,7 +458,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-release
+          name: ios-release-${{ steps.version-info.outputs.version }}
           path: build/ios/ipa/*.ipa
           retention-days: 7
 
@@ -438,9 +479,13 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: iOS IPA Release - ${{ github.sha }}
-          body: > 
-            Attached is the iOS IPA release for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
+          subject: iOS IPA Release - ${{ steps.version-info.outputs.version }}
+          body: |
+            iOS IPA Release for version ${{ steps.version-info.outputs.version }}
+            Build time: ${{ steps.version-info.outputs.timestamp }}
+            Commit: ${{ github.sha }}
+            
+            Note: IPA files are for development purposes and may require manual installation.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/ios/ipa/*.ipa
@@ -485,6 +530,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Get version and timestamp
+        id: version-info
+        run: |
+          # Try to get version from cider if available, otherwise from pubspec.yaml
+          if command -v dart &> /dev/null; then
+            if dart pub global list | grep -q cider; then
+              VERSION=$(dart pub global run cider version)
+            else
+              VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
+            fi
+          else
+            VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
+          fi
+          
+          TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Timestamp: $TIMESTAMP"
+
       - name: Decode Keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
@@ -500,7 +565,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
+          name: android-apk-${{ steps.version-info.outputs.version }}
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 7
 
@@ -521,8 +586,9 @@ jobs:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
           parent_folder_id: 0ANYm83GKkrjgUk9PVA
           target: build/app/outputs/flutter-apk/app-release.apk
-          name: app-release-${{ github.sha }}.apk
-          override: true
+          name: app-release-${{ steps.version-info.outputs.version }} (${{ steps.version-info.outputs.timestamp }}).apk
+          override: false
+          replace_mode: add_new
         id: drive-upload
 
       - name: Send APK via Gmail (if small)
@@ -534,8 +600,11 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Build - ${{ github.sha }}
-          body: Attached is the Android APK build for commit ${{ github.sha }}.
+          subject: Android APK Build - ${{ steps.version-info.outputs.version }}
+          body: |
+            Android APK Build for version ${{ steps.version-info.outputs.version }}
+            Build time: ${{ steps.version-info.outputs.timestamp }}
+            Commit: ${{ github.sha }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/app/outputs/flutter-apk/app-release.apk
@@ -549,14 +618,18 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Build - ${{ github.sha }} (Google Drive)
+          subject: Android APK Build - ${{ steps.version-info.outputs.version }} (Google Drive)
           body: |
-            The Android APK build for commit ${{ github.sha }} is too large for email.
+            Android APK Build for version ${{ steps.version-info.outputs.version }}
+            Build time: ${{ steps.version-info.outputs.timestamp }}
+            Commit: ${{ github.sha }}
             
-            Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
+            The APK file is too large for email attachment.
             
-            File ID: ${{ steps.drive-upload.outputs.file_id }}
-            File Name: ${{ steps.drive-upload.outputs.file_name }}
+            📥 Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
+            
+            📄 File Name: ${{ steps.drive-upload.outputs.file_name }}
+            🆔 File ID: ${{ steps.drive-upload.outputs.file_id }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
@@ -589,6 +662,16 @@ jobs:
           flutter pub get
           cd ios && pod install
 
+      - name: Get version and timestamp
+        id: version-info
+        run: |
+          VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
+          TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Timestamp: $TIMESTAMP"
+
       - name: Fastlane Match Setup
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -604,7 +687,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa
+          name: ios-ipa-${{ steps.version-info.outputs.version }}
           path: build/ios/ipa/*.ipa
           retention-days: 7
 
@@ -616,9 +699,13 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: iOS IPA Build - ${{ github.sha }}
-          body: >
-            Attached is the iOS IPA build for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
+          subject: iOS IPA Build - ${{ steps.version-info.outputs.version }}
+          body: |
+            iOS IPA Build for version ${{ steps.version-info.outputs.version }}
+            Build time: ${{ steps.version-info.outputs.timestamp }}
+            Commit: ${{ github.sha }}
+            
+            Note: IPA files are for development purposes and may require manual installation.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/ios/ipa/*.ipa
@@ -645,26 +732,36 @@ jobs:
             BODY="$BODY- APK Build: Succeeded ✅\n"
           elif [ "${{ needs.build-apk.result }}" == "failure" ]; then
             BODY="$BODY- APK Build: Failed ❌\n"
+          elif [ "${{ needs.build-apk.result }}" == "skipped" ]; then
+            BODY="$BODY- APK Build: Skipped ⏭️\n"
           fi
           if [ "${{ needs.android-patch.result }}" == "success" ]; then
             BODY="$BODY- Android Patch: Succeeded ✅\n"
           elif [ "${{ needs.android-patch.result }}" == "failure" ]; then
             BODY="$BODY- Android Patch: Failed ❌\n"
+          elif [ "${{ needs.android-patch.result }}" == "skipped" ]; then
+            BODY="$BODY- Android Patch: Skipped ⏭️\n"
           fi
           if [ "${{ needs.ios-patch.result }}" == "success" ]; then
             BODY="$BODY- iOS Patch: Succeeded ✅\n"
           elif [ "${{ needs.ios-patch.result }}" == "failure" ]; then
             BODY="$BODY- iOS Patch: Failed ❌\n"
+          elif [ "${{ needs.ios-patch.result }}" == "skipped" ]; then
+            BODY="$BODY- iOS Patch: Skipped ⏭️\n"
           fi
           if [ "${{ needs.android-release.result }}" == "success" ]; then
             BODY="$BODY- Android Release: Succeeded ✅\n"
           elif [ "${{ needs.android-release.result }}" == "failure" ]; then
             BODY="$BODY- Android Release: Failed ❌\n"
+          elif [ "${{ needs.android-release.result }}" == "skipped" ]; then
+            BODY="$BODY- Android Release: Skipped ⏭️\n"
           fi
           if [ "${{ needs.ios-release.result }}" == "success" ]; then
             BODY="$BODY- iOS Release: Succeeded ✅\n"
           elif [ "${{ needs.ios-release.result }}" == "failure" ]; then
             BODY="$BODY- iOS Release: Failed ❌\n"
+          elif [ "${{ needs.ios-release.result }}" == "skipped" ]; then
+            BODY="$BODY- iOS Release: Skipped ⏭️\n"
           fi
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
@@ -682,7 +779,7 @@ jobs:
           body: ${{ steps.notification.outputs.body }}
           to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
-          
+
       # Optional: Slack notification (uncomment to enable)
       # - name: Send Slack notification
       #   uses: slackapi/slack-github-action@v1
