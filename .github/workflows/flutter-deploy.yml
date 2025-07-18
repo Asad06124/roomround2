@@ -55,6 +55,9 @@ jobs:
           elif [[ $COMMIT_MESSAGE =~ \[patch-ios-release-android\] ]]; then
             echo "action=patch-ios-release-android" >> $GITHUB_OUTPUT
             echo "platform=both" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[build-apk\] ]]; then
+            echo "action=build-apk" >> $GITHUB_OUTPUT
+            echo "platform=android" >> $GITHUB_OUTPUT
           elif [[ $COMMIT_MESSAGE =~ \[build-ipa\] ]]; then
             echo "action=build-ipa" >> $GITHUB_OUTPUT
             echo "platform=ios" >> $GITHUB_OUTPUT
@@ -66,6 +69,7 @@ jobs:
 
   validate-secrets:
     runs-on: ubuntu-latest
+    needs: parse-commit
     steps:
       - name: Check required secrets
         run: |
@@ -74,21 +78,28 @@ jobs:
             echo "Missing required secrets (GMAIL_USERNAME, GMAIL_APP_PASSWORD, RECIPIENT_EMAILS, ACCOUNT_HOLDER_EMAIL)"
             exit 1
           fi
-          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "patch" && -z "${{ secrets.SHOREBIRD_TOKEN }}" ]]; then
-            echo "Missing SHOREBIRD_TOKEN for patch action"
-            exit 1
+          
+          # Only check Shorebird token for Shorebird operations
+          if [[ "${{ needs.parse-commit.outputs.action }}" != "build-apk" && "${{ needs.parse-commit.outputs.action }}" != "build-ipa" ]]; then
+            if [ -z "${{ secrets.SHOREBIRD_TOKEN }}" ]; then
+              echo "Missing SHOREBIRD_TOKEN - required for Shorebird patches and releases"
+              exit 1
+            fi
           fi
+          
           if [ -z "${{ secrets.ANDROID_KEYSTORE }}" ] || [ -z "${{ secrets.KEYSTORE_ALIAS }}" ] || \
              [ -z "${{ secrets.KEYSTORE_PASSWORD }}" ] || [ -z "${{ secrets.KEY_PASSWORD }}" ]; then
             echo "Missing Android signing secrets"
             exit 1
           fi
+          
           if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-android" || "${{ needs.parse-commit.outputs.action }}" =~ "patch-ios-release-android" ]]; then
             if [ -z "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}" ]; then
               echo "Missing GOOGLE_PLAY_SERVICE_ACCOUNT for Android release"
               exit 1
             fi
           fi
+          
           if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "patch-android-release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "build-ipa" ]]; then
             if [ -z "${{ secrets.MATCH_PASSWORD }}" ] || [ -z "${{ secrets.MATCH_GIT_AUTH }}" ] || \
                [ -z "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" ] || [ -z "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}" ] || \
@@ -100,7 +111,7 @@ jobs:
 
   android-patch:
     needs: [parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'android' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-android-release-ios') }}
+    if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'android' || needs.parse-commit.outputs.platform == 'both') || needs.parse-commit.outputs.action == 'patch-android-release-ios' }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -162,7 +173,7 @@ jobs:
 
   ios-patch:
     needs: [parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'ios' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-ios-release-android') }}
+    if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'ios' || needs.parse-commit.outputs.platform == 'both') || needs.parse-commit.outputs.action == 'patch-ios-release-android' }}
     runs-on: macos-latest
     continue-on-error: true
     steps:
@@ -219,7 +230,7 @@ jobs:
 
   android-release:
     needs: [parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.action == 'release' && (needs.parse-commit.outputs.platform == 'android' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-ios-release-android') }}
+    if: ${{ needs.parse-commit.outputs.action == 'release' && (needs.parse-commit.outputs.platform == 'android' || needs.parse-commit.outputs.platform == 'both') || needs.parse-commit.outputs.action == 'patch-ios-release-android' }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -240,6 +251,14 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Setup Shorebird CLI
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: Verify Shorebird Installation
+        run: shorebird --version
+
       - name: Install cider
         run: dart pub global activate cider
 
@@ -249,7 +268,6 @@ jobs:
       - name: Get version and timestamp
         id: version-info
         run: |
-          # Try to get version from cider if available, otherwise from pubspec.yaml
           if command -v dart &> /dev/null; then
             if dart pub global list | grep -q cider; then
               VERSION=$(dart pub global run cider version)
@@ -281,23 +299,25 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
 
-      - name: Build Signed APK
+      - name: Create Shorebird release for Android (APK + AAB)
+        env:
+          SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
         run: |
-          flutter build apk --release \
+          # Create Shorebird release with APK
+          shorebird release android \
+          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
+          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+          
+          # Create AAB using Shorebird (this ensures consistency with the release)
+          shorebird release android --artifact=aab \
           --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
           --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
           --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
           --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
 
-      - name: Build Signed AAB for Google Play
-        run: |
-          flutter build appbundle --release \
-          --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
-          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
-          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
-          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-
-      - name: Upload artifact
+      - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -338,11 +358,14 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Release - ${{ steps.version-info.outputs.version }}
+          subject: Android Release (Shorebird) - ${{ steps.version-info.outputs.version }}
           body: |
-            Android APK Release for version ${{ steps.version-info.outputs.version }}
+            Android Release (Shorebird) for version ${{ steps.version-info.outputs.version }}
             Build time: ${{ steps.version-info.outputs.timestamp }}
             Commit: ${{ github.sha }}
+            
+            This release was built using Shorebird and supports over-the-air updates.
+            Includes both APK and AAB files for distribution.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/app/outputs/flutter-apk/app-release.apk
@@ -356,12 +379,14 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Release - ${{ steps.version-info.outputs.version }} (Google Drive)
+          subject: Android Release (Shorebird) - ${{ steps.version-info.outputs.version }} (Google Drive)
           body: |
-            Android APK Release for version ${{ steps.version-info.outputs.version }}
+            Android Release (Shorebird) for version ${{ steps.version-info.outputs.version }}
             Build time: ${{ steps.version-info.outputs.timestamp }}
             Commit: ${{ github.sha }}
             
+            This release was built using Shorebird and supports over-the-air updates.
+            Includes both APK and AAB files for distribution.
             The APK file is too large for email attachment.
             
             📥 Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
@@ -375,7 +400,7 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}" | base64 --decode > google_play_credentials.json
 
-      - name: Deploy to Google Play
+      - name: Deploy AAB to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: google_play_credentials.json
@@ -400,7 +425,7 @@ jobs:
 
   ios-release:
     needs: [parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.action == 'release' && (needs.parse-commit.outputs.platform == 'ios' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-android-release-ios') }}
+    if: ${{ needs.parse-commit.outputs.action == 'release' && (needs.parse-commit.outputs.platform == 'ios' || needs.parse-commit.outputs.platform == 'both') || needs.parse-commit.outputs.action == 'patch-android-release-ios' }}
     runs-on: macos-latest
     continue-on-error: true
     steps:
@@ -413,6 +438,14 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
+
+      - name: Setup Shorebird CLI
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: Verify Shorebird Installation
+        run: shorebird --version
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -434,7 +467,6 @@ jobs:
       - name: Get version and timestamp
         id: version-info
         run: |
-          # Try to get version from cider if available, otherwise from pubspec.yaml
           if command -v dart &> /dev/null; then
             if dart pub global list | grep -q cider; then
               VERSION=$(dart pub global run cider version)
@@ -467,12 +499,15 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
         run: |
+          cd ios
           bundle exec fastlane match appstore
 
-      - name: Build IPA
+      - name: Create Shorebird release for iOS (IPA)
+        env:
+          SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
         run: |
-          flutter build ipa --release \
-          --export-options-plist=ios/Runner/ExportOptions.plist
+          # Create Shorebird release with IPA for deployment
+          shorebird release ios --export-options-plist=ios/Runner/ExportOptions.plist
 
       - name: Upload artifact
         if: always()
@@ -499,13 +534,14 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: iOS IPA Release - ${{ steps.version-info.outputs.version }}
+          subject: iOS Release (Shorebird) - ${{ steps.version-info.outputs.version }}
           body: |
-            iOS IPA Release for version ${{ steps.version-info.outputs.version }}
+            iOS Release (Shorebird) for version ${{ steps.version-info.outputs.version }}
             Build time: ${{ steps.version-info.outputs.timestamp }}
             Commit: ${{ github.sha }}
             
-            Note: IPA files are for development purposes and may require manual installation.
+            This release was built using Shorebird and supports over-the-air updates.
+            The IPA has been deployed to TestFlight for distribution.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/ios/ipa/*.ipa
@@ -525,9 +561,10 @@ jobs:
           path: ios-release-failure.log
           retention-days: 7
 
-  # This job will ALWAYS run for APK builds
+  # Standard Flutter build for APK only (no Shorebird)
   build-apk:
     needs: [parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.action == 'build-apk' || needs.parse-commit.outputs.action == 'default' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -553,15 +590,14 @@ jobs:
       - name: Get version and timestamp
         id: version-info
         run: |
-          # Try to get version from cider if available, otherwise from pubspec.yaml
           if command -v dart &> /dev/null; then
             if dart pub global list | grep -q cider; then
               VERSION=$(dart pub global run cider version)
             else
-              VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
+              VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
             fi
           else
-            VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
+            VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
           fi
           
           TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
@@ -574,7 +610,7 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
 
-      - name: Build Signed APK
+      - name: Build Signed APK (Standard Flutter Build)
         run: |
           flutter build apk --release \
           --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
@@ -620,11 +656,14 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Build - ${{ steps.version-info.outputs.version }}
+          subject: Android APK Build (Standard) - ${{ steps.version-info.outputs.version }}
           body: |
-            Android APK Build for version ${{ steps.version-info.outputs.version }}
+            Android APK Build (Standard Flutter) for version ${{ steps.version-info.outputs.version }}
             Build time: ${{ steps.version-info.outputs.timestamp }}
             Commit: ${{ github.sha }}
+            
+            Note: This is a standard Flutter build, not a Shorebird release.
+            No over-the-air update support.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/app/outputs/flutter-apk/app-release.apk
@@ -638,12 +677,14 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: Android APK Build - ${{ steps.version-info.outputs.version }} (Google Drive)
+          subject: Android APK Build (Standard) - ${{ steps.version-info.outputs.version }} (Google Drive)
           body: |
-            Android APK Build for version ${{ steps.version-info.outputs.version }}
+            Android APK Build (Standard Flutter) for version ${{ steps.version-info.outputs.version }}
             Build time: ${{ steps.version-info.outputs.timestamp }}
             Commit: ${{ github.sha }}
             
+            Note: This is a standard Flutter build, not a Shorebird release.
+            No over-the-air update support.
             The APK file is too large for email attachment.
             
             📥 Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
@@ -653,6 +694,7 @@ jobs:
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
+  # Standard Flutter build for IPA only (no Shorebird)
   build-ipa:
     needs: [parse-commit, validate-secrets]
     if: ${{ needs.parse-commit.outputs.action == 'build-ipa' }}
@@ -685,7 +727,6 @@ jobs:
       - name: Get version and timestamp
         id: version-info
         run: |
-          # Try to get version from cider if available, otherwise from pubspec.yaml
           if command -v dart &> /dev/null; then
             if dart pub global list | grep -q cider; then
               VERSION=$(dart pub global run cider version)
@@ -701,15 +742,16 @@ jobs:
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
           echo "Timestamp: $TIMESTAMP"
-  
+
       - name: Fastlane Match Setup
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
         run: |
+          cd ios
           bundle exec fastlane match appstore
 
-      - name: Build IPA
+      - name: Build IPA (Standard Flutter Build)
         run: |
           flutter build ipa --release \
           --export-options-plist=ios/Runner/ExportOptions.plist
@@ -729,19 +771,21 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: iOS IPA Build - ${{ steps.version-info.outputs.version }}
+          subject: iOS IPA Build (Standard) - ${{ steps.version-info.outputs.version }}
           body: |
-            iOS IPA Build for version ${{ steps.version-info.outputs.version }}
+            iOS IPA Build (Standard Flutter) for version ${{ steps.version-info.outputs.version }}
             Build time: ${{ steps.version-info.outputs.timestamp }}
             Commit: ${{ github.sha }}
             
-            Note: IPA files are for development purposes and may require manual installation.
+            Note: This is a standard Flutter build, not a Shorebird release.
+            No over-the-air update support.
+            IPA files are for development purposes and may require manual installation.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/ios/ipa/*.ipa
 
   notify-status:
-    needs: [parse-commit, android-patch, ios-patch, android-release, ios-release, build-apk]
+    needs: [parse-commit, android-patch, ios-patch, android-release, ios-release, build-apk, build-ipa]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -759,39 +803,46 @@ jobs:
         run: |
           BODY="CI/CD Status for commit ${{ github.sha }}:\n\n"
           if [ "${{ needs.build-apk.result }}" == "success" ]; then
-            BODY="$BODY- APK Build: Succeeded ✅\n"
+            BODY="$BODY- APK Build (Standard): Succeeded ✅\n"
           elif [ "${{ needs.build-apk.result }}" == "failure" ]; then
-            BODY="$BODY- APK Build: Failed ❌\n"
+            BODY="$BODY- APK Build (Standard): Failed ❌\n"
           elif [ "${{ needs.build-apk.result }}" == "skipped" ]; then
-            BODY="$BODY- APK Build: Skipped ⏭️\n"
+            BODY="$BODY- APK Build (Standard): Skipped ⏭️\n"
+          fi
+          if [ "${{ needs.build-ipa.result }}" == "success" ]; then
+            BODY="$BODY- IPA Build (Standard): Succeeded ✅\n"
+          elif [ "${{ needs.build-ipa.result }}" == "failure" ]; then
+            BODY="$BODY- IPA Build (Standard): Failed ❌\n"
+          elif [ "${{ needs.build-ipa.result }}" == "skipped" ]; then
+            BODY="$BODY- IPA Build (Standard): Skipped ⏭️\n"
           fi
           if [ "${{ needs.android-patch.result }}" == "success" ]; then
-            BODY="$BODY- Android Patch: Succeeded ✅\n"
+            BODY="$BODY- Android Patch (Shorebird): Succeeded ✅\n"
           elif [ "${{ needs.android-patch.result }}" == "failure" ]; then
-            BODY="$BODY- Android Patch: Failed ❌\n"
+            BODY="$BODY- Android Patch (Shorebird): Failed ❌\n"
           elif [ "${{ needs.android-patch.result }}" == "skipped" ]; then
-            BODY="$BODY- Android Patch: Skipped ⏭️\n"
+            BODY="$BODY- Android Patch (Shorebird): Skipped ⏭️\n"
           fi
           if [ "${{ needs.ios-patch.result }}" == "success" ]; then
-            BODY="$BODY- iOS Patch: Succeeded ✅\n"
+            BODY="$BODY- iOS Patch (Shorebird): Succeeded ✅\n"
           elif [ "${{ needs.ios-patch.result }}" == "failure" ]; then
-            BODY="$BODY- iOS Patch: Failed ❌\n"
+            BODY="$BODY- iOS Patch (Shorebird): Failed ❌\n"
           elif [ "${{ needs.ios-patch.result }}" == "skipped" ]; then
-            BODY="$BODY- iOS Patch: Skipped ⏭️\n"
+            BODY="$BODY- iOS Patch (Shorebird): Skipped ⏭️\n"
           fi
           if [ "${{ needs.android-release.result }}" == "success" ]; then
-            BODY="$BODY- Android Release: Succeeded ✅\n"
+            BODY="$BODY- Android Release (Shorebird): Succeeded ✅\n"
           elif [ "${{ needs.android-release.result }}" == "failure" ]; then
-            BODY="$BODY- Android Release: Failed ❌\n"
+            BODY="$BODY- Android Release (Shorebird): Failed ❌\n"
           elif [ "${{ needs.android-release.result }}" == "skipped" ]; then
-            BODY="$BODY- Android Release: Skipped ⏭️\n"
+            BODY="$BODY- Android Release (Shorebird): Skipped ⏭️\n"
           fi
           if [ "${{ needs.ios-release.result }}" == "success" ]; then
-            BODY="$BODY- iOS Release: Succeeded ✅\n"
+            BODY="$BODY- iOS Release (Shorebird): Succeeded ✅\n"
           elif [ "${{ needs.ios-release.result }}" == "failure" ]; then
-            BODY="$BODY- iOS Release: Failed ❌\n"
+            BODY="$BODY- iOS Release (Shorebird): Failed ❌\n"
           elif [ "${{ needs.ios-release.result }}" == "skipped" ]; then
-            BODY="$BODY- iOS Release: Skipped ⏭️\n"
+            BODY="$BODY- iOS Release (Shorebird): Skipped ⏭️\n"
           fi
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
@@ -809,7 +860,7 @@ jobs:
           body: ${{ steps.notification.outputs.body }}
           to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
-
+          
       # Optional: Slack notification (uncomment to enable)
       # - name: Send Slack notification
       #   uses: slackapi/slack-github-action@v1
