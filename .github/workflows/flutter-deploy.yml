@@ -249,7 +249,17 @@ jobs:
       - name: Get version and timestamp
         id: version-info
         run: |
-          VERSION=$(dart pub global run cider version)
+          # Try to get version from cider if available, otherwise from pubspec.yaml
+          if command -v dart &> /dev/null; then
+            if dart pub global list | grep -q cider; then
+              VERSION=$(dart pub global run cider version)
+            else
+              VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
+            fi
+          else
+            VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
+          fi
+          
           TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
@@ -675,7 +685,17 @@ jobs:
       - name: Get version and timestamp
         id: version-info
         run: |
-          VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
+          # Try to get version from cider if available, otherwise from pubspec.yaml
+          if command -v dart &> /dev/null; then
+            if dart pub global list | grep -q cider; then
+              VERSION=$(dart pub global run cider version)
+            else
+              VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
+            fi
+          else
+            VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
+          fi
+          
           TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
