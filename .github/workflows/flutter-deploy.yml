@@ -558,10 +558,10 @@ jobs:
             if dart pub global list | grep -q cider; then
               VERSION=$(dart pub global run cider version)
             else
-              VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
+              VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
             fi
           else
-            VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2)
+            VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml)
           fi
           
           TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
@@ -701,7 +701,7 @@ jobs:
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
           echo "Timestamp: $TIMESTAMP"
-
+  
       - name: Fastlane Match Setup
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
