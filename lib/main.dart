@@ -6,7 +6,6 @@ import 'package:roomrounds/helpers/data_storage_helper.dart';
 import 'package:roomrounds/module/profile/controller/profile_controller.dart';
 
 import 'firebase_options.dart';
-// main.dart
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
