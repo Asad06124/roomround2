@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - Asad/chat
   pull_request:
     branches:
       - main
+      - Asad/chat
 
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
