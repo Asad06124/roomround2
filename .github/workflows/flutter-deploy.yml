@@ -1,74 +1,60 @@
-#
-# CI/CD Pipeline Structure (Mermaid Diagram)
-#
-# ```mermaid
+
+# mermaid
 # flowchart TD
-#   %% Phase 1: Three separate matrices (run in parallel)
-#   subgraph VersionMatrix["🧱 Version Matrix"]
-#     VERSION_SETUP["Version Setup 📋"]
+#   %% Phase 1: Three matrices with one subtask each (run in parallel)
+#   subgraph InitializationMatrix["🔧 Initialization Matrix"]
+#     direction TB
+#     subgraph VersionSetup["🧱 Version Setup"]
+#       VERSION_TASK["Version Setup 📋"]
+#     end
+#     subgraph ParseCommit["🔍 Parse Commit"]
+#       PARSE_TASK["Parse Commit 📝"]
+#     end
+#     subgraph ValidateSecrets["🔐 Validate Secrets"]
+#       SECRETS_TASK["Validate Secrets 🔑"]
+#     end
 #   end
-#
-#   subgraph ParseMatrix["🔍 Parse Matrix"]
-#     PARSE_COMMIT["Parse Commit 📝"]
-#   end
-#
-#   subgraph SecretsMatrix["🔐 Secrets Matrix"]
-#     VALIDATE_SECRETS["Validate Secrets 🔑"]
-#   end
-#
+
 #   %% Phase 2: Three matrices with subtasks
 #   subgraph PatchMatrix["🏖️ Patch Matrix"]
 #     PATCH_ANDROID["Patch Android 🤖"]
 #     PATCH_IOS["Patch iOS 🍏"]
 #   end
-#
 #   subgraph ReleaseMatrix["🚀 Release Matrix"]
 #     RELEASE_ANDROID["Release Android 🚀🤖"]
 #     RELEASE_IOS["Release iOS 🚀🍏"]
 #   end
-#
 #   subgraph StandardMatrix["📦 Standard Matrix"]
 #     BUILD_APK["Build APK 📱"]
 #     BUILD_IPA["Build IPA 🍎"]
 #   end
-#
+
 #   %% Phase 3: Pipeline Status
 #   PIPELINE_STATUS["📊 Pipeline Status"]
-#
+
 #   %% Flow: All Phase 1 matrices must complete before any Phase 2 matrix starts
-#   VersionMatrix --> PatchMatrix
-#   VersionMatrix --> ReleaseMatrix
-#   VersionMatrix --> StandardMatrix
-#
-#   ParseMatrix --> PatchMatrix
-#   ParseMatrix --> ReleaseMatrix
-#   ParseMatrix --> StandardMatrix
-#
-#   SecretsMatrix --> PatchMatrix
-#   SecretsMatrix --> ReleaseMatrix
-#   SecretsMatrix --> StandardMatrix
-#
+#   InitializationMatrix --> PatchMatrix
+#   InitializationMatrix --> ReleaseMatrix
+#   InitializationMatrix --> StandardMatrix
+
 #   %% All Phase 2 matrices feed into final status
 #   PatchMatrix --> PIPELINE_STATUS
 #   ReleaseMatrix --> PIPELINE_STATUS
 #   StandardMatrix --> PIPELINE_STATUS
-# ```
-#
+
+
 name: 🚀 Flutter CI/CD Pipeline with Shorebird
 
-# 🚀 CI/CD Pipeline Flow - Three Phase Structure
-# PHASE 1: Three separate matrices (run in parallel)
-#        ┌────────────────────┐   ┌────────────────────┐   ┌──────────────────────┐
-#        │   🧱 Version       │   │   🔍 Parse         │   │ 🔐 Secrets           │
-#        │     Matrix         │   │     Matrix         │   │   Matrix             │
-#        │ ┌────────────────┐ │   │ ┌────────────────┐ │   │ ┌──────────────────┐ │
-#        │ │ Version Setup  │ │   │ │ Parse Commit   │ │   │ │ Validate Secrets │ │
-#        │ └────────────────┘ │   │ └────────────────┘ │   │ └──────────────────┘ │
-#        └─────────┬──────────┘   └─────────┬──────────┘   └─────────┬────────────┘
-#                  │                        │                        │
-#                  └────────────┬───────────┴────────────┬──────────┘
-#                               │                        │
-#                               ▼                        ▼
+# Updated Pipeline Flow - Three Phase Structure
+# PHASE 1: Three matrices with one subtask each (run in parallel)
+#        ┌──────────────────────────────────────────────────────────────┐
+#        │                    🔧 Initialization Matrix                  │
+#        │ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐ │
+#        │ │ 🧱 Version Setup │ │ 🔍 Parse Commit │ │ 🔐 Validate Secrets │ │
+#        │ └──────────────────┘ └──────────────────┘ └──────────────────┘ │
+#        └──────────────────────┬──────────────────────┬────────────────┘
+#                               │                      │
+#                               ▼                      ▼
 # PHASE 2: Three matrices with subtasks (run in parallel after Phase 1)
 #        ┌────────────────────────────────┐ ┌────────────────────────────┐ ┌──────────────────────────────┐
 #        │      🏖️ Patch Matrix          │ │     🚀 Release Matrix       │ │     📦 Standard Matrix        │
@@ -105,73 +91,34 @@ env:
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════════════════
-  # 🔹 PHASE 1: INITIALIZATION JOBS (Run in Parallel)
+  # 🔹 PHASE 1: INITIALIZATION MATRIX (Run in Parallel)
   # ═══════════════════════════════════════════════════════════════════════════════════════
-  
-  # 🧱 Version Setup
-  version-setup:
-    name: 🧱 Version Setup
-    runs-on: ubuntu-latest
+  initialization-matrix:
+    name: 🔧 Initialization Matrix
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        task:
+          - version-setup
+          - parse-commit
+          - validate-secrets
+        include:
+          - task: version-setup
+            runner: ubuntu-latest
+            emoji: 🧱
+            task_name: Version Setup
+          - task: parse-commit
+            runner: ubuntu-latest
+            emoji: 🔍
+            task_name: Parse Commit
+          - task: validate-secrets
+            runner: ubuntu-latest
+            emoji: 🔐
+            task_name: Validate Secrets
     outputs:
       version: ${{ steps.version-info.outputs.version }}
       timestamp: ${{ steps.version-info.outputs.timestamp }}
       build_number: ${{ steps.version-info.outputs.build_number }}
-    steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v4
-
-      - name: 🔧 Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
-          cache: true
-
-      - name: 📦 Install cider globally
-        run: dart pub global activate cider
-
-      - name: 📊 Get version and timestamp
-        id: version-info
-        run: |
-          # Install dependencies first to ensure pubspec.yaml is accessible
-          flutter pub get
-          
-          # Try multiple methods to get version
-          if command -v dart &> /dev/null && dart pub global list | grep -q cider; then
-            VERSION=$(dart pub global run cider version 2>/dev/null || echo "")
-          fi
-          
-          # Fallback to parsing pubspec.yaml directly
-          if [ -z "$VERSION" ]; then
-            VERSION=$(grep '^version:' pubspec.yaml | cut -d ' ' -f 2 | tr -d ' ')
-          fi
-          
-          # If still empty, use a default
-          if [ -z "$VERSION" ]; then
-            VERSION="1.0.0+1"
-          fi
-          
-          # Extract build number
-          BUILD_NUMBER=$(echo $VERSION | cut -d '+' -f 2)
-          if [ -z "$BUILD_NUMBER" ]; then
-            BUILD_NUMBER="1"
-          fi
-          
-          TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
-          
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
-          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-          
-          echo "✅ Version: $VERSION"
-          echo "⏰ Timestamp: $TIMESTAMP"
-          echo "🔢 Build Number: $BUILD_NUMBER"
-
-  # 🔍 Parse Commit
-  parse-commit:
-    name: 🔍 Parse Commit
-    runs-on: ubuntu-latest
-    outputs:
       should_run_patch_android: ${{ steps.parse.outputs.should_run_patch_android }}
       should_run_patch_ios: ${{ steps.parse.outputs.should_run_patch_ios }}
       should_run_release_android: ${{ steps.parse.outputs.should_run_release_android }}
@@ -180,56 +127,79 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🔍 Parse commit message
+      # Version Setup Task
+      - name: 🔧 Set up Flutter (Version Setup)
+        if: matrix.task == 'version-setup'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 Install cider globally (Version Setup)
+        if: matrix.task == 'version-setup'
+        run: dart pub global activate cider
+
+      - name: 📊 Get version and timestamp (Version Setup)
+        if: matrix.task == 'version-setup'
+        id: version-info
+        run: |
+          flutter pub get
+          VERSION=$(dart pub global run cider version 2>/dev/null || grep '^version:' pubspec.yaml | cut -d ' ' -f 2 | tr -d ' ')
+          VERSION=${VERSION:-"1.0.0+1"}
+          BUILD_NUMBER=$(echo $VERSION | cut -d '+' -f 2)
+          BUILD_NUMBER=${BUILD_NUMBER:-"1"}
+          TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "✅ Version: $VERSION"
+          echo "⏰ Timestamp: $TIMESTAMP"
+          echo "🔢 Build Number: $BUILD_NUMBER"
+
+      # Parse Commit Task
+      - name: 🔍 Parse commit message (Parse Commit)
+        if: matrix.task == 'parse-commit'
         id: parse
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           echo "📝 Commit Message: $COMMIT_MESSAGE"
           
-          # Initialize all flags as false
           PATCH_ANDROID=false
           PATCH_IOS=false
           RELEASE_ANDROID=false
           RELEASE_IOS=false
           
-          # Parse commit message for flags
-          if [[ $COMMIT_MESSAGE =~ \[patch-android\] ]]; then
+          # Strict regex to match exact tags at start of message
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android\]' >/dev/null; then
             PATCH_ANDROID=true
           fi
-          
-          if [[ $COMMIT_MESSAGE =~ \[patch-ios\] ]]; then
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-ios\]' >/dev/null; then
             PATCH_IOS=true
           fi
-          
-          if [[ $COMMIT_MESSAGE =~ \[patch-both\] ]]; then
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-both\]' >/dev/null; then
             PATCH_ANDROID=true
             PATCH_IOS=true
           fi
-          
-          if [[ $COMMIT_MESSAGE =~ \[release-android\] ]]; then
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[release-android\]' >/dev/null; then
             RELEASE_ANDROID=true
           fi
-          
-          if [[ $COMMIT_MESSAGE =~ \[release-ios\] ]]; then
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[release-ios\]' >/dev/null; then
             RELEASE_IOS=true
           fi
-          
-          if [[ $COMMIT_MESSAGE =~ \[release-both\] ]]; then
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[release-both\]' >/dev/null; then
             RELEASE_ANDROID=true
             RELEASE_IOS=true
           fi
-          
-          if [[ $COMMIT_MESSAGE =~ \[patch-android-release-ios\] ]]; then
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android-release-ios\]' >/dev/null; then
             PATCH_ANDROID=true
             RELEASE_IOS=true
           fi
-          
-          if [[ $COMMIT_MESSAGE =~ \[patch-ios-release-android\] ]]; then
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-ios-release-android\]' >/dev/null; then
             PATCH_IOS=true
             RELEASE_ANDROID=true
           fi
           
-          # Set outputs
           echo "should_run_patch_android=$PATCH_ANDROID" >> $GITHUB_OUTPUT
           echo "should_run_patch_ios=$PATCH_IOS" >> $GITHUB_OUTPUT
           echo "should_run_release_android=$RELEASE_ANDROID" >> $GITHUB_OUTPUT
@@ -242,40 +212,29 @@ jobs:
           echo "  🍎 Release iOS: $RELEASE_IOS"
           echo "  📦 Standard APK & IPA: Always Run"
 
-  # 🔐 Validate Secrets
-  validate-secrets:
-    name: 🔐 Validate Secrets
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🔍 Check required secrets
+      # Validate Secrets Task
+      - name: 🔍 Check required secrets (Validate Secrets)
+        if: matrix.task == 'validate-secrets'
         run: |
           echo "🔐 Validating required secrets..."
-          
-          # Check email secrets
           if [ -z "${{ secrets.GMAIL_USERNAME }}" ] || [ -z "${{ secrets.GMAIL_APP_PASSWORD }}" ] || \
              [ -z "${{ secrets.RECIPIENT_EMAILS }}" ] || [ -z "${{ secrets.ACCOUNT_HOLDER_EMAIL }}" ]; then
-            echo "❌ Missing email secrets (GMAIL_USERNAME, GMAIL_APP_PASSWORD, RECIPIENT_EMAILS, ACCOUNT_HOLDER_EMAIL)"
+            echo "❌ Missing email secrets"
             exit 1
           fi
-          
-          # Check Android signing secrets
           if [ -z "${{ secrets.ANDROID_KEYSTORE }}" ] || [ -z "${{ secrets.KEYSTORE_ALIAS }}" ] || \
              [ -z "${{ secrets.KEYSTORE_PASSWORD }}" ] || [ -z "${{ secrets.KEY_PASSWORD }}" ]; then
             echo "❌ Missing Android signing secrets"
             exit 1
           fi
-          
           echo "✅ All required secrets are present"
-
   # ═══════════════════════════════════════════════════════════════════════════════════════
-  # 🔹 PHASE 2: BUILD MATRICES (Run in Parallel after Phase 1 completes)
+  # 🔹 PHASE 2: BUILD MATRICES
   # ═══════════════════════════════════════════════════════════════════════════════════════
-
-  # 🏖️ Patch Matrix (Android and iOS as separate tasks)
   patch-matrix:
     name: 🏖️ Patch Matrix
-    needs: [version-setup, parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.should_run_patch_android == 'true' || needs.parse-commit.outputs.should_run_patch_ios == 'true' }}
+    needs: initialization-matrix
+    if: ${{ needs.initialization-matrix.outputs.should_run_patch_android == 'true' || needs.initialization-matrix.outputs.should_run_patch_ios == 'true' }}
     strategy:
       matrix:
         platform:
@@ -283,12 +242,12 @@ jobs:
           - ios
         include:
           - platform: android
-            condition: ${{ needs.parse-commit.outputs.should_run_patch_android == 'true' }}
+            condition: ${{ needs.initialization-matrix.outputs.should_run_patch_android == 'true' }}
             runner: ubuntu-latest
             emoji: 🤖
             task_name: Patch Android
           - platform: ios
-            condition: ${{ needs.parse-commit.outputs.should_run_patch_ios == 'true' }}
+            condition: ${{ needs.initialization-matrix.outputs.should_run_patch_ios == 'true' }}
             runner: macos-latest
             emoji: 🍏
             task_name: Patch iOS
@@ -347,17 +306,16 @@ jobs:
         if: always() && matrix.condition
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-patch-${{ needs.version-setup.outputs.version }}
+          name: ${{ matrix.platform }}-patch-${{ needs.initialization-matrix.outputs.version }}
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/ios/ipa/*.ipa
           retention-days: 7
 
-  # 🚀 Release Matrix (Android and iOS as separate tasks)
   release-matrix:
     name: 🚀 Release Matrix
-    needs: [version-setup, parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.should_run_release_android == 'true' || needs.parse-commit.outputs.should_run_release_ios == 'true' }}
+    needs: initialization-matrix
+    if: ${{ needs.initialization-matrix.outputs.should_run_release_android == 'true' || needs.initialization-matrix.outputs.should_run_release_ios == 'true' }}
     strategy:
       matrix:
         platform:
@@ -365,12 +323,12 @@ jobs:
           - ios
         include:
           - platform: android
-            condition: ${{ needs.parse-commit.outputs.should_run_release_android == 'true' }}
+            condition: ${{ needs.initialization-matrix.outputs.should_run_release_android == 'true' }}
             runner: ubuntu-latest
             emoji: 🚀🤖
             task_name: Release Android
           - platform: ios
-            condition: ${{ needs.parse-commit.outputs.should_run_release_ios == 'true' }}
+            condition: ${{ needs.initialization-matrix.outputs.should_run_release_ios == 'true' }}
             runner: macos-latest
             emoji: 🚀🍏
             task_name: Release iOS
@@ -463,21 +421,17 @@ jobs:
           SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
         run: |
           if [ "${{ matrix.platform }}" == "android" ]; then
-            # Create Shorebird release with APK
             shorebird release android \
             --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
             --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
             --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
             --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-            
-            # Create AAB using Shorebird
             shorebird release android --artifact=aab \
             --dart-define=KEYSTORE_PATH=android/upload-keystore.jks \
             --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
             --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
             --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
           else
-            # iOS release
             shorebird release ios --export-options-plist=ios/Runner/ExportOptions.plist
           fi
 
@@ -495,7 +449,7 @@ jobs:
         if: always() && matrix.condition
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-release-${{ needs.version-setup.outputs.version }}
+          name: ${{ matrix.platform }}-release-${{ needs.initialization-matrix.outputs.version }}
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
@@ -505,26 +459,24 @@ jobs:
       - name: 📧 Send Release Notification
         if: ${{ matrix.condition }}
         uses: dawidd6/action-send-mail@v3
-        with:
+        with: 
           server_address: smtp.gmail.com
           server_port: 465
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: ${{ matrix.emoji }} ${{ matrix.task_name }} - ${{ needs.version-setup.outputs.version }}
+          subject: ${{ matrix.emoji }} ${{ matrix.task_name }} - ${{ needs.initialization-matrix.outputs.version }}
           body: |
-            🚀 ${{ matrix.task_name }} (Shorebird) for version ${{ needs.version-setup.outputs.version }}
-            ⏰ Build time: ${{ needs.version-setup.outputs.timestamp }}
+            🚀 ${{ matrix.task_name }} (Shorebird) for version ${{ needs.initialization-matrix.outputs.version }}
+            ⏰ Build time: ${{ needs.initialization-matrix.outputs.timestamp }}
             📝 Commit: ${{ github.sha }}
-            
             ✨ This release supports over-the-air updates via Shorebird
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
-  # 📦 Standard Build Matrix (APK and IPA as separate tasks)
   standard-matrix:
     name: 📦 Standard Matrix
-    needs: [version-setup, parse-commit, validate-secrets]
+    needs: initialization-matrix
     strategy:
       matrix:
         platform:
@@ -609,7 +561,7 @@ jobs:
       - name: 📤 Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-standard-${{ needs.version-setup.outputs.version }}-${{ needs.version-setup.outputs.timestamp }}
+          name: ${{ matrix.platform }}-standard-${{ needs.initialization-matrix.outputs.version }}-${{ needs.initialization-matrix.outputs.timestamp }}
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/ios/ipa/*.ipa
@@ -634,7 +586,7 @@ jobs:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
           parent_folder_id: 0ANYm83GKkrjgUk9PVA
           target: build/app/outputs/flutter-apk/app-release.apk
-          name: app-release-${{ needs.version-setup.outputs.version }}-(${{ needs.version-setup.outputs.timestamp }}).apk
+          name: app-release-${{ needs.initialization-matrix.outputs.version }}-(${{ needs.initialization-matrix.outputs.timestamp }}).apk
           override: false
           replace_mode: add_new
         id: drive-upload
@@ -647,13 +599,12 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: ${{ matrix.emoji }} ${{ matrix.task_name }} Build - ${{ needs.version-setup.outputs.version }}
+          subject: ${{ matrix.emoji }} ${{ matrix.task_name }} Build - ${{ needs.initialization-matrix.outputs.version }}
           body: |
             🔨 ${{ matrix.task_name }} Build (Flutter)
-            📋 Version: ${{ needs.version-setup.outputs.version }}
-            ⏰ Build time: ${{ needs.version-setup.outputs.timestamp }}
+            📋 Version: ${{ needs.initialization-matrix.outputs.version }}
+            ⏰ Build time: ${{ needs.initialization-matrix.outputs.timestamp }}
             📝 Commit: ${{ github.sha }}
-            
             ⚠️ Note: This is a standard Flutter build (No Shorebird OTA support)
             ${{ matrix.platform == 'android' && steps.apk-size.outputs.large_apk == 'true' && format('📥 Download from Google Drive: {0}', steps.drive-upload.outputs.web_view_link) || '' }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
@@ -663,13 +614,11 @@ jobs:
             ${{ matrix.platform == 'ios' && 'build/ios/ipa/*.ipa' || '' }}
 
   # ═══════════════════════════════════════════════════════════════════════════════════════
-  # 🔹 PHASE 3: PIPELINE STATUS (Runs after all Phase 2 jobs complete)
+  # 🔹 PHASE 3: PIPELINE STATUS
   # ═══════════════════════════════════════════════════════════════════════════════════════
-
-  # 📊 Pipeline Status
   pipeline-status:
     name: 📊 Pipeline Status
-    needs: [version-setup, parse-commit, validate-secrets, patch-matrix, release-matrix, standard-matrix]
+    needs: [initialization-matrix, patch-matrix, release-matrix, standard-matrix]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -681,31 +630,23 @@ jobs:
         run: |
           BODY="🚀 CI/CD Pipeline Status Report\n"
           BODY="$BODY━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-          BODY="$BODY📋 Version: ${{ needs.version-setup.outputs.version }}\n"
-          BODY="$BODY⏰ Timestamp: ${{ needs.version-setup.outputs.timestamp }}\n"
+          BODY="$BODY📋 Version: ${{ needs.initialization-matrix.outputs.version }}\n"
+          BODY="$BODY⏰ Timestamp: ${{ needs.initialization-matrix.outputs.timestamp }}\n"
           BODY="$BODY📝 Commit: ${{ github.sha }}\n\n"
           
           BODY="$BODY🎯 Three-Phase Pipeline Results:\n"
           BODY="$BODY┌─────────────────────────────────────────────────────────────────────────────────────┐\n"
-          BODY="$BODY│ PHASE 1 - INITIALIZATION (Parallel)                                                │\n"
+          BODY="$BODY│ PHASE 1 - INITIALIZATION MATRIX                                                   │\n"
           BODY="$BODY└─────────────────────────────────────────────────────────────────────────────────────┘\n"
           
-          if [ "${{ needs.version-setup.result }}" == "success" ]; then
+          if [ "${{ needs.initialization-matrix.result }}" == "success" ]; then
             BODY="$BODY✅ 🧱 Version Setup: Success\n"
-          else
-            BODY="$BODY❌ 🧱 Version Setup: Failed\n"
-          fi
-          
-          if [ "${{ needs.parse-commit.result }}" == "success" ]; then
             BODY="$BODY✅ 🔍 Parse Commit: Success\n"
-          else
-            BODY="$BODY❌ 🔍 Parse Commit: Failed\n"
-          fi
-          
-          if [ "${{ needs.validate-secrets.result }}" == "success" ]; then
             BODY="$BODY✅ 🔐 Validate Secrets: Success\n"
           else
-            BODY="$BODY❌ 🔐 Validate Secrets: Failed\n"
+            BODY="$BODY❌ 🧱 Version Setup: ${{ contains(needs.initialization-matrix.outputs, 'version') && 'Success' || 'Failed' }}\n"
+            BODY="$BODY❌ 🔍 Parse Commit: ${{ contains(needs.initialization-matrix.outputs, 'should_run_patch_android') && 'Success' || 'Failed' }}\n"
+            BODY="$BODY❌ 🔐 Validate Secrets: ${{ needs.initialization-matrix.result == 'success' && 'Success' || 'Failed' }}\n"
           fi
           
           BODY="$BODY\n┌─────────────────────────────────────────────────────────────────────────────────────┐\n"
@@ -742,10 +683,10 @@ jobs:
           BODY="$BODY✅ 📊 Pipeline Status: Complete\n\n"
           
           BODY="$BODY📌 Commit Flags Detected:\n"
-          BODY="$BODY  📱 Patch Android: ${{ needs.parse-commit.outputs.should_run_patch_android }}\n"
-          BODY="$BODY  🍏 Patch iOS: ${{ needs.parse-commit.outputs.should_run_patch_ios }}\n"
-          BODY="$BODY  📱 Release Android: ${{ needs.parse-commit.outputs.should_run_release_android }}\n"
-          BODY="$BODY  🍏 Release iOS: ${{ needs.parse-commit.outputs.should_run_release_ios }}\n"
+          BODY="$BODY  📱 Patch Android: ${{ needs.initialization-matrix.outputs.should_run_patch_android }}\n"
+          BODY="$BODY  🍏 Patch iOS: ${{ needs.initialization-matrix.outputs.should_run_patch_ios }}\n"
+          BODY="$BODY  📱 Release Android: ${{ needs.initialization-matrix.outputs.should_run_release_android }}\n"
+          BODY="$BODY  🍏 Release iOS: ${{ needs.initialization-matrix.outputs.should_run_release_ios }}\n"
           BODY="$BODY  📦 Standard Builds: Always Run\n"
           
           echo "body<<EOF" >> $GITHUB_OUTPUT
@@ -760,10 +701,11 @@ jobs:
           secure: true
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: 📊 Three-Phase CI/CD Pipeline Status - ${{ needs.version-setup.outputs.version }}
+          subject: 📊 Three-Phase CI/CD Pipeline Status - ${{ needs.initialization-matrix.outputs.version }}
           body: ${{ steps.notification.outputs.body }}
           to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
+
 
       # Optional: Slack notification (uncomment to enable)
       # - name: Send Slack notification
