@@ -21,6 +21,11 @@ jobs:
       action: ${{ steps.parse.outputs.action }}
       platform: ${{ steps.parse.outputs.platform }}
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -70,6 +75,11 @@ jobs:
   validate-secrets:
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y tar; }
+          tar --version
+
       - name: Check required secrets
         run: |
           if [ -z "${{ secrets.GMAIL_USERNAME }}" ] || [ -z "${{ secrets.GMAIL_APP_PASSWORD }}" ] || \
@@ -111,6 +121,11 @@ jobs:
     env:
       PATH: "$HOME/.shorebird/bin:$PATH"  # Persist PATH for all steps
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -170,6 +185,11 @@ jobs:
     env:
       PATH: "$HOME/.shorebird/bin:$PATH"  # Persist PATH for all steps
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { brew install gnu-tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -222,6 +242,11 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -256,7 +281,7 @@ jobs:
           git commit -m "Bump version to $NEW_VERSION [skip ci]"
           git push origin main
 
-      - name: Decode Keystore
+      - name: Decode Keystone
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/upload-keystore.jks
 
@@ -336,7 +361,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: google_play_credentials.json
-          packageName: com.asad.yourapp  # Replace with your app's package name
+          packageName: com.roomrounds.llc
           releaseFiles: build/app/outputs/flutter-apk/app-release.apk
           track: internal
 
@@ -353,7 +378,7 @@ jobs:
         with:
           name: android-release-failure-logs
           path: android-release-failure.log
-          retention-days: 4
+          retention-days: 7
 
   ios-release:
     needs: [parse-commit, validate-secrets]
@@ -361,6 +386,11 @@ jobs:
     runs-on: macos-latest
     continue-on-error: true
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { brew install gnu-tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -463,6 +493,11 @@ jobs:
     if: ${{ needs.parse-commit.outputs.action == 'build-apk' || needs.parse-commit.outputs.action == 'build-both' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -558,6 +593,11 @@ jobs:
     if: ${{ needs.parse-commit.outputs.action == 'build-ipa' || needs.parse-commit.outputs.action == 'build-both' }}
     runs-on: macos-latest
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { brew install gnu-tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -621,11 +661,16 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure tar is installed
+        run: |
+          command -v tar >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y tar; }
+          tar --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download failure logs (if any)
-        uses: actions/upload-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           path: failure-logs
         continue-on-error: true
