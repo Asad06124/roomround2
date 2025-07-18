@@ -52,18 +52,12 @@ jobs:
           elif [[ $COMMIT_MESSAGE =~ \[patch-ios-release-android\] ]]; then
             echo "action=patch-ios-release-android" >> $GITHUB_OUTPUT
             echo "platform=both" >> $GITHUB_OUTPUT
-          elif [[ $COMMIT_MESSAGE =~ \[build-apk\] ]]; then
-            echo "action=build-apk" >> $GITHUB_OUTPUT
-            echo "platform=android" >> $GITHUB_OUTPUT
           elif [[ $COMMIT_MESSAGE =~ \[build-ipa\] ]]; then
             echo "action=build-ipa" >> $GITHUB_OUTPUT
             echo "platform=ios" >> $GITHUB_OUTPUT
-          elif [[ $COMMIT_MESSAGE =~ \[build-both\] ]]; then
-            echo "action=build-both" >> $GITHUB_OUTPUT
-            echo "platform=both" >> $GITHUB_OUTPUT
           else
-            echo "No valid flag found in commit message: $COMMIT_MESSAGE. Defaulting to build-apk."
-            echo "action=build-apk" >> $GITHUB_OUTPUT
+            echo "No specific flag found in commit message: $COMMIT_MESSAGE. Running default actions."
+            echo "action=default" >> $GITHUB_OUTPUT
             echo "platform=android" >> $GITHUB_OUTPUT
           fi
 
@@ -81,12 +75,10 @@ jobs:
             echo "Missing SHOREBIRD_TOKEN for patch action"
             exit 1
           fi
-          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-android" || "${{ needs.parse-commit.outputs.action }}" =~ "build-apk" || "${{ needs.parse-commit.outputs.action }}" =~ "build-both" ]]; then
-            if [ -z "${{ secrets.ANDROID_KEYSTORE }}" ] || [ -z "${{ secrets.KEYSTORE_ALIAS }}" ] || \
-               [ -z "${{ secrets.KEYSTORE_PASSWORD }}" ] || [ -z "${{ secrets.KEY_PASSWORD }}" ]; then
-              echo "Missing Android signing secrets for release or build-apk"
-              exit 1
-            fi
+          if [ -z "${{ secrets.ANDROID_KEYSTORE }}" ] || [ -z "${{ secrets.KEYSTORE_ALIAS }}" ] || \
+             [ -z "${{ secrets.KEYSTORE_PASSWORD }}" ] || [ -z "${{ secrets.KEY_PASSWORD }}" ]; then
+            echo "Missing Android signing secrets"
+            exit 1
           fi
           if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-android" || "${{ needs.parse-commit.outputs.action }}" =~ "patch-ios-release-android" ]]; then
             if [ -z "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}" ]; then
@@ -94,11 +86,11 @@ jobs:
               exit 1
             fi
           fi
-          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "patch-android-release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "build-ipa" || "${{ needs.parse-commit.outputs.action }}" =~ "build-both" ]]; then
+          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "patch-android-release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "build-ipa" ]]; then
             if [ -z "${{ secrets.MATCH_PASSWORD }}" ] || [ -z "${{ secrets.MATCH_GIT_AUTH }}" ] || \
                [ -z "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" ] || [ -z "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}" ] || \
                [ -z "${{ secrets.APP_STORE_CONNECT_API_KEY }}" ]; then
-              echo "Missing iOS signing/deployment secrets for release or build-ipa"
+              echo "Missing iOS signing/deployment secrets"
               exit 1
             fi
           fi
@@ -126,10 +118,10 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install Shorebird CLI
-        run: |
-          curl -s https://install.shorebird.dev | bash
-          echo "$HOME/.shorebird/bin" >> $GITHUB_PATH
+      - name: Setup Shorebird CLI
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
 
       - name: Verify Shorebird Installation
         run: shorebird --version
@@ -138,6 +130,8 @@ jobs:
         run: flutter pub get
 
       - name: Create Shorebird patch for Android
+        env:
+          SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
         run: shorebird patch android --release-version latest
 
       - name: Upload artifact
@@ -179,10 +173,10 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install Shorebird CLI
-        run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shorebirdtech/shorebird/releases/latest/download/shorebird-installer.sh | bash
-          echo "$HOME/.shorebird/bin" >> $GITHUB_PATH
+      - name: Setup Shorebird CLI
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
 
       - name: Verify Shorebird Installation
         run: shorebird --version
@@ -193,6 +187,8 @@ jobs:
           cd ios && pod install
 
       - name: Create Shorebird patch for iOS
+        env:
+          SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
         run: shorebird patch ios --release-version latest
 
       - name: Upload artifact
@@ -290,13 +286,13 @@ jobs:
 
       - name: Upload to Google Drive (if large)
         if: steps.apk-size.outputs.large_apk == 'true'
-        uses: adityak74/google-drive-upload-git-action@v0.3
+        uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.3.1
         with:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
-          filename: build/app/outputs/flutter-apk/app-release.apk
-          folderId: 0ANYm83GKkrjgUk9PVA
+          parent_folder_id: 0ANYm83GKkrjgUk9PVA
+          target: build/app/outputs/flutter-apk/app-release.apk
           name: app-release-${{ github.sha }}.apk
-          overwrite: true
+          override: true
         id: drive-upload
 
       - name: Send APK via Gmail (if small)
@@ -324,9 +320,13 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: Android APK Release - ${{ github.sha }} (Google Drive)
-          body: >
+          body: |
             The Android APK release for commit ${{ github.sha }} is too large for email.
-            Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
+            
+            Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
+            
+            File ID: ${{ steps.drive-upload.outputs.file_id }}
+            File Name: ${{ steps.drive-upload.outputs.file_name }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
@@ -460,9 +460,9 @@ jobs:
           path: ios-release-failure.log
           retention-days: 7
 
+  # This job will ALWAYS run for APK builds
   build-apk:
     needs: [parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.action == 'build-apk' || needs.parse-commit.outputs.action == 'build-both' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -516,13 +516,13 @@ jobs:
 
       - name: Upload to Google Drive (if large)
         if: steps.apk-size.outputs.large_apk == 'true'
-        uses: adityak74/google-drive-upload-git-action@v0.3
+        uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.3.1
         with:
           credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
-          filename: build/app/outputs/flutter-apk/app-release.apk
-          folderId: 0ANYm83GKkrjgUk9PVA
+          parent_folder_id: 0ANYm83GKkrjgUk9PVA
+          target: build/app/outputs/flutter-apk/app-release.apk
           name: app-release-${{ github.sha }}.apk
-          overwrite: true
+          override: true
         id: drive-upload
 
       - name: Send APK via Gmail (if small)
@@ -550,14 +550,19 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: Android APK Build - ${{ github.sha }} (Google Drive)
-          body: >
-            The Android APK build for commit ${{ github.sha }} is too large for email. Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
+          body: |
+            The Android APK build for commit ${{ github.sha }} is too large for email.
+            
+            Download from Google Drive: ${{ steps.drive-upload.outputs.web_view_link }}
+            
+            File ID: ${{ steps.drive-upload.outputs.file_id }}
+            File Name: ${{ steps.drive-upload.outputs.file_name }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
   build-ipa:
     needs: [parse-commit, validate-secrets]
-    if: ${{ needs.parse-commit.outputs.action == 'build-ipa' || needs.parse-commit.outputs.action == 'build-both' }}
+    if: ${{ needs.parse-commit.outputs.action == 'build-ipa' }}
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -619,7 +624,7 @@ jobs:
           attachments: build/ios/ipa/*.ipa
 
   notify-status:
-    needs: [parse-commit, android-patch, ios-patch, android-release, ios-release]
+    needs: [parse-commit, android-patch, ios-patch, android-release, ios-release, build-apk]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -627,7 +632,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download failure logs (if any)
-        uses: actions/upload-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           path: failure-logs
         continue-on-error: true
@@ -636,25 +641,30 @@ jobs:
         id: notification
         run: |
           BODY="CI/CD Status for commit ${{ github.sha }}:\n\n"
+          if [ "${{ needs.build-apk.result }}" == "success" ]; then
+            BODY="$BODY- APK Build: Succeeded ✅\n"
+          elif [ "${{ needs.build-apk.result }}" == "failure" ]; then
+            BODY="$BODY- APK Build: Failed ❌\n"
+          fi
           if [ "${{ needs.android-patch.result }}" == "success" ]; then
-            BODY="$BODY- Android Patch: Succeeded\n"
+            BODY="$BODY- Android Patch: Succeeded ✅\n"
           elif [ "${{ needs.android-patch.result }}" == "failure" ]; then
-            BODY="$BODY- Android Patch: Failed\n  Reason: $(cat failure-logs/android-patch-failure-logs/android-patch-failure.log 2>/dev/null || echo 'Unknown error')\n"
+            BODY="$BODY- Android Patch: Failed ❌\n"
           fi
           if [ "${{ needs.ios-patch.result }}" == "success" ]; then
-            BODY="$BODY- iOS Patch: Succeeded\n"
+            BODY="$BODY- iOS Patch: Succeeded ✅\n"
           elif [ "${{ needs.ios-patch.result }}" == "failure" ]; then
-            BODY="$BODY- iOS Patch: Failed\n  Reason: $(cat failure-logs/ios-patch-failure-logs/ios-patch-failure.log 2>/dev/null || echo 'Unknown error')\n"
+            BODY="$BODY- iOS Patch: Failed ❌\n"
           fi
           if [ "${{ needs.android-release.result }}" == "success" ]; then
-            BODY="$BODY- Android Release: Succeeded\n"
+            BODY="$BODY- Android Release: Succeeded ✅\n"
           elif [ "${{ needs.android-release.result }}" == "failure" ]; then
-            BODY="$BODY- Android Release: Failed\n  Reason: $(cat failure-logs/android-release-failure-logs/android-release-failure.log 2>/dev/null || echo 'Unknown error')\n"
+            BODY="$BODY- Android Release: Failed ❌\n"
           fi
           if [ "${{ needs.ios-release.result }}" == "success" ]; then
-            BODY="$BODY- iOS Release: Succeeded\n"
+            BODY="$BODY- iOS Release: Succeeded ✅\n"
           elif [ "${{ needs.ios-release.result }}" == "failure" ]; then
-            BODY="$BODY- iOS Release: Failed\n  Reason: $(cat failure-logs/ios-release-failure-logs/ios-release-failure.log 2>/dev/null || echo 'Unknown error')\n"
+            BODY="$BODY- iOS Release: Failed ❌\n"
           fi
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
@@ -672,7 +682,7 @@ jobs:
           body: ${{ steps.notification.outputs.body }}
           to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
-
+          
       # Optional: Slack notification (uncomment to enable)
       # - name: Send Slack notification
       #   uses: slackapi/slack-github-action@v1
