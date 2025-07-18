@@ -142,7 +142,7 @@ jobs:
 
       - name: Upload artifact
         if: always()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: android-patch
           path: build/app/outputs/flutter-apk/app-release.apk
@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload failure logs
         if: failure()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: android-patch-failure-logs
           path: android-patch-failure.log
@@ -197,7 +197,7 @@ jobs:
 
       - name: Upload artifact
         if: always()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: ios-patch
           path: build/ios/ipa/*.ipa
@@ -212,7 +212,7 @@ jobs:
 
       - name: Upload failure logs
         if: failure()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: ios-patch-failure-logs
           path: ios-patch-failure.log
@@ -272,7 +272,7 @@ jobs:
 
       - name: Upload artifact
         if: always()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: android-release
           path: build/app/outputs/flutter-apk/app-release.apk
@@ -351,7 +351,7 @@ jobs:
 
       - name: Upload failure logs
         if: failure()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: android-release-failure-logs
           path: android-release-failure.log
@@ -415,7 +415,7 @@ jobs:
 
       - name: Upload artifact
         if: always()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: ios-release
           path: build/ios/ipa/*.ipa
@@ -454,7 +454,7 @@ jobs:
 
       - name: Upload failure logs
         if: failure()
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: ios-release-failure-logs
           path: ios-release-failure.log
@@ -498,7 +498,7 @@ jobs:
           --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
 
       - name: Upload artifact
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: build/app/outputs/flutter-apk/app-release.apk
@@ -597,7 +597,7 @@ jobs:
           --export-options-plist=ios/Runner/ExportOptions.plist
 
       - name: Upload artifact
-        uses: actions/checkout@v4
+        uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
           path: build/ios/ipa/*.ipa
