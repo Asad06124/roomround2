@@ -4,7 +4,6 @@ import 'package:roomrounds/core/constants/imports.dart';
 import 'package:roomrounds/module/assigned_task/controller/ticket_chat_controller.dart';
 import 'package:roomrounds/module/maintenance/controller/maintenance_task_chat_controller.dart';
 
-import '../../../core/apis/models/tickets/ticket_model.dart';
 import '../../../core/components/app_image.dart';
 import '../../message/components/message_components.dart';
 import '../views/ticket_image_full_view.dart';
