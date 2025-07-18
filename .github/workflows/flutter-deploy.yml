@@ -229,8 +229,8 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════════════════
   # 🔹 PHASE 2: BUILD MATRICES
   # ═══════════════════════════════════════════════════════════════════════════════════════
-  patch-matrix:
-    name: 🏖️ Patch Matrix
+  patch-ios-android:
+    name: 🏖️ Patch iOS/Android
     needs: [version-setup, parse-commit, validate-secrets]
     if: ${{ needs.parse-commit.outputs.should_run_patch_android == 'true' || needs.parse-commit.outputs.should_run_patch_ios == 'true' }}
     strategy:
@@ -252,14 +252,10 @@ jobs:
     runs-on: ${{ matrix.runner }}
     continue-on-error: true
     steps:
-      - name: ⏭️ Skip if not needed
-        if: ${{ !matrix.condition }}
-        run: echo "⏭️ Skipping ${{ matrix.task_name }} - not requested in commit message"
-
       - name: 📥 Checkout repository
         if: ${{ matrix.condition }}
         uses: actions/checkout@v4
-
+  
       - name: ☕ Set up Java (Android only)
         if: matrix.platform == 'android' && matrix.condition
         uses: actions/setup-java@v3
@@ -267,7 +263,7 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
           cache: 'gradle'
-
+  
       - name: 🔧 Set up Flutter
         if: ${{ matrix.condition }}
         uses: subosito/flutter-action@v2
@@ -275,17 +271,17 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
-
+  
       - name: 🏖️ Setup Shorebird CLI
         if: ${{ matrix.condition }}
         uses: shorebirdtech/setup-shorebird@v1
         with:
           cache: true
-
+  
       - name: ✅ Verify Shorebird Installation
         if: ${{ matrix.condition }}
         run: shorebird --version
-
+  
       - name: 📦 Install dependencies
         if: ${{ matrix.condition }}
         run: |
@@ -293,13 +289,13 @@ jobs:
           if [ "${{ matrix.platform }}" == "ios" ]; then
             cd ios && pod install
           fi
-
+  
       - name: 🚀 Create Shorebird patch
         if: ${{ matrix.condition }}
         env:
           SHOREBIRD_TOKEN: ${{ env.SHOREBIRD_TOKEN }}
         run: shorebird patch ${{ matrix.platform }} --release-version latest
-
+  
       - name: 📤 Upload artifact
         if: always() && matrix.condition
         uses: actions/upload-artifact@v4
@@ -309,7 +305,6 @@ jobs:
             build/app/outputs/flutter-apk/app-release.apk
             build/ios/ipa/*.ipa
           retention-days: 7
-
   release-matrix:
     name: 🚀 Release Matrix
     needs: [version-setup, parse-commit, validate-secrets]
@@ -616,7 +611,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════════════════
   pipeline-status:
     name: 📊 Pipeline Status
-    needs: [version-setup, parse-commit, validate-secrets, patch-matrix, release-matrix, standard-matrix]
+    needs: [version-setup, parse-commit, validate-secrets, patch-ios-android, release-matrix, standard-matrix]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
