@@ -627,7 +627,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download failure logs (if any)
-        uses: actions/download-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: failure-logs
         continue-on-error: true
