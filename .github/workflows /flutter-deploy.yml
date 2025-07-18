@@ -1,0 +1,671 @@
+name: Flutter CI/CD with Shorebird
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  FLUTTER_VERSION: '3.24.0'
+
+jobs:
+  parse-commit:
+    runs-on: ubuntu-latest
+    outputs:
+      action: ${{ steps.parse.outputs.action }}
+      platform: ${{ steps.parse.outputs.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse commit message
+        id: parse
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          if [[ $COMMIT_MESSAGE =~ \[patch-android\] ]]; then
+            echo "action=patch" >> $GITHUB_OUTPUT
+            echo "platform=android" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[patch-ios\] ]]; then
+            echo "action=patch" >> $GITHUB_OUTPUT
+            echo "platform=ios" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[patch-both\] ]]; then
+            echo "action=patch" >> $GITHUB_OUTPUT
+            echo "platform=both" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[release-android\] ]]; then
+            echo "action=release" >> $GITHUB_OUTPUT
+            echo "platform=android" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[release-ios\] ]]; then
+            echo "action=release" >> $GITHUB_OUTPUT
+            echo "platform=ios" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[release-both\] ]]; then
+            echo "action=release" >> $GITHUB_OUTPUT
+            echo "platform=both" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[patch-android-release-ios\] ]]; then
+            echo "action=patch-android-release-ios" >> $GITHUB_OUTPUT
+            echo "platform=both" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[patch-ios-release-android\] ]]; then
+            echo "action=patch-ios-release-android" >> $GITHUB_OUTPUT
+            echo "platform=both" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[build-apk\] ]]; then
+            echo "action=build-apk" >> $GITHUB_OUTPUT
+            echo "platform=android" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[build-ipa\] ]]; then
+            echo "action=build-ipa" >> $GITHUB_OUTPUT
+            echo "platform=ios" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MESSAGE =~ \[build-both\] ]]; then
+            echo "action=build-both" >> $GITHUB_OUTPUT
+            echo "platform=both" >> $GITHUB_OUTPUT
+          else
+            echo "Invalid or no flag found in commit message: $COMMIT_MESSAGE"
+            exit 1
+          fi
+
+  validate-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required secrets
+        run: |
+          if [ -z "${{ secrets.GMAIL_USERNAME }}" ] || [ -z "${{ secrets.GMAIL_APP_PASSWORD }}" ] || \
+             [ -z "${{ secrets.RECIPIENT_EMAILS }}" ] || [ -z "${{ secrets.ACCOUNT_HOLDER_EMAIL }}" ]; then
+            echo "Missing required secrets (GMAIL_USERNAME, GMAIL_APP_PASSWORD, RECIPIENT_EMAILS, ACCOUNT_HOLDER_EMAIL)"
+            exit 1
+          fi
+          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "patch" && -z "${{ secrets.SHOREBIRD_TOKEN }}" ]]; then
+            echo "Missing SHOREBIRD_TOKEN for patch action"
+            exit 1
+          fi
+          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-android" || "${{ needs.parse-commit.outputs.action }}" =~ "build-apk" || "${{ needs.parse-commit.outputs.action }}" =~ "build-both" ]]; then
+            if [ -z "${{ secrets.ANDROID_KEYSTORE }}" ] || [ -z "${{ secrets.KEYSTORE_ALIAS }}" ] || \
+               [ -z "${{ secrets.KEYSTORE_PASSWORD }}" ] || [ -z "${{ secrets.KEY_PASSWORD }}" ]; then
+              echo "Missing Android signing secrets for release or build-apk"
+              exit 1
+            fi
+          fi
+          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-android" || "${{ needs.parse-commit.outputs.action }}" =~ "patch-ios-release-android" ]]; then
+            if [ -z "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}" ]; then
+              echo "Missing GOOGLE_PLAY_SERVICE_ACCOUNT for Android release"
+              exit 1
+            fi
+          fi
+          if [[ "${{ needs.parse-commit.outputs.action }}" =~ "release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "patch-android-release-ios" || "${{ needs.parse-commit.outputs.action }}" =~ "build-ipa" || "${{ needs.parse-commit.outputs.action }}" =~ "build-both" ]]; then
+            if [ -z "${{ secrets.MATCH_PASSWORD }}" ] || [ -z "${{ secrets.MATCH_GIT_AUTH }}" ] || \
+               [ -z "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" ] || [ -z "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}" ] || \
+               [ -z "${{ secrets.APP_STORE_CONNECT_API_KEY }}" ]; then
+              echo "Missing iOS signing/deployment secrets for release or build-ipa"
+              exit 1
+            fi
+          fi
+
+  android-patch:
+    needs: [parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'android' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-android-release-ios') }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Shorebird CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shorebirdtech/shorebird/releases/latest/download/shorebird-installer.sh | bash
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Create Shorebird patch for Android
+        run: |
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird patch android --release-version latest
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-patch
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
+
+      - name: Capture logs
+        if: failure()
+        run: |
+          echo "Android patch job failed. Logs saved for notification." > android-patch-failure.log
+          cat android-patch-failure.log
+        continue-on-error: true
+
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-patch-failure-logs
+          path: android-patch-failure.log
+          retention-days: 7
+
+  ios-patch:
+    needs: [parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.action == 'patch' && (needs.parse-commit.outputs.platform == 'ios' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-ios-release-android') }}
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Shorebird CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shorebirdtech/shorebird/releases/latest/download/shorebird-installer.sh | bash
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird --version
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd ios && pod install
+
+      - name: Create Shorebird patch for iOS
+        run: |
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird patch ios --release-version latest
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-patch
+          path: build/ios/ipa/*.ipa
+          retention-days: 7
+
+      - name: Capture logs
+        if: failure()
+        run: |
+          echo "iOS patch job failed. Logs saved for notification." > ios-patch-failure.log
+          cat ios-patch-failure.log
+        continue-on-error: true
+
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-patch-failure-logs
+          path: ios-patch-failure.log
+          retention-days: 7
+
+  android-release:
+    needs: [parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.action == 'release' && (needs.parse-commit.outputs.platform == 'android' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-ios-release-android') }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install cider
+        run: dart pub global activate cider
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Bump version
+        run: |
+          dart pub global run cider bump build
+          NEW_VERSION=$(dart pub global run cider version)
+          echo "New version: $NEW_VERSION"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add pubspec.yaml
+          git commit -m "Bump version to $NEW_VERSION [skip ci]"
+          git push origin main
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+
+      - name: Build Signed APK
+        run: |
+          flutter build apk --release \
+          --dart-define=KEYSTORE_PATH=android/app/keystore.jks \
+          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
+
+      - name: Check APK size
+        id: apk-size
+        run: |
+          APK_SIZE=$(stat -c %s build/app/outputs/flutter-apk/app-release.apk)
+          if [ $APK_SIZE -gt 26214400 ]; then  # 25MB in bytes
+            echo "large_apk=true" >> $GITHUB_OUTPUT
+          else
+            echo "large_apk=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload to Google Drive (if large)
+        if: steps.apk-size.outputs.large_apk == 'true'
+        uses: adityak74/google-drive-upload-git-action@v0.3
+        with:
+          credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          filename: build/app/outputs/flutter-apk/app-release.apk
+          folderId: your-google-drive-folder-id
+          name: app-release-${{ github.sha }}.apk
+          overwrite: true
+        id: drive-upload
+
+      - name: Send APK via Gmail (if small)
+        if: steps.apk-size.outputs.large_apk == 'false'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: Android APK Release - ${{ github.sha }}
+          body: Attached is the Android APK release for commit ${{ github.sha }}.
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+          attachments: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Send Google Drive link via Gmail (if large)
+        if: steps.apk-size.outputs.large_apk == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: Android APK Release - ${{ github.sha }} (Google Drive)
+          body: The Android APK release for commit ${{ github.sha }} is too large for email. Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+
+      - name: Deploy to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+          packageName: com.example.yourapp
+          releaseFiles: build/app/outputs/flutter-apk/app-release.apk
+          track: internal
+
+      - name: Capture logs
+        if: failure()
+        run: |
+          echo "Android release job failed. Logs saved for notification." > android-release-failure.log
+          cat android-release-failure.log
+        continue-on-error: true
+
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release-failure-logs
+          path: android-release-failure.log
+          retention-days: 7
+
+  ios-release:
+    needs: [parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.action == 'release' && (needs.parse-commit.outputs.platform == 'ios' || needs.parse-commit.outputs.platform == 'both' || needs.parse-commit.outputs.action == 'patch-android-release-ios') }}
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.0'
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      - name: Install cider
+        run: dart pub global activate cider
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd ios && pod install
+
+      - name: Bump version
+        run: |
+          dart pub global run cider bump build
+          NEW_VERSION=$(dart pub global run cider version)
+          echo "New version: $NEW_VERSION"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add pubspec.yaml
+          git commit -m "Bump version to $NEW_VERSION [skip ci]"
+          git push origin main
+
+      - name: Fastlane Match Setup
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
+        run: |
+          bundle exec fastlane match appstore
+
+      - name: Build IPA
+        run: |
+          flutter build ipa --release \
+          --export-options-plist=ios/Runner/ExportOptions.plist
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-release
+          path: build/ios/ipa/*.ipa
+          retention-days: 7
+
+      - name: Deploy to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          cd ios
+          bundle exec fastlane beta
+
+      - name: Send IPA via Gmail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: iOS IPA Release - ${{ github.sha }}
+          body: Attached is the iOS IPA release for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+          attachments: build/ios/ipa/*.ipa
+
+      - name: Capture logs
+        if: failure()
+        run: |
+          echo "iOS release job failed. Logs saved for notification." > ios-release-failure.log
+          cat ios-release-failure.log
+        continue-on-error: true
+
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-release-failure-logs
+          path: ios-release-failure.log
+          retention-days: 7
+
+  build-apk:
+    needs: [parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.action == 'build-apk' || needs.parse-commit.outputs.action == 'build-both' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+
+      - name: Build Signed APK
+        run: |
+          flutter build apk --release \
+          --dart-define=KEYSTORE_PATH=android/app/keystore.jks \
+          --dart-define=KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
+
+      - name: Check APK size
+        id: apk-size
+        run: |
+          APK_SIZE=$(stat -c %s build/app/outputs/flutter-apk/app-release.apk)
+          if [ $APK_SIZE -gt 26214400 ]; then  # 25MB in bytes
+            echo "large_apk=true" >> $GITHUB_OUTPUT
+          else
+            echo "large_apk=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload to Google Drive (if large)
+        if: steps.apk-size.outputs.large_apk == 'true'
+        uses: adityak74/google-drive-upload-git-action@v0.3
+        with:
+          credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          filename: build/app/outputs/flutter-apk/app-release.apk
+          folderId: your-google-drive-folder-id
+          name: app-release-${{ github.sha }}.apk
+          overwrite: true
+        id: drive-upload
+
+      - name: Send APK via Gmail (if small)
+        if: steps.apk-size.outputs.large_apk == 'false'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: Android APK Build - ${{ github.sha }}
+          body: Attached is the Android APK build for commit ${{ github.sha }}.
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+          attachments: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Send Google Drive link via Gmail (if large)
+        if: steps.apk-size.outputs.large_apk == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: Android APK Build - ${{ github.sha }} (Google Drive)
+          body: The Android APK build for commit ${{ github.sha }} is too large for email. Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+
+  build-ipa:
+    needs: [parse-commit, validate-secrets]
+    if: ${{ needs.parse-commit.outputs.action == 'build-ipa' || needs.parse-commit.outputs.action == 'build-both' }}
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.0'
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd ios && pod install
+
+      - name: Fastlane Match Setup
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
+        run: |
+          bundle exec fastlane match appstore
+
+      - name: Build IPA
+        run: |
+          flutter build ipa --release \
+          --export-options-plist=ios/Runner/ExportOptions.plist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-ipa
+          path: build/ios/ipa/*.ipa
+          retention-days: 7
+
+      - name: Send IPA via Gmail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: iOS IPA Build - ${{ github.sha }}
+          body: Attached is the iOS IPA build for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
+          to: ${{ secrets.RECIPIENT_EMAILS }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+          attachments: build/ios/ipa/*.ipa
+
+  notify-status:
+    needs: [parse-commit, android-patch, ios-patch, android-release, ios-release]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download failure logs (if any)
+        uses: actions/download-artifact@v3
+        with:
+          path: failure-logs
+        continue-on-error: true
+
+      - name: Prepare notification body
+        id: notification
+        run: |
+          BODY="CI/CD Status for commit ${{ github.sha }}:\n\n"
+          if [ "${{ needs.android-patch.result }}" == "success" ]; then
+            BODY="$BODY- Android Patch: Succeeded\n"
+          elif [ "${{ needs.android-patch.result }}" == "failure" ]; then
+            BODY="$BODY- Android Patch: Failed\n  Reason: $(cat failure-logs/android-patch-failure-logs/android-patch-failure.log 2>/dev/null || echo 'Unknown error')\n"
+          fi
+          if [ "${{ needs.ios-patch.result }}" == "success" ]; then
+            BODY="$BODY- iOS Patch: Succeeded\n"
+          elif [ "${{ needs.ios-patch.result }}" == "failure" ]; then
+            BODY="$BODY- iOS Patch: Failed\n  Reason: $(cat failure-logs/ios-patch-failure-logs/ios-patch-failure.log 2>/dev/null || echo 'Unknown error')\n"
+          fi
+          if [ "${{ needs.android-release.result }}" == "success" ]; then
+            BODY="$BODY- Android Release: Succeeded\n"
+          elif [ "${{ needs.android-release.result }}" == "failure" ]; then
+            BODY="$BODY- Android Release: Failed\n  Reason: $(cat failure-logs/android-release-failure-logs/android-release-failure.log 2>/dev/null || echo 'Unknown error')\n"
+          fi
+          if [ "${{ needs.ios-release.result }}" == "success" ]; then
+            BODY="$BODY- iOS Release: Succeeded\n"
+          elif [ "${{ needs.ios-release.result }}" == "failure" ]; then
+            BODY="$BODY- iOS Release: Failed\n  Reason: $(cat failure-logs/ios-release-failure-logs/ios-release-failure.log 2>/dev/null || echo 'Unknown error')\n"
+          fi
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Send status notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: CI/CD Status Notification - ${{ github.sha }}
+          body: ${{ steps.notification.outputs.body }}
+          to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+
+      # Optional: Slack notification (uncomment to enable)
+      # - name: Send Slack notification
+      #   uses: slackapi/slack-github-action@v1
+      #   with:
+      #     slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+      #     channel-id: 'your-channel-id'
+      #     text: ${{ steps.notification.outputs.body }}
+      #   if: always()
