@@ -109,37 +109,35 @@ jobs:
       version: ${{ steps.version-info.outputs.version }}
       timestamp: ${{ steps.version-info.outputs.timestamp }}
       build_number: ${{ steps.version-info.outputs.build_number }}
-    strategy:
-      matrix:
-        steps:
-         - name: 📥 Checkout repository
-           uses: actions/checkout@v4
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
 
-         - name: 🔧 Set up Flutter
-           uses: subosito/flutter-action@v2
-           with:
-            flutter-version: ${{ env.FLUTTER_VERSION }}
-            channel: 'stable'
-            cache: true
+      - name: 🔧 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
 
-         - name: 📦 Install cider globally
-           run: dart pub global activate cider
+      - name: 📦 Install cider globally
+        run: dart pub global activate cider
 
-         - name: 📊 Get version and timestamp
-           id: version-info
-           run: |
-            flutter pub get
-            VERSION=$(dart pub global run cider version 2>/dev/null || grep '^version:' pubspec.yaml | cut -d ' ' -f 2 | tr -d ' ')
-            VERSION=${VERSION:-"1.0.0+1"}
-            BUILD_NUMBER=$(echo $VERSION | cut -d '+' -f 2)
-            BUILD_NUMBER=${BUILD_NUMBER:-"1"}
-            TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
-            echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-            echo "✅ Version: $VERSION"
-            echo "⏰ Timestamp: $TIMESTAMP"
-            echo "🔢 Build Number: $BUILD_NUMBER"
+      - name: 📊 Get version and timestamp
+        id: version-info
+        run: |
+          flutter pub get
+          VERSION=$(dart pub global run cider version 2>/dev/null || grep '^version:' pubspec.yaml | cut -d ' ' -f 2 | tr -d ' ')
+          VERSION=${VERSION:-"1.0.0+1"}
+          BUILD_NUMBER=$(echo $VERSION | cut -d '+' -f 2)
+          BUILD_NUMBER=${BUILD_NUMBER:-"1"}
+          TIMESTAMP=$(date +'%m-%d-%Y %H:%M')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "✅ Version: $VERSION"
+          echo "⏰ Timestamp: $TIMESTAMP"
+          echo "🔢 Build Number: $BUILD_NUMBER"
 
   parse-commit-matrix:
     name: 🔍 Parse Commit Matrix
@@ -149,64 +147,62 @@ jobs:
       should_run_patch_ios: ${{ steps.parse.outputs.should_run_patch_ios }}
       should_run_release_android: ${{ steps.parse.outputs.should_run_release_android }}
       should_run_release_ios: ${{ steps.parse.outputs.should_run_release_ios }}
-    strategy:
-      matrix:
-       steps:
-         - name: 📥 Checkout repository
-           uses: actions/checkout@v4
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
 
-         - name: 🔍 Parse commit message
-           id: parse
-           run: |
-             COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-             echo "📝 Commit Message: $COMMIT_MESSAGE"
-             
-             PATCH_ANDROID=false
-             PATCH_IOS=false
-             RELEASE_ANDROID=false
-             RELEASE_IOS=false
-             
-             # Strict regex to match exact tags at start of message
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android\]' >/dev/null; then
-               PATCH_ANDROID=true
-             fi
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-ios\]' >/dev/null; then
-               PATCH_IOS=true
-             fi
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-both\]' >/dev/null; then
-               PATCH_ANDROID=true
-               PATCH_IOS=true
-             fi
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[release-android\]' >/dev/null; then
-               RELEASE_ANDROID=true
-             fi
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[release-ios\]' >/dev/null; then
-               RELEASE_IOS=true
-             fi
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[release-both\]' >/dev/null; then
-               RELEASE_ANDROID=true
-               RELEASE_IOS=true
-             fi
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android-release-ios\]' >/dev/null; then
-               PATCH_ANDROID=true
-               RELEASE_IOS=true
-             fi
-             if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-ios-release-android\]' >/dev/null; then
-               PATCH_IOS=true
-               RELEASE_ANDROID=true
-             fi
-             
-             echo "should_run_patch_android=$PATCH_ANDROID" >> $GITHUB_OUTPUT
-             echo "should_run_patch_ios=$PATCH_IOS" >> $GITHUB_OUTPUT
-             echo "should_run_release_android=$RELEASE_ANDROID" >> $GITHUB_OUTPUT
-             echo "should_run_release_ios=$RELEASE_IOS" >> $GITHUB_OUTPUT
-             
-             echo "🎯 Parsed Actions:"
-             echo "  📱 Patch Android: $PATCH_ANDROID"
-             echo "  🍎 Patch iOS: $PATCH_IOS"
-             echo "  📱 Release Android: $RELEASE_ANDROID"
-             echo "  🍎 Release iOS: $RELEASE_IOS"
-             echo "  📦 Standard APK & IPA: Always Run"
+      - name: 🔍 Parse commit message
+        id: parse
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "📝 Commit Message: $COMMIT_MESSAGE"
+          
+          PATCH_ANDROID=false
+          PATCH_IOS=false
+          RELEASE_ANDROID=false
+          RELEASE_IOS=false
+          
+          # Strict regex to match exact tags at start of message
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android\]' >/dev/null; then
+            PATCH_ANDROID=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-ios\]' >/dev/null; then
+            PATCH_IOS=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-both\]' >/dev/null; then
+            PATCH_ANDROID=true
+            PATCH_IOS=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[release-android\]' >/dev/null; then
+            RELEASE_ANDROID=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[release-ios\]' >/dev/null; then
+            RELEASE_IOS=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[release-both\]' >/dev/null; then
+            RELEASE_ANDROID=true
+            RELEASE_IOS=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android-release-ios\]' >/dev/null; then
+            PATCH_ANDROID=true
+            RELEASE_IOS=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-ios-release-android\]' >/dev/null; then
+            PATCH_IOS=true
+            RELEASE_ANDROID=true
+          fi
+          
+          echo "should_run_patch_android=$PATCH_ANDROID" >> $GITHUB_OUTPUT
+          echo "should_run_patch_ios=$PATCH_IOS" >> $GITHUB_OUTPUT
+          echo "should_run_release_android=$RELEASE_ANDROID" >> $GITHUB_OUTPUT
+          echo "should_run_release_ios=$RELEASE_IOS" >> $GITHUB_OUTPUT
+          
+          echo "🎯 Parsed Actions:"
+          echo "  📱 Patch Android: $PATCH_ANDROID"
+          echo "  🍎 Patch iOS: $PATCH_IOS"
+          echo "  📱 Release Android: $RELEASE_ANDROID"
+          echo "  🍎 Release iOS: $RELEASE_IOS"
+          echo "  📦 Standard APK & IPA: Always Run"
 
   validate-secrets-matrix:
     name: 🔐 Validate Secrets Matrix
