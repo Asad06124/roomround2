@@ -62,8 +62,9 @@ jobs:
             echo "action=build-both" >> $GITHUB_OUTPUT
             echo "platform=both" >> $GITHUB_OUTPUT
           else
-            echo "Invalid or no flag found in commit message: $COMMIT_MESSAGE"
-            exit 1
+            echo "No valid flag found in commit message: $COMMIT_MESSAGE. Defaulting to build-apk."
+            echo "action=build-apk" >> $GITHUB_OUTPUT
+            echo "platform=android" >> $GITHUB_OUTPUT
           fi
 
   validate-secrets:
@@ -323,15 +324,21 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: Android APK Release - ${{ github.sha }} (Google Drive)
-          body: The Android APK release for commit ${{ github.sha }} is too large for email. Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
+          body: >
+            The Android APK release for commit ${{ github.sha }} is too large for email.
+            Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
+
+      - name: Decode Google Play Service Account
+        run: |
+          echo "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}" | base64 --decode > google_play_credentials.json
 
       - name: Deploy to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
-          packageName: com.example.yourapp
+          serviceAccountJson: google_play_credentials.json
+          packageName: com.asad.yourapp  # Replace with your app's package name
           releaseFiles: build/app/outputs/flutter-apk/app-release.apk
           track: internal
 
@@ -432,7 +439,8 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: iOS IPA Release - ${{ github.sha }}
-          body: Attached is the iOS IPA release for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
+          body: > 
+            Attached is the iOS IPA release for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/ios/ipa/*.ipa
@@ -542,7 +550,8 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: Android APK Build - ${{ github.sha }} (Google Drive)
-          body: The Android APK build for commit ${{ github.sha }} is too large for email. Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
+          body: >
+            The Android APK build for commit ${{ github.sha }} is too large for email. Download from Google Drive: ${{ steps.drive-upload.outputs.url }}
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
 
@@ -603,7 +612,8 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: iOS IPA Build - ${{ github.sha }}
-          body: Attached is the iOS IPA build for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
+          body: >
+            Attached is the iOS IPA build for commit ${{ github.sha }}. Note: IPA files are for development purposes and may require manual installation.
           to: ${{ secrets.RECIPIENT_EMAILS }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build/ios/ipa/*.ipa
