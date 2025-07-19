@@ -72,6 +72,8 @@ jobs:
       should_run_patch_android: ${{ steps.parse.outputs.should_run_patch_android }}
       should_run_patch_ios: ${{ steps.parse.outputs.should_run_patch_ios }}
       should_run_release_android: ${{ steps.parse.outputs.should_run_release_android }}
+      should_run_build_apk: ${{ steps.parse.outputs.should_run_release_android }}
+      should_run_build_ios: ${{ steps.parse.outputs.should_run_release_android }}
       should_run_release_ios: ${{ steps.parse.outputs.should_run_release_ios }}
     steps:
       - name: 📥 Checkout repository
@@ -87,6 +89,8 @@ jobs:
           PATCH_IOS=false
           RELEASE_ANDROID=false
           RELEASE_IOS=false
+          BUILD_APK=false
+          BUILD_IOS=false
           
           # Strict regex to match exact tags at start of message
           if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android\]' >/dev/null; then
@@ -109,6 +113,18 @@ jobs:
             RELEASE_ANDROID=true
             RELEASE_IOS=true
           fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[build-apk\]' >/dev/null; then
+            BUILD_APK=true
+            RELEASE_IOS=false
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[build-both\]' >/dev/null; then
+            BUILD_APK=true
+            BUILD_IOS=true
+          fi
+          if echo "$COMMIT_MESSAGE" | grep -E '^\[build-ios\]' >/dev/null; then
+            BUILD_APK=false
+            BUILD_IOS=true
+          fi
           if echo "$COMMIT_MESSAGE" | grep -E '^\[patch-android-release-ios\]' >/dev/null; then
             PATCH_ANDROID=true
             RELEASE_IOS=true
@@ -122,13 +138,16 @@ jobs:
           echo "should_run_patch_ios=$PATCH_IOS" >> $GITHUB_OUTPUT
           echo "should_run_release_android=$RELEASE_ANDROID" >> $GITHUB_OUTPUT
           echo "should_run_release_ios=$RELEASE_IOS" >> $GITHUB_OUTPUT
+          echo "should_run_build_apk=$BUILD_APK" >> $GITHUB_OUTPUT
+          echo "should_run_build_ios=$BUILD_IOS" >> $GITHUB_OUTPUT
           
           echo "🎯 Parsed Actions:"
           echo "  📱 Patch Android: $PATCH_ANDROID"
           echo "  🍎 Patch iOS: $PATCH_IOS"
           echo "  📱 Release Android: $RELEASE_ANDROID"
           echo "  🍎 Release iOS: $RELEASE_IOS"
-          echo "  📦 Standard APK & IPA: Always Run"
+          echo "  📦 Standard APK: BUILD_APK"
+          echo "  📦 Standard IPA: BUILD_IOS"
 
   validate-secrets:
     name: 🔐 Validate Secrets
@@ -408,11 +427,13 @@ jobs:
           - platform: android
             runner: ubuntu-latest
             emoji: 📱
+            condition: ${{ needs.parse-commit.outputs.should_run_build_apk == 'true' }}
             artifact_name: APK
             task_name: Standard APK
           - platform: ios
             runner: macos-latest
             emoji: 🍎
+            condition: ${{ needs.parse-commit.outputs.should_run_build_ios == 'true' }}
             artifact_name: IPA
             task_name: Standard IPA
     runs-on: ${{ matrix.runner }}
@@ -621,7 +642,18 @@ jobs:
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
+      - name: 📧 Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: CI/CD Pipeline Status Report
+          to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
+          from: GitHub Actions <noreply@asadbalqani.com>
+          body: ${{ steps.notification.outputs.BODY }}
+          # content_type: text/html
 
       # Optional: Slack notification (uncomment to enable)
       # - name: Send Slack notification
