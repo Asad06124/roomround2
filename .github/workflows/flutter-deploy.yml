@@ -545,12 +545,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4  
-
+        uses: actions/checkout@v4
+  
       - name: 📊 Prepare status notification
         id: notification
         run: |
-          BODY='<!DOCTYPE html>
+          cat << 'EOF' > status_body.html
+          <!DOCTYPE html>
           <html lang="en">
           <head>
             <meta charset="UTF-8">
@@ -605,9 +606,21 @@ jobs:
                       </td>
                     </tr>
                   </table>
-                  <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 20px;">
-                    <tr>
-                      <td style="background-color: #ivelmente  
+                  <!-- Add more phases and content as needed -->
+                </td>
+              </tr>
+            </table>
+          </body>
+          </html>
+          EOF
+          
+          # Read the HTML content into a variable
+          BODY=$(cat status_body.html)
+          
+          # Set as output for other steps if needed
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
 
       # Optional: Slack notification (uncomment to enable)
