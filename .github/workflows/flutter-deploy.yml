@@ -1,76 +1,5 @@
 
-# mermaid
-# flowchart TD
-#   %% Phase 1: Three matrices with one subtask each (run in parallel)
-#   subgraph InitializationMatrix["🔧 Initialization Matrix"]
-#     direction TB
-#     subgraph VersionSetup["🧱 Version Setup"]
-#       VERSION_TASK["Version Setup 📋"]
-#     end
-#     subgraph ParseCommit["🔍 Parse Commit"]
-#       PARSE_TASK["Parse Commit 📝"]
-#     end
-#     subgraph ValidateSecrets["🔐 Validate Secrets"]
-#       SECRETS_TASK["Validate Secrets 🔑"]
-#     end
-#   end
-
-#   %% Phase 2: Three matrices with subtasks
-#   subgraph PatchMatrix["🏖️ Patch Matrix"]
-#     PATCH_ANDROID["Patch Android 🤖"]
-#     PATCH_IOS["Patch iOS 🍏"]
-#   end
-#   subgraph ReleaseMatrix["🚀 Release Matrix"]
-#     RELEASE_ANDROID["Release Android 🚀🤖"]
-#     RELEASE_IOS["Release iOS 🚀🍏"]
-#   end
-#   subgraph StandardMatrix["📦 Standard Matrix"]
-#     BUILD_APK["Build APK 📱"]
-#     BUILD_IPA["Build IPA 🍎"]
-#   end
-
-#   %% Phase 3: Pipeline Status
-#   PIPELINE_STATUS["📊 Pipeline Status"]
-
-#   %% Flow: All Phase 1 matrices must complete before any Phase 2 matrix starts
-#   InitializationMatrix --> PatchMatrix
-#   InitializationMatrix --> ReleaseMatrix
-#   InitializationMatrix --> StandardMatrix
-
-#   %% All Phase 2 matrices feed into final status
-#   PatchMatrix --> PIPELINE_STATUS
-#   ReleaseMatrix --> PIPELINE_STATUS
-#   StandardMatrix --> PIPELINE_STATUS
-
-
 name: 🚀 Flutter CI/CD Pipeline with Shorebird
-
-# Updated Pipeline Flow - Three Phase Structure
-# PHASE 1: Three matrices with one subtask each (run in parallel)
-#        ┌──────────────────────────────────────────────────────────────┐
-#        │                    🔧 Initialization Matrix                  │
-#        │ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐ │
-#        │ │ 🧱 Version Setup │ │ 🔍 Parse Commit │ │ 🔐 Validate Secrets │ │
-#        │ └──────────────────┘ └──────────────────┘ └──────────────────┘ │
-#        └──────────────────────┬──────────────────────┬────────────────┘
-#                               │                      │
-#                               ▼                      ▼
-# PHASE 2: Three matrices with subtasks (run in parallel after Phase 1)
-#        ┌────────────────────────────────┐ ┌────────────────────────────┐ ┌──────────────────────────────┐
-#        │      🏖️ Patch Matrix          │ │     🚀 Release Matrix       │ │     📦 Standard Matrix        │
-#        │ ┌────────────┬────────────┐   │ │ ┌────────────┬────────────┐ │ │ ┌────────────┬────────────┐ │
-#        │ │ Patch      │ Patch      │   │ │ │ Release    │ Release    │ │ │ │ Standard   │ Standard   │ │
-#        │ │ Android    │ iOS        │   │ │ │ Android    │ iOS        │ │ │ │ APK        │ IPA        │ │
-#        │ └────────────┴────────────┘   │ │ └────────────┴────────────┘ │ │ └────────────┴────────────┘ │
-#        └────────────┬───────────────────┘ └────────────┬───────────────┘ └────────────┬────────────────┘
-#                     │                                  │                              │
-#                     └────────────┬─────────────────────┴──────────────┬──────────────┘
-#                                  │                                     │
-#                                  ▼                                     ▼
-# PHASE 3: Final status (runs after all Phase 2 matrices complete)
-#                        ┌────────────────────────────┐
-#                        │   📊 Pipeline Status       │
-#                        └────────────────────────────┘
 
 on:
   push:
@@ -616,58 +545,69 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  
 
       - name: 📊 Prepare status notification
         id: notification
         run: |
-          BODY="🚀 CI/CD Pipeline Status Report\n"
-          BODY="$BODY━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-          BODY="$BODY📋 Version: ${{ needs.version-setup.outputs.version }}\n"
-          BODY="$BODY⏰ Timestamp: ${{ needs.version-setup.outputs.timestamp }}\n"
-          BODY="$BODY📝 Commit: ${{ github.sha }}\n\n"
-          
-          BODY="$BODY🎯 Three-Phase Pipeline Results:\n"
-          BODY="$BODY┌─────────────────────────────────────────────────────────────────────────────────────┐\n"
-          BODY="$BODY│ PHASE 1 - INITIALIZATION MATRICES                                                  │\n"
-          BODY="$BODY└─────────────────────────────────────────────────────────────────────────────────────┘\n"
-          
-          BODY="$BODY✅ 🧱 Version Setup: ${{ needs.version-setup.result == 'success' && 'Success' || 'Failed' }}\n"
-          BODY="$BODY✅ 🔍 Parse Commit: ${{ needs.parse-commit.result == 'success' && 'Success' || 'Failed' }}\n"
-          BODY="$BODY✅ 🔐 Validate Secrets: ${{ needs.validate-secrets.result == 'success' && 'Success' || 'Failed' }}\n"
-          
-          BODY="$BODY\n┌─────────────────────────────────────────────────────────────────────────────────────┐\n"
-          BODY="$BODY│ PHASE 2 - BUILD MATRICES (Parallel after Phase 1)                                  │\n"
-          BODY="$BODY└─────────────────────────────────────────────────────────────────────────────────────┘\n"
-          
-          if [ "${{ needs.patch-matrix.result }}" == "success" ]; then
-            BODY="$BODY✅ 🏖️ Patch Matrix: Success\n"
-          elif [ "${{ needs.patch-matrix.result }}" == "failure" ]; then
-            BODY="$BODY❌ 🏖️ Patch Matrix: Failed\n"
-          elif [ "${{ needs.patch-matrix.result }}" == "skipped" ]; then
-            BODY="$BODY⏭️ 🏖️ Patch Matrix: Skipped\n"
-          fi
-          
-          if [ "${{ needs.release-matrix.result }}" == "success" ]; then
-            BODY="$BODY✅ 🚀 Release Matrix: Success\n"
-          elif [ "${{ needs.release-matrix.result }}" == "failure" ]; then
-            BODY="$BODY❌ 🚀 Release Matrix: Failed\n"
-          elif [ "${{ needs.release-matrix.result }}" == "skipped" ]; then
-            BODY="$BODY⏭️ 🚀 Release Matrix: Skipped\n"
-          fi
-          
-          if [ "${{ needs.standard-matrix.result }}" == "success" ]; then
-            BODY="$BODY✅ 📦 Standard Matrix: Success\n"
-          elif [ "${{ needs.standard-matrix.result }}" == "failure" ]; then
-            BODY="$BODY❌ 📦 Standard Matrix: Failed\n"
-          elif [ "${{ needs.standard-matrix.result }}" == "skipped" ]; then
-            BODY="$BODY⏭️ 📦 Standard Matrix: Skipped\n"
-          fi
-          
-          BODY="$BODY\n┌─────────────────────────────────────────────────────────────────────────────────────┐\n"
-          BODY="$BODY│ PHASE 3 - PIPELINE STATUS (Final Summary)                                           │\n"
-          BODY="$BODY└─────────────────────────────────────────────────────────────────────────────────────┘\n"
-          BODY="$BODY✅ 📊 Pipe
+          BODY='<!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>CI/CD Pipeline Status Report</title>
+          </head>
+          <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border: 1px solid #e0e0e0; margin: 20px auto;">
+              <tr>
+                <td style="background-color: #007bff; padding: 20px; text-align: center;">
+                  <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🚀 CI/CD Pipeline Status Report</h1>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 20px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding: 10px 0; font-size: 16px; color: #333333;">
+                        <strong>📋 Version:</strong> ${{ needs.version-setup.outputs.version }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px 0; font-size: 16px; color: #333333;">
+                        <strong>⏰ Timestamp:</strong> ${{ needs.version-setup.outputs.timestamp }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px 0; font-size: 16px; color: #333333;">
+                        <strong>📝 Commit:</strong> ${{ github.sha }}
+                      </td>
+                    </tr>
+                  </table>
+                  <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+                  <h2 style="color: #333333; font-size: 20px; margin: 0 0 10px;">🎯 Three-Phase Pipeline Results</h2>
+                  <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 20px;">
+                    <tr>
+                      <td style="background-color: #f8f9fa; padding: 15px; font-size: 16px; font-weight: bold; color: #333333;">
+                        Phase 1 - Initialization Matrices
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px;">
+                        <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                          🧱 Version Setup: <span style="color: ${{ needs.version-setup.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.version-setup.result == 'success' && 'Success' || 'Failed' }}</span>
+                        </p>
+                        <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                          🔍 Parse Commit: <span style="color: ${{ needs.parse-commit.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.parse-commit.result == 'success' && 'Success' || 'Failed' }}</span>
+                        </p>
+                        <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                          🔐 Validate Secrets: <span style="color: ${{ needs.validate-secrets.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.validate-secrets.result == 'success' && 'Success' || 'Failed' }}</span>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                  <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 20px;">
+                    <tr>
+                      <td style="background-color: #ivelmente  
 
 
       # Optional: Slack notification (uncomment to enable)
