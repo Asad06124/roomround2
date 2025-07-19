@@ -560,123 +560,123 @@ jobs:
   # 🔹 PHASE 3: PIPELINE STATUS
   # ═══════════════════════════════════════════════════════════════════════════════════════
   pipeline-status:
-      name: 📊 Pipeline Status
-      needs: [version-setup, parse-commit, validate-secrets, Patch, release-matrix, standard-matrix]
-      if: ${{ always() }}
-      runs-on: ubuntu-latest
-      steps:
-        - name: 📥 Checkout repository
-          uses: actions/checkout@v4
-    
-        - name: 📊 Prepare status notification
-          id: notification
-          run: |
-            cat << 'EOF' > status_body.html
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>CI/CD Pipeline Status Report</title>
-            </head>
-            <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
-              <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border: 1px solid #e0e0e0; margin: 20px auto;">
-                <tr>
-                  <td style="background-color: #007bff; padding: 20px; text-align: center;">
-                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🚀 CI/CD Pipeline Status Report</h1>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 20px;">
-                    <table width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td style="padding: 10px 0; font-size: 16px; color: #333333;">
-                          <strong>📋 Version:</strong> ${{ needs.version-setup.outputs.version }}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px 0; font-size: 16px; color: #333333;">
-                          <strong>⏰ Timestamp:</strong> ${{ needs.version-setup.outputs.timestamp }}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px 0; font-size: 16px; color: #333333;">
-                          <strong>📝 Commit:</strong> ${{ github.sha }}
-                        </td>
-                      </tr>
-                    </table>
-                    <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 20px 0;">
-                    <h2 style="color: #333333; font-size: 20px; margin: 0 0 10px;">🎯 Three-Phase Pipeline Results</h2>
-                    <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 20px;">
-                      <tr>
-                        <td style="background-color: #f8f9fa; padding: 15px; font-size: 16px; font-weight: bold; color: #333333;">
-                          Phase 1 - Initialization Matrices
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px;">
-                          <p style="margin: 5px 0; font-size: 14px; color: #333333;">
-                            🧱 Version Setup: <span style="color: ${{ needs.version-setup.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.version-setup.result == 'success' && 'Success' || 'Failed' }}</span>
-                          </p>
-                          <p style="margin: 5px 0; font-size: 14px; color: #333333;">
-                            🔍 Parse Commit: <span style="color: ${{ needs.parse-commit.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.parse-commit.result == 'success' && 'Success' || 'Failed' }}</span>
-                          </p>
-                          <p style="margin: 5px 0; font-size: 14px; color: #333333;">
-                            🔐 Validate Secrets: <span style="color: ${{ needs.validate-secrets.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.validate-secrets.result == 'success' && 'Success' || 'Failed' }}</span>
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-                    <!-- Add more phases here -->
-                    <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 20px;">
-                      <tr>
-                        <td style="background-color: #f8f9fa; padding: 15px; font-size: 16px; font-weight: bold; color: #333333;">
-                          Phase 2 - Build & Test
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px;">
-                          <p style="margin: 5px 0; font-size: 14px; color: #333333;">
-                            🔧 Patch: <span style="color: ${{ needs.Patch.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.Patch.result == 'success' && 'Success' || 'Failed' }}</span>
-                          </p>
-                          <p style="margin: 5px 0; font-size: 14px; color: #333333;">
-                            🚀 Release Matrix: <span style="color: ${{ needs.release-matrix.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.release-matrix.result == 'success' && 'Success' || 'Failed' }}</span>
-                          </p>
-                          <p style="margin: 5px 0; font-size: 14px; color: #333333;">
-                            📊 Standard Matrix: <span style="color: ${{ needs.standard-matrix.result == 'success' && '#28a745' || '#dc3545' }};">${{ needs.standard-matrix.result == 'success' && 'Success' || 'Failed' }}</span>
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </body>
-            </html>
-            EOF
-            
-            # Read the HTML content into a variable (with proper escaping)
-            BODY=$(cat status_body.html)
-            
-            # Set as output with proper multiline handling
-            echo "html_body<<EOF" >> $GITHUB_OUTPUT
-            echo "$BODY" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-  
-        - name: 📧 Send email notification
-          uses: dawidd6/action-send-mail@v3
-          with:
-            server_address: smtp.gmail.com
-            server_port: 465
-            secure: true
-            username: ${{ secrets.GMAIL_USERNAME }}
-            password: ${{ secrets.GMAIL_APP_PASSWORD }}
-            subject: "🚀 CI/CD Pipeline Status Report - ${{ needs.version-setup.outputs.version }}"
-            to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
-            from: GitHub Actions <noreply@asadbalqani.com>
-            html_body: ${{ steps.notification.outputs.html_body }}
-            priority: normal
-          # content_type: text/html
+     name: 📊 Pipeline Status
+     needs: [version-setup, parse-commit, validate-secrets, Patch, release-matrix, standard-matrix]
+     if: ${{ always() }}
+     runs-on: ubuntu-latest
+     steps:
+       - name: 📥 Checkout repository
+         uses: actions/checkout@v4
+   
+       - name: 📊 Prepare status notification
+         id: notification
+         run: |
+           cat << 'EOF' > status_body.html
+           <!DOCTYPE html>
+           <html lang="en">
+           <head>
+             <meta charset="UTF-8">
+             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+             <title>CI/CD Pipeline Status Report</title>
+           </head>
+           <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
+             <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border: 1px solid #e0e0e0; margin: 20px auto;">
+               <tr>
+                 <td style="background-color: #007bff; padding: 20px; text-align: center;">
+                   <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🚀 CI/CD Pipeline Status Report</h1>
+                 </td>
+               </tr>
+               <tr>
+                 <td style="padding: 20px;">
+                   <table width="100%" cellpadding="0" cellspacing="0">
+                     <tr>
+                       <td style="padding: 10px 0; font-size: 16px; color: #333333;">
+                         <strong>📋 Version:</strong> ${{ needs.version-setup.outputs.version }}
+                       </td>
+                     </tr>
+                     <tr>
+                       <td style="padding: 10px 0; font-size: 16px; color: #333333;">
+                         <strong>⏰ Timestamp:</strong> ${{ needs.version-setup.outputs.timestamp }}
+                       </td>
+                     </tr>
+                     <tr>
+                       <td style="padding: 10px 0; font-size: 16px; color: #333333;">
+                         <strong>📝 Commit:</strong> ${{ github.sha }}
+                       </td>
+                     </tr>
+                   </table>
+                   <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+                   <h2 style="color: #333333; font-size: 20px; margin: 0 0 10px;">🎯 Three-Phase Pipeline Results</h2>
+                   <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 20px;">
+                     <tr>
+                       <td style="background-color: #f8f9fa; padding: 15px; font-size: 16px; font-weight: bold; color: #333333;">
+                         Phase 1 - Initialization Matrices
+                       </td>
+                     </tr>
+                     <tr>
+                       <td style="padding: 10px;">
+                         <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                           🧱 Version Setup: <span style="color: ${{ needs.version-setup.result == 'success' && '#28a745' || needs.version-setup.result == 'skipped' && '#ffc107' || '#dc3545' }};">${{ needs.version-setup.result == 'success' && 'Success' || needs.version-setup.result == 'skipped' && 'Skipped' || 'Failed' }}</span>
+                         </p>
+                         <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                           🔍 Parse Commit: <span style="color: ${{ needs.parse-commit.result == 'success' && '#28a745' || needs.parse-commit.result == 'skipped' && '#ffc107' || '#dc3545' }};">${{ needs.parse-commit.result == 'success' && 'Success' || needs.parse-commit.result == 'skipped' && 'Skipped' || 'Failed' }}</span>
+                         </p>
+                         <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                           🔐 Validate Secrets: <span style="color: ${{ needs.validate-secrets.result == 'success' && '#28a745' || needs.validate-secrets.result == 'skipped' && '#ffc107' || '#dc3545' }};">${{ needs.validate-secrets.result == 'success' && 'Success' || needs.validate-secrets.result == 'skipped' && 'Skipped' || 'Failed' }}</span>
+                         </p>
+                       </td>
+                     </tr>
+                   </table>
+                   <!-- Add more phases here -->
+                   <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 20px;">
+                     <tr>
+                       <td style="background-color: #f8f9fa; padding: 15px; font-size: 16px; font-weight: bold; color: #333333;">
+                         Phase 2 - Build & Test
+                       </td>
+                     </tr>
+                     <tr>
+                       <td style="padding: 10px;">
+                         <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                           🔧 Patch: <span style="color: ${{ needs.Patch.result == 'success' && '#28a745' || needs.Patch.result == 'skipped' && '#ffc107' || '#dc3545' }};">${{ needs.Patch.result == 'success' && 'Success' || needs.Patch.result == 'skipped' && 'Skipped' || 'Failed' }}</span>
+                         </p>
+                         <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                           🚀 Release Matrix: <span style="color: ${{ needs.release-matrix.result == 'success' && '#28a745' || needs.release-matrix.result == 'skipped' && '#ffc107' || '#dc3545' }};">${{ needs.release-matrix.result == 'success' && 'Success' || needs.release-matrix.result == 'skipped' && 'Skipped' || 'Failed' }}</span>
+                         </p>
+                         <p style="margin: 5px 0; font-size: 14px; color: #333333;">
+                           📊 Standard Matrix: <span style="color: ${{ needs.standard-matrix.result == 'success' && '#28a745' || needs.standard-matrix.result == 'skipped' && '#ffc107' || '#dc3545' }};">${{ needs.standard-matrix.result == 'success' && 'Success' || needs.standard-matrix.result == 'skipped' && 'Skipped' || 'Failed' }}</span>
+                         </p>
+                       </td>
+                     </tr>
+                   </table>
+                 </td>
+               </tr>
+             </table>
+           </body>
+           </html>
+           EOF
+           
+           # Read the HTML content into a variable (with proper escaping)
+           BODY=$(cat status_body.html)
+           
+           # Set as output with proper multiline handling
+           echo "html_body<<EOF" >> $GITHUB_OUTPUT
+           echo "$BODY" >> $GITHUB_OUTPUT
+           echo "EOF" >> $GITHUB_OUTPUT 
+
+       - name: 📧 Send email notification
+         uses: dawidd6/action-send-mail@v3
+         with:
+           server_address: smtp.gmail.com
+           server_port: 465
+           secure: true
+           username: ${{ secrets.GMAIL_USERNAME }}
+           password: ${{ secrets.GMAIL_APP_PASSWORD }}
+           subject: "🚀 CI/CD Pipeline Status Report - ${{ needs.version-setup.outputs.version }}"
+           to: ${{ secrets.ACCOUNT_HOLDER_EMAIL }}
+           from: GitHub Actions <noreply@asadbalqani.com>
+           html_body: ${{ steps.notification.outputs.html_body }}
+           priority: normal
+           # content_type: text/html
 
       # Optional: Slack notification (uncomment to enable)
       # - name: Send Slack notification
